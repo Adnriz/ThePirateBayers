@@ -1,48 +1,44 @@
-package dal;
+package DAL;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
-
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
-
-
-public class SQLController {
-    private static final String PROP_FILE = ".idea/config/config.settings";
+public class DBConnector {
+    // It's important that the user makes a config.settings file from the example in the config folder.
+    // With the information filled.
+    private static final String PROP_FILE = "config/config.settings";
     private SQLServerDataSource dataSource;
 
-    public SQLController() throws IOException{
+    /**
+     * Sets sensitive login information for the database connection.
+     *
+     * @throws SQLException If the DataSource cannot be made.
+     * @throws IOException If the file path cannot be read.
+     */
+    public DBConnector() throws SQLException, IOException {
         Properties databaseProperties = new Properties();
-        databaseProperties.load(new FileInputStream(new File(PROP_FILE)));
-
-        dataSource = new SQLServerDataSource();
-        dataSource.setServerName(databaseProperties.getProperty("server"));
-        dataSource.setDatabaseName(databaseProperties.getProperty("database"));
-        dataSource.setUser(databaseProperties.getProperty("user"));
-        dataSource.setPassword(databaseProperties.getProperty("password"));
-        dataSource.setPortNumber(1433);
-        dataSource.setTrustServerCertificate(true);
+        databaseProperties.load(new FileInputStream(PROP_FILE));
+        this.dataSource = new SQLServerDataSource();
+        this.dataSource.setServerName(databaseProperties.getProperty("Server"));
+        this.dataSource.setDatabaseName(databaseProperties.getProperty("Database"));
+        this.dataSource.setUser(databaseProperties.getProperty("User"));
+        this.dataSource.setPassword(databaseProperties.getProperty("Password"));
+        this.dataSource.setPortNumber(Integer.parseInt(databaseProperties.getProperty("Port")));
+        this.dataSource.setTrustServerCertificate(true);
     }
 
+    /**
+     * Gets a Connection object with a connection to the database.
+     *
+     * @return A Connection object with the connection to the database.
+     * @throws SQLServerException If the connection cannot be made.
+     */
     public Connection getConnection() throws SQLServerException {
-        return dataSource.getConnection();
-    }
-
-
-    public static void main(String[] args) throws SQLException, IOException {
-
-        SQLController databaseConnector = new SQLController();
-
-        try (Connection connection = databaseConnector.getConnection()) {
-
-            System.out.println("Is it open? " + !connection.isClosed());
-
-        } //Connection gets closed here
+        return this.dataSource.getConnection();
     }
 }
