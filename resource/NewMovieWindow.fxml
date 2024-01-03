@@ -9,11 +9,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller.NewMovieController">
    <children>
       <Button fx:id="btnSave" layoutX="14.0" layoutY="361.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="57.0" text="Save" />
-      <Button fx:id="btnClose" layoutX="229.0" layoutY="361.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="57.0" text="Close" />
+      <Button fx:id="btnClose" layoutX="229.0" layoutY="361.0" mnemonicParsing="false" onAction="#btnClose" prefHeight="25.0" prefWidth="57.0" text="Close" />
       <TextField fx:id="txtTitle" layoutX="53.0" layoutY="39.0" prefHeight="25.0" prefWidth="194.0" promptText="Ace Ventura: When Nature Calls" />
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="87.0" layoutY="14.0" prefHeight="25.0" prefWidth="119.0" text="Title:" textAlignment="CENTER">
          <font>
@@ -40,9 +39,9 @@
             <Font size="16.0" />
          </font>
       </Label>
-      <ComboBox fx:id="cbCategory1" layoutX="87.0" layoutY="89.0" prefHeight="25.0" prefWidth="119.0" promptText="Comedy" />
-      <ComboBox fx:id="cbCategory2" layoutX="87.0" layoutY="115.0" prefHeight="25.0" prefWidth="119.0" promptText="Adventure" />
-      <ComboBox fx:id="cbCategory3" layoutX="88.0" layoutY="141.0" prefHeight="25.0" prefWidth="119.0" promptText="Crime" />
+      <ComboBox fx:id="cbCategory1" layoutX="84.0" layoutY="89.0" prefHeight="25.0" prefWidth="125.0" promptText="Comedy" />
+      <ComboBox fx:id="cbCategory2" layoutX="84.0" layoutY="115.0" prefHeight="25.0" prefWidth="125.0" promptText="Science Fiction" />
+      <ComboBox fx:id="cbCategory3" layoutX="84.0" layoutY="141.0" prefHeight="25.0" prefWidth="125.0" promptText="Crime" />
       <Spinner fx:id="spinnerIMDB" editable="true" layoutX="88.0" layoutY="196.0" prefHeight="25.0" prefWidth="119.0" />
       <Spinner fx:id="spinnerPersonal" editable="true" layoutX="88.0" layoutY="249.0" prefHeight="25.0" prefWidth="119.0" />
       <DatePicker fx:id="dateLastViewed" layoutX="87.0" layoutY="305.0" prefHeight="25.0" prefWidth="119.0" />
