@@ -1,18 +1,20 @@
 package BE;
 
 public class Movie {
+    private int id;
     private String MovieTitle;
     private double PersonalRating;
     private double ImdbRating;
     private String filePath;
     private String lastView;
 
-    public Movie(String movieTitle, double personalRating, double imdbRating, String filePath, String lastView) {
+    public Movie(String movieTitle, double personalRating, double imdbRating, String filePath, String lastView, int id) {
         MovieTitle = movieTitle;
         PersonalRating = personalRating;
         ImdbRating = imdbRating;
         this.filePath = filePath;
         this.lastView = lastView;
+        this.id = id;
     }
     public Movie() {}
 
@@ -54,5 +56,13 @@ public class Movie {
 
     public void setLastView(String lastView) {
         this.lastView = lastView;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
