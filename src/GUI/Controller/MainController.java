@@ -19,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 
 public class MainController {
@@ -59,15 +60,24 @@ public class MainController {
     private TextField txtSearch;
 
     public void initialize(){
-        setupCategoryBoxes();
-        spinnersENGAGE();
+        setupInteractable();
     }
+
 
     @FXML
     private void onNewMovie(ActionEvent actionEvent) throws IOException
     {
         Stage stage = loadStage("/NewMovieWindow.fxml", "New Movie");
         stage.show();
+    }
+
+    /**
+     * Collects all methods that handles the input controls.
+     */
+    private void setupInteractable()
+    {
+        setupCategoryBoxes();
+        spinnersENGAGE();
     }
 
     /**

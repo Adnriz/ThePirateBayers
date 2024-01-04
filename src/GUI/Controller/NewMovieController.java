@@ -39,10 +39,21 @@ public class NewMovieController {
 
     @FXML
     private TextField txtTitle;
+    @FXML
+    private TextField txtFilepath;
 
     public void initialize(){
+        setupInteractable();
+    }
+
+    /**
+     * Collects all methods that handles the input controls.
+     */
+    private void setupInteractable()
+    {
         setupCategoryBoxes();
         spinnersENGAGE();
+        // dateLastViewed.setValue(LocalDate.now());  // needs to be moved to when movie is updated, and or update when the movie is played on the database.
     }
 
     // :) CODE SMELL INCOMING, Maybe move it to another class, and give this one access to the method.
@@ -94,8 +105,10 @@ public class NewMovieController {
         LocalDate lastViewed = dateLastViewed.getValue();
         double imdbRating = spinnerIMDB.getValue();
         double personalRating = spinnerPersonal.getValue();
+        String filepath = txtFilepath.getText();
 
         return new Movie();
+        // return new Movie(title,category1,category2,category3,imdbRating,personalRating,filepath); // needs constructor
     }
     public void btnClose(ActionEvent actionEvent) {
         Stage stage = (Stage) txtTitle.getScene().getWindow();
