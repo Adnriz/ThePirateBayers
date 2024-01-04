@@ -16,6 +16,7 @@ public class Movie {
         this.lastView = lastView;
         this.id = id;
     }
+
     public Movie() {}
 
     public String getMovieTitle() {
