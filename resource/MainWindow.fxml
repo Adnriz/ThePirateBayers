@@ -15,11 +15,11 @@
    <children>
       <TableView fx:id="tblviewMovies" layoutX="17.0" layoutY="50.0" prefHeight="342.0" prefWidth="768.0">
         <columns>
-          <TableColumn fx:id="calIMDB" prefWidth="63.0" text="IMDB" />
+          <TableColumn fx:id="colIMDB" prefWidth="63.0" text="IMDB" />
           <TableColumn fx:id="colPersonal" prefWidth="68.0" text="Peronsal" />
             <TableColumn fx:id="colTitle" prefWidth="313.0" text="Title" />
-            <TableColumn fx:id="colCategory" prefWidth="207.0" text="Categories" />
-            <TableColumn fx:id="colLastViewed" prefWidth="116.0" text="Last Viewed" />
+            <TableColumn fx:id="colCategories" prefWidth="207.0" text="Categories" />
+            <TableColumn fx:id="colLastView" prefWidth="116.0" text="Last Viewed" />
         </columns>
       </TableView>
       <TextField fx:id="txtSearch" layoutX="17.0" layoutY="25.0" prefHeight="25.0" prefWidth="198.0" promptText="Search" />

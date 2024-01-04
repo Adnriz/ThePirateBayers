@@ -15,6 +15,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
@@ -24,16 +25,6 @@ import java.time.LocalDate;
 
 public class MainController {
 
-    @FXML
-    private Button btnApplyFilters;
-    @FXML
-    private Button btnClearFilters;
-    @FXML
-    private Button btnDelete;
-    @FXML
-    private Button btnNewMovie;
-    @FXML
-    private Button btnUpdate;
     @FXML
     private ComboBox<String> cbCategory1;
     @FXML
@@ -49,18 +40,25 @@ public class MainController {
     @FXML
     private TableColumn<Movie,String> colTitle;
     @FXML
-    private TableColumn<Movie, String> colCategory;
+    private TableColumn<Movie, String> colCategories;  // Maybe an arraylist instead of string
     @FXML
-    private TableColumn<Movie, ?> colLastViewed;
+    private TableColumn<Movie, String> colLastView;
     @FXML
     private TableColumn<Movie,Double> colPersonal;
     @FXML
-    private TableColumn<Movie,Double> calIMDB;
+    private TableColumn<Movie,Double> colIMDB;
     @FXML
     private TextField txtSearch;
 
+    private final MovieModel movieModel;
+
     public void initialize(){
         setupInteractable();
+        setupMovieTableview();
+    }
+
+    public MainController() throws Exception {
+        movieModel = new MovieModel();
     }
 
 
@@ -78,6 +76,19 @@ public class MainController {
     {
         setupCategoryBoxes();
         spinnersENGAGE();
+    }
+
+
+    private void setupMovieTableview(){
+
+        tblviewMovies.setItems(movieModel.getObservableMovies());
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("MovieTitle"));
+        colPersonal.setCellValueFactory(new PropertyValueFactory<>("PersonalRating"));
+        colIMDB.setCellValueFactory(new PropertyValueFactory<>("ImdbRating"));
+        colLastView.setCellValueFactory(new PropertyValueFactory<>("lastView"));
+
+        //colCategory.setCellValueFactory(new PropertyValueFactory<>("Categories"));  // Implement later, when we know how
+
     }
 
     /**

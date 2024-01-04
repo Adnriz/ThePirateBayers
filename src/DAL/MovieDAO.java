@@ -24,7 +24,7 @@ public class MovieDAO {
                 allMovies.add(extractMovieFromResultSet(rs));
             }
         } catch (SQLException e) {
-            throw new SQLException("Could not retrieve songs from database", e);
+            throw new SQLException("Could not retrieve movie from database", e);
         }
         return allMovies;
     }
@@ -34,7 +34,7 @@ public class MovieDAO {
     ////////////////////////
 
     /**
-     * Extracts song information from ResultSet into a movie object.
+     * Extracts movie information from ResultSet into a movie object.
      *
      * @param rs ResultSet containing movie data.
      * @return A movie object.
@@ -42,13 +42,13 @@ public class MovieDAO {
      */
     private Movie extractMovieFromResultSet(ResultSet rs) throws SQLException {
         String title = rs.getString("title");
-        Double personalRating = rs.getDouble("PersonalRating");
-        Double imdbRating = rs.getDouble("IMDBRating");
+        double personalRating = rs.getDouble("PersonalRating");
+        double imdbRating = rs.getDouble("IMDBRating");
         String filepath = rs.getString("Filepath");
-        String lastviewed = rs.getString("Lastview");
+        String lastview = rs.getString("Lastview");
         int id = rs.getInt("id");
 
-        return new Movie(title,personalRating,imdbRating,filepath,lastviewed,id);
+        return new Movie(title,personalRating,imdbRating,filepath,lastview,id);
     }
     /**
      * Prepares a PreparedStatement with the movie data.
