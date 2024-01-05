@@ -63,5 +63,23 @@ public class MovieDAO {
         stmt.setString(5, movie.getFilePath());
         stmt.setString(6, movie.getLastView());
     }
+    public void deleteMovie(Movie movie) throws Exception {
+        if (databaseConnector == null) {
+            try {
+                databaseConnector = new DBConnector();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        String sql = "DELETE FROM Movie WHERE id = ?";
+        try (Connection conn = databaseConnector.getConnection()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
 
+            stmt.setInt(1, movie.getId());
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new Exception("Could not delete movie", ex);
+        }
+    }
 }
