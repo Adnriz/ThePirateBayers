@@ -1,5 +1,6 @@
 package DAL;
 
+import BE.Category;
 import BE.Movie;
 
 import java.io.IOException;
@@ -14,17 +15,39 @@ public class MovieDAO {
         databaseConnector = new DBConnector();
     }
 
-    public List<Movie> getAllMovies() throws SQLException{
+    /**
+     * Gets all movies and categories associated with the movieID in the CatMovie Table.
+     * Which then gets sent up in the layers.
+     * @return allMovies
+     * @throws SQLException
+     */
+    public List<Movie> getAllMoviesWithCategories() throws SQLException {
         List<Movie> allMovies = new ArrayList<>();
-        String SQL = "SELECT * FROM Movie;";
+        String SQL = "SELECT Movie.id AS MovieId, Movie.Title AS MovieTitle, Movie.PersonalRating, Movie.IMDBRating, Movie.Filepath, Movie.Lastview, Category.id AS CategoryId, Category.Category " +
+                     "FROM Movie " +
+                     "LEFT JOIN CatMovie ON Movie.id = CatMovie.MovieId " +
+                     "LEFT JOIN Category ON CatMovie.CategoryId = Category.id";
         try (Connection conn = databaseConnector.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(SQL)) {
+
+            Movie currentMovie = null;
+
             while (rs.next()) {
-                allMovies.add(extractMovieFromResultSet(rs));
+                int movieId = rs.getInt("MovieId");
+                if (currentMovie == null || currentMovie.getId() != movieId) {
+                    // Creates new Movie object to store information
+                    currentMovie = extractMovie(rs);
+                    allMovies.add(currentMovie);
+                } else {
+                    // If its a new Movie object, means it need to populate the Categories of the new movie.
+                    int categoryId = rs.getInt("CategoryId");
+                    String category = rs.getString("Category");
+                    currentMovie.addCategory(new Category(categoryId, category));
+                }
             }
         } catch (SQLException e) {
-            throw new SQLException("Could not retrieve movie from database", e);
+            throw new SQLException("Could not retrieve movies with categories from the database", e);
         }
         return allMovies;
     }
@@ -34,35 +57,29 @@ public class MovieDAO {
     ////////////////////////
 
     /**
-     * Extracts movie information from ResultSet into a movie object.
-     *
-     * @param rs ResultSet containing movie data.
-     * @return A movie object.
-     * @throws SQLException for errors in accessing the ResultSet.
+     * Method created a movie object with all the data from the DB. and then returns the Movie object.
+     * @param rs
+     * @return Movie
+     * @throws SQLException
      */
-    private Movie extractMovieFromResultSet(ResultSet rs) throws SQLException {
-        String title = rs.getString("title");
+    private Movie extractMovie(ResultSet rs) throws SQLException {
+        int movieId = rs.getInt("MovieId");
+        String title = rs.getString("MovieTitle");
         double personalRating = rs.getDouble("PersonalRating");
         double imdbRating = rs.getDouble("IMDBRating");
-        String filepath = rs.getString("Filepath");
-        String lastview = rs.getString("Lastview");
-        int id = rs.getInt("id");
+        String filePath = rs.getString("Filepath");
+        String lastView = rs.getString("Lastview");
 
-        return new Movie(title,personalRating,imdbRating,filepath,lastview,id);
+        int categoryId = rs.getInt("CategoryId");
+        String category = rs.getString("Category");
+
+        Movie movie = new Movie(title, personalRating, imdbRating, filePath, lastView, movieId);
+
+        movie.addCategory(new Category(categoryId, category));
+
+        return movie;
     }
-    /**
-     * Prepares a PreparedStatement with the movie data.
-     * @param stmt The PreparedStatement to be prepared.
-     * @param movie The movie providing the data.
-     * @throws SQLException for statement preparation errors.
-     */
-    private void prepareMovieStatement(PreparedStatement stmt, Movie movie) throws SQLException {
-        stmt.setString(2, movie.getMovieTitle());
-        stmt.setDouble(3,movie.getPersonalRating());
-        stmt.setDouble(4,movie.getImdbRating());
-        stmt.setString(5, movie.getFilePath());
-        stmt.setString(6, movie.getLastView());
-    }
+
     public void deleteMovie(Movie movie) throws Exception {
         if (databaseConnector == null) {
             try {

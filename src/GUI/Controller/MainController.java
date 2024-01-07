@@ -1,26 +1,24 @@
 package GUI.Controller;
-
 import GUI.Model.MovieModel;
-import javafx.application.Platform;
+
+import BE.Movie;
+import BE.Category;
+
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-
-import BE.Movie;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.util.List;
 
 
 public class MainController {
@@ -40,7 +38,7 @@ public class MainController {
     @FXML
     private TableColumn<Movie,String> colTitle;
     @FXML
-    private TableColumn<Movie, String> colCategories;  // Maybe an arraylist instead of string
+    private TableColumn<Movie, String> colCategories;
     @FXML
     private TableColumn<Movie, String> colLastView;
     @FXML
@@ -54,13 +52,11 @@ public class MainController {
 
     public void initialize(){
         setupInteractable();
-        setupMovieTableview();
     }
 
     public MainController() throws Exception {
         movieModel = new MovieModel();
     }
-
 
     @FXML
     private void onNewMovie(ActionEvent actionEvent) throws IOException
@@ -76,19 +72,30 @@ public class MainController {
     {
         setupCategoryBoxes();
         spinnersENGAGE();
+        setupMovieTableview();
     }
 
 
-    private void setupMovieTableview(){
-
+    private void setupMovieTableview() {
         tblviewMovies.setItems(movieModel.getObservableMovies());
         colTitle.setCellValueFactory(new PropertyValueFactory<>("MovieTitle"));
         colPersonal.setCellValueFactory(new PropertyValueFactory<>("PersonalRating"));
         colIMDB.setCellValueFactory(new PropertyValueFactory<>("ImdbRating"));
         colLastView.setCellValueFactory(new PropertyValueFactory<>("lastView"));
 
-        //colCategory.setCellValueFactory(new PropertyValueFactory<>("Categories"));  // Implement later, when we know how
-
+        /**
+         * Cell value factory for the colCategories TableColumn. It retrieves the list of categories
+         * from the Movie object and sets the cell value to a formatted, sorted, and filtered string
+         * of category names. If the list of categories is null, it sets an empty string as the cell value.
+         */
+        colCategories.setCellValueFactory(cellData -> {
+            List<Category> categories = cellData.getValue().getCategories();
+            if (categories != null) {
+                return new SimpleStringProperty(movieModel.getCategoriesAsStringSorted(cellData.getValue()));
+            } else {
+                return new SimpleStringProperty("");
+            }
+        });
     }
 
     /**
@@ -113,20 +120,20 @@ public class MainController {
     private void setupCategoryBoxes()
     {
         // A list containing all the movie categories
-        ObservableList<String> movieCategories = FXCollections.observableArrayList("Yep,This Isnt a Category :)","Fantasy","Action","Western","Adventure","Musical","Comedy","Romance","Horror",
+        ObservableList<String> movieCategories = FXCollections.observableArrayList("Empty","Fantasy","Action","Western","Adventure","Musical","Comedy","Romance","Horror",
                 "Mystery","Animation","Documentary","Drama","Thriller","Science Fiction","Crime","History","Sports","Family","Film-Noir","Short","War","Game-Show","Reality");
 
         cbCategory1.getItems().clear();
         cbCategory1.getItems().addAll(movieCategories);
-        cbCategory1.getSelectionModel().select("Yep This Isnt a Category :)");
+        cbCategory1.getSelectionModel().select("Empty");
 
         cbCategory2.getItems().clear();
         cbCategory2.getItems().addAll(movieCategories);
-        cbCategory2.getSelectionModel().select("Yep This Isnt a Category :)");
+        cbCategory2.getSelectionModel().select("Empty");
 
         cbCategory3.getItems().clear();
         cbCategory3.getItems().addAll(movieCategories);
-        cbCategory3.getSelectionModel().select("Yep This Isnt a Category :)");
+        cbCategory3.getSelectionModel().select("Empty");
 
     }
     /**

@@ -79,23 +79,23 @@ public class NewMovieController {
     private void setupCategoryBoxes()
     {
         // A list containing all the movie categories
-        ObservableList<String> movieCategories = FXCollections.observableArrayList("Yep,This Isnt a Category :)","Fantasy","Action","Western","Adventure","Musical","Comedy","Romance","Horror",
+        ObservableList<String> movieCategories = FXCollections.observableArrayList("Empty","Fantasy","Action","Western","Adventure","Musical","Comedy","Romance","Horror",
                 "Mystery","Animation","Documentary","Drama","Thriller","Science Fiction","Crime","History","Sports","Family","Film-Noir","Short","War","Game-Show","Reality");
 
         cbCategory1.getItems().clear();
         cbCategory1.getItems().addAll(movieCategories);
-        cbCategory1.getSelectionModel().select("Yep This Isnt a Category :)");
+        cbCategory1.getSelectionModel().select("Empty");
 
         cbCategory2.getItems().clear();
         cbCategory2.getItems().addAll(movieCategories);
-        cbCategory2.getSelectionModel().select("Yep This Isnt a Category :)");
+        cbCategory2.getSelectionModel().select("Empty");
 
         cbCategory3.getItems().clear();
         cbCategory3.getItems().addAll(movieCategories);
-        cbCategory3.getSelectionModel().select("Yep This Isnt a Category :)");
+        cbCategory3.getSelectionModel().select("Empty");
 
     }
-
+    // CODE SMELL DONE MAYBE PROBABLY //
     @FXML
     private Movie getUserInput() {
         String title = txtTitle.getText();
