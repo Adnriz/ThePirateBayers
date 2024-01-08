@@ -11,8 +11,8 @@
 
 <AnchorPane prefHeight="447.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller.NewMovieController">
    <children>
-      <Button fx:id="btnSave" layoutX="14.0" layoutY="408.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="57.0" text="Save" />
-      <Button fx:id="btnClose" layoutX="229.0" layoutY="408.0" mnemonicParsing="false" onAction="#btnClose" prefHeight="25.0" prefWidth="57.0" text="Close" />
+      <Button fx:id="btnSave" layoutX="14.0" layoutY="408.0" mnemonicParsing="false" onAction="#onSave" prefHeight="25.0" prefWidth="57.0" text="Save" />
+      <Button fx:id="btnClose" layoutX="229.0" layoutY="408.0" mnemonicParsing="false" onAction="#onClose" prefHeight="25.0" prefWidth="57.0" text="Close" />
       <TextField fx:id="txtTitle" layoutX="53.0" layoutY="39.0" prefHeight="25.0" prefWidth="194.0" promptText="Ace Ventura: When Nature Calls" />
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="87.0" layoutY="14.0" prefHeight="25.0" prefWidth="119.0" text="Title:" textAlignment="CENTER">
          <font>

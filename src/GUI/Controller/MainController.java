@@ -47,22 +47,43 @@ public class MainController {
     private TableColumn<Movie,Double> colIMDB;
     @FXML
     private TextField txtSearch;
-
-    private final MovieModel movieModel;
-
-    public void initialize(){
-        setupInteractable();
-    }
+    private MovieModel movieModel;
 
     public MainController() throws Exception {
         movieModel = new MovieModel();
     }
 
+    /**
+     * Initializes the controller.
+     */
+    public void initialize(){
+        setupInteractable();
+    }
+
+    /**
+     * Handles the action to open the NewMovie window.
+     *
+     * @param actionEvent The event that triggered the action.
+     * @throws IOException If the FXML file cannot be loaded.
+     */
     @FXML
-    private void onNewMovie(ActionEvent actionEvent) throws IOException
-    {
-        Stage stage = loadStage("/NewMovieWindow.fxml", "New Movie");
-        stage.show();
+    private void onNewMovie(ActionEvent actionEvent) throws IOException {
+        // Load the NewMovieWindow
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/NewMovieWindow.fxml"));
+        Parent root = loader.load();
+
+        // Get the controller and pass the current MovieModel
+        NewMovieController newMovieController = loader.getController();
+        newMovieController.setMovieModel(movieModel);
+
+        // Show the window and wait for it to close
+        Stage stage = new Stage();
+        stage.setTitle("New Movie");
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
+
+        // Refresh the TableView
+        tblviewMovies.refresh();
     }
 
     /**
@@ -97,6 +118,7 @@ public class MainController {
             }
         });
     }
+
 
     /**
      * Method to set up the Spinners on launch.
@@ -136,23 +158,5 @@ public class MainController {
         cbCategory3.getSelectionModel().select("Empty");
 
     }
-    /**
-     * Loads a new stage (window) with the specified FXML file and title.
-     *
-     * @param fxmlPath The path to the FXML file.
-     * @param title The title of the new stage.
-     * @return Stage The newly created stage.
-     * @throws IOException If there is an error loading the FXML file.
-     */
-    private Stage loadStage(String fxmlPath, String title) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-        Parent root = loader.load();
-
-        Stage stage = new Stage();
-        stage.setTitle(title);
-        stage.setScene(new Scene(root));
-        return stage;
-    }
-
 
 }

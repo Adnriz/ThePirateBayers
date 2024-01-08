@@ -52,6 +52,76 @@ public class MovieDAO {
         return allMovies;
     }
 
+    /**
+     * Fetches categories for a specific movie based on its ID.
+     *
+     * @param movieId The ID of the movie.
+     * @return A list of categories associated with the movie.
+     * @throws SQLException If a database access error occurs.
+     */
+    public List<Category> getCategoriesForMovie(int movieId) throws SQLException {
+        List<Category> categories = new ArrayList<>();
+        String sql = "SELECT Category.id, Category.Category FROM CatMovie " +
+                "JOIN Category ON CatMovie.CategoryId = Category.id " +
+                "WHERE CatMovie.MovieId = ?;";
+
+        try (Connection conn = databaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, movieId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    int categoryId = rs.getInt("id");
+                    String categoryName = rs.getString("Category");
+                    categories.add(new Category(categoryId, categoryName));
+                }
+            }
+        }
+        return categories;
+    }
+
+    /**
+     * Inserts a new movie into the database and links it with its categories.
+     *
+     * @param movie The Movie object to insert.
+     * @return The Movie object with its generated ID.
+     * @throws SQLException If a database access error occurs.
+     */
+    public Movie createMovie(Movie movie) throws SQLException {
+        String sql = "INSERT INTO Movie (Title, PersonalRating, IMDBRating, FilePath) VALUES (?, ?, ?, ?);";
+        try (Connection conn = databaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            pstmt.setString(1, movie.getMovieTitle());
+            pstmt.setDouble(2, movie.getPersonalRating());
+            pstmt.setDouble(3, movie.getImdbRating());
+            pstmt.setString(4, movie.getFilePath());
+            pstmt.executeUpdate();
+
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    movie.setId(generatedKeys.getInt(1));
+                }
+            }
+
+            linkMovieWithCategories(movie);
+            return movie;
+        }
+    }
+
+    private void linkMovieWithCategories(Movie movie) throws SQLException {
+        String sql = "INSERT INTO CatMovie (CategoryId, MovieId) VALUES (?, ?);";
+        try (Connection conn = databaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            for (Integer categoryId : movie.getCategoryIds()) {
+                pstmt.setInt(1, categoryId);
+                pstmt.setInt(2, movie.getId());
+                pstmt.executeUpdate();
+            }
+        }
+    }
+
     ////////////////////////
     //// Helper Methods ////
     ////////////////////////

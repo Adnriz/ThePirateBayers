@@ -11,6 +11,7 @@ public class Movie {
     private String filePath;
     private String lastView;
     private List<Category> categories;
+    private List<Integer> categoryIds;
 
     public Movie(String movieTitle, double personalRating, double imdbRating, String filePath, String lastView, int id) {
 
@@ -22,6 +23,7 @@ public class Movie {
         setId(id);
 
         setCategories(new ArrayList<>());
+        setCategoryIds(new ArrayList<>());
 
     }
 
@@ -82,8 +84,16 @@ public class Movie {
     public void setCategories(List<Category> categories) {
         this.categories = categories;
     }
+
     public void addCategory(Category category) {
         categories.add(category);
     }
 
+    public List<Integer> getCategoryIds() {
+        return categoryIds;
+    }
+
+    public void setCategoryIds(List<Integer> categoryIds) {
+        this.categoryIds = categoryIds;
+    }
 }

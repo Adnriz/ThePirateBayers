@@ -1,6 +1,7 @@
 package GUI.Controller;
 
 import BE.Movie;
+import GUI.Model.MovieModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -9,7 +10,10 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
-import java.time.LocalDate;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NewMovieController {
 
@@ -42,8 +46,26 @@ public class NewMovieController {
     @FXML
     private TextField txtFilepath;
 
+    private MovieModel movieModel;
+
+
+    public NewMovieController() throws SQLException, IOException {
+    }
+
+    /**
+     * Initializes the controller.
+     */
     public void initialize(){
         setupInteractable();
+    }
+
+    /**
+     * Sets the MovieModel for this controller.
+     *
+     * @param movieModel The MovieModel to be used.
+     */
+    public void setMovieModel(MovieModel movieModel) {
+        this.movieModel = movieModel;
     }
 
     /**
@@ -96,23 +118,80 @@ public class NewMovieController {
 
     }
     // CODE SMELL DONE MAYBE PROBABLY //
+    /**
+     * Gathers user input from the form fields and creates a new Movie object.
+     *
+     * @return A Movie object populated with user input.
+     */
     @FXML
     private Movie getUserInput() {
         String title = txtTitle.getText();
-        String category1 = cbCategory1.getValue();
-        String category2 = cbCategory2.getValue();
-        String category3 = cbCategory3.getValue();
-        LocalDate lastViewed = dateLastViewed.getValue();
         double imdbRating = spinnerIMDB.getValue();
         double personalRating = spinnerPersonal.getValue();
         String filepath = txtFilepath.getText();
 
-        return new Movie();
-        // return new Movie(title,category1,category2,category3,imdbRating,personalRating,filepath); // needs constructor
+        List<Integer> categoryIds = new ArrayList<>();
+        categoryIds.add(convertCategoryNameToId(cbCategory1.getValue()));
+        categoryIds.add(convertCategoryNameToId(cbCategory2.getValue()));
+        categoryIds.add(convertCategoryNameToId(cbCategory3.getValue()));
+
+        // Remove any invalid category IDs (-1 for not found)
+        categoryIds.removeIf(id -> id == -1 || id == null);
+
+        // Creating the Movie object with the collected information
+        Movie newMovie = new Movie();
+        newMovie.setMovieTitle(title);
+        newMovie.setImdbRating(imdbRating);
+        newMovie.setPersonalRating(personalRating);
+        newMovie.setFilePath(filepath);
+        newMovie.setCategoryIds(categoryIds);
+
+        return newMovie;
     }
-    public void btnClose(ActionEvent actionEvent) {
-        Stage stage = (Stage) txtTitle.getScene().getWindow();
+
+    /**
+     * Converts a category name to its ID.
+     *
+     * @param categoryName The name of the category.
+     * @return The ID of the category, or -1 if not found.
+     */
+    private int convertCategoryNameToId(String categoryName) {
+        if (categoryName == null || categoryName.isEmpty()) {
+            return -1; // Return -1 or any other default value to indicate "not found"
+        }
+        return movieModel.getCategoryModel().getCategoryIDFromName(categoryName);
+    }
+
+    /**
+     * Handles the save action when the Save button is clicked.
+     * It gathers user input, adds the movie to the model, and closes the window.
+     */
+    @FXML
+    private void onSave() {
+        try {
+            Movie movie = getUserInput();
+            movieModel.addMovie(movie);
+            closeWindow();
+        } catch (SQLException e) {
+            // Handle SQL exceptions, maybe show an error message
+        }
+    }
+
+    /**
+     * Closes the current window.
+     */
+    private void closeWindow() {
+        Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.close();
     }
+
+    /**
+     * Handles the save action when the Close button is clicked.
+     * Closes the current window.
+     */
+    public void onClose(ActionEvent actionEvent) {
+        closeWindow();
+    }
+
 
 }

@@ -2,19 +2,25 @@ package GUI.Model;
 
 import BE.Category;
 import BE.Movie;
+import BLL.CategoryManager;
 import BLL.MovieManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MovieModel {
     private ObservableList<Movie> availableMovies;
     private MovieManager movieManager;
+    private CategoryModel categoryModel;
 
-    public MovieModel() throws Exception {
+
+    public MovieModel() throws SQLException, IOException {
         movieManager = new MovieManager();
+        categoryModel = new CategoryModel();
         availableMovies = FXCollections.observableArrayList(movieManager.getAllMoviesWithCategories());
     }
 
@@ -47,6 +53,39 @@ public class MovieModel {
         return String.join(", ", sortedCategories);
     }
 
+    /**
+     * Returns the CategoryModel used by MovieModel.
+     *
+     * @return The CategoryModel instance.
+     */
+    public CategoryModel getCategoryModel() {
+        return categoryModel;
+    }
+
+    /**
+     * Returns the list of available movies as an ObservableList.
+     *
+     * @return ObservableList of movies.
+     */
+    public ObservableList<Movie> getAvailableMovies() {
+        return availableMovies;
+    }
+
+    /**
+     * Adds a new movie to the model. This includes creating the movie in the database,
+     * fetching its categories, and updating the list of available movies.
+     *
+     * @param movie The movie to be added.
+     * @throws SQLException If a database access error occurs.
+     */
+    public void addMovie(Movie movie) throws SQLException {
+        Movie createdMovie = movieManager.createMovie(movie);
+
+        List<Category> categories = movieManager.getCategoriesForMovie(createdMovie.getId());
+        createdMovie.setCategories(categories);
+
+        availableMovies.add(createdMovie);
+    }
 }
 
 
