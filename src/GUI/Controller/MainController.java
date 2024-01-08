@@ -96,6 +96,9 @@ public class MainController {
         setupCategoryBoxes();
         spinnersENGAGE();
         setupMovieTableview();
+
+        // Adds a listener to the search field, so that it updates it realtime.
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> onFilterSearch());
     }
 
 
@@ -184,4 +187,56 @@ public class MainController {
             System.out.println("No movie selected!");
         }
     }
+
+    private void onFilterSearch() {
+        String searchText = txtSearch.getText();
+        if (!searchText.isEmpty()) {
+            try {
+                List<Movie> searchResult = movieModel.searchMovies(searchText);
+                updateTableView(searchResult);
+            } catch (Exception e) {
+                displayError(e);
+            }
+        } else {
+            // If the search field is empty, show all movies
+            try {
+                movieModel.refreshMovies();
+            } catch (Exception e) {
+                displayError(e);
+            }
+        }
+    }
+
+    private void displayError(Throwable t) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Application Error");
+        alert.setHeaderText("An error occurred: " + t.getMessage());
+        alert.setContentText("Please try again or contact support if the problem persists.");
+        alert.showAndWait();
+    }
+
+    private void updateTableView(List<Movie> movies){
+        tblviewMovies.getItems().clear();
+        tblviewMovies.getItems().addAll(movies);
+    }
+
+    /**
+     * Loads a new stage (window) with the specified FXML file and title.
+     *
+     * @param fxmlPath The path to the FXML file.
+     * @param title The title of the new stage.
+     * @return Stage The newly created stage.
+     * @throws IOException If there is an error loading the FXML file.
+     */
+    private Stage loadStage(String fxmlPath, String title) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
+
+        Stage stage = new Stage();
+        stage.setTitle(title);
+        stage.setScene(new Scene(root));
+        return stage;
+    }
+
+
 }

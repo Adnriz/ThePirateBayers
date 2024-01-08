@@ -13,9 +13,11 @@ import java.util.List;
 public class MovieManager {
 
     private final MovieDAO movieDAO;
+    private final MovieSearcher movieSearcher;
 
     public MovieManager() throws SQLException, IOException {
         movieDAO = new MovieDAO();
+        movieSearcher = new MovieSearcher();
     }
 
     /**
@@ -49,6 +51,13 @@ public class MovieManager {
     public Movie createMovie(Movie movie) throws SQLException {
         return movieDAO.createMovie(movie);
     }
+
+    public List<Movie> searchMovies(String query) throws Exception
+    {
+        List<Movie> allMovies = getAllMoviesWithCategories();
+        return movieSearcher.search(allMovies, query);
+    }
+
 
 
 }

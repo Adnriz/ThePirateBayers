@@ -86,6 +86,15 @@ public class MovieModel {
 
         availableMovies.add(createdMovie);
     }
+    public List<Movie> searchMovies(String query) throws Exception
+    {
+        return movieManager.searchMovies(query);
+    }
+
+    public void refreshMovies() throws SQLException {
+        List<Movie> allMovies = movieManager.getAllMoviesWithCategories();
+        availableMovies.setAll(allMovies);
+    }
 }
 
 
