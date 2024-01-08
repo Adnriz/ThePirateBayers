@@ -1,4 +1,5 @@
 package GUI.Controller;
+import DAL.MovieDAO;
 import GUI.Model.MovieModel;
 
 import BE.Movie;
@@ -18,6 +19,7 @@ import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 
@@ -159,4 +161,27 @@ public class MainController {
 
     }
 
+    public void deleteMovie(ActionEvent event) throws SQLException, IOException {
+        // Retrieve the selected movie from tblviewMovies
+        Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
+
+        // Ensure a movie was selected
+        if (selectedMovie != null) {
+            MovieDAO movieDao = new MovieDAO();
+
+            try {
+                // Delete the selected movie from the database
+                movieDao.deleteMovie(selectedMovie);
+
+                // Update the TableView by removing the selected movie
+                tblviewMovies.getItems().remove(selectedMovie);
+            } catch (Exception e) {
+                // Handle the exception (e.g., show an error message)
+                System.out.println("An error occurred: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("No movie selected!");
+        }
+    }
 }
