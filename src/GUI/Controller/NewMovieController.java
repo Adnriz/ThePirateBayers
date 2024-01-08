@@ -47,6 +47,7 @@ public class NewMovieController {
     private TextField txtFilepath;
 
     private MovieModel movieModel;
+    private Movie currentMovie;
 
 
     public NewMovieController() throws SQLException, IOException {

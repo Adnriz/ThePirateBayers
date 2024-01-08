@@ -11,7 +11,7 @@ import java.util.Properties;
 public class DBConnector {
     // It's important that the user makes a config.settings file from the example in the config folder.
     // With the information filled.
-    private static final String PROP_FILE = "config/config.setting";
+    private static final String PROP_FILE = "config/config.settings";
     private SQLServerDataSource dataSource;
 
     /**

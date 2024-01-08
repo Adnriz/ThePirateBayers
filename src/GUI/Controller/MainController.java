@@ -38,18 +38,21 @@ public class MainController {
     @FXML
     private TableView<Movie> tblviewMovies;
     @FXML
-    private TableColumn<Movie,String> colTitle;
+    private TableColumn<Movie, String> colTitle;
     @FXML
     private TableColumn<Movie, String> colCategories;
     @FXML
     private TableColumn<Movie, String> colLastView;
     @FXML
-    private TableColumn<Movie,Double> colPersonal;
+    private TableColumn<Movie, Double> colPersonal;
     @FXML
-    private TableColumn<Movie,Double> colIMDB;
+    private TableColumn<Movie, Double> colIMDB;
     @FXML
     private TextField txtSearch;
+    @FXML
+    private Label errorLbl;
     private MovieModel movieModel;
+    private UpdateMovieController updateMovieController;
 
     public MainController() throws Exception {
         movieModel = new MovieModel();
@@ -58,7 +61,7 @@ public class MainController {
     /**
      * Initializes the controller.
      */
-    public void initialize(){
+    public void initialize() {
         setupInteractable();
     }
 
@@ -91,8 +94,7 @@ public class MainController {
     /**
      * Collects all methods that handles the input controls.
      */
-    private void setupInteractable()
-    {
+    private void setupInteractable() {
         setupCategoryBoxes();
         spinnersENGAGE();
         setupMovieTableview();
@@ -144,11 +146,10 @@ public class MainController {
     /**
      * Method to set up all the combo boxes with categories on launch
      */
-    private void setupCategoryBoxes()
-    {
+    private void setupCategoryBoxes() {
         // A list containing all the movie categories
-        ObservableList<String> movieCategories = FXCollections.observableArrayList("Empty","Fantasy","Action","Western","Adventure","Musical","Comedy","Romance","Horror",
-                "Mystery","Animation","Documentary","Drama","Thriller","Science Fiction","Crime","History","Sports","Family","Film-Noir","Short","War","Game-Show","Reality");
+        ObservableList<String> movieCategories = FXCollections.observableArrayList("Empty", "Fantasy", "Action", "Western", "Adventure", "Musical", "Comedy", "Romance", "Horror",
+                "Mystery", "Animation", "Documentary", "Drama", "Thriller", "Science Fiction", "Crime", "History", "Sports", "Family", "Film-Noir", "Short", "War", "Game-Show", "Reality");
 
         cbCategory1.getItems().clear();
         cbCategory1.getItems().addAll(movieCategories);
@@ -215,7 +216,7 @@ public class MainController {
         alert.showAndWait();
     }
 
-    private void updateTableView(List<Movie> movies){
+    private void updateTableView(List<Movie> movies) {
         tblviewMovies.getItems().clear();
         tblviewMovies.getItems().addAll(movies);
     }
@@ -224,7 +225,7 @@ public class MainController {
      * Loads a new stage (window) with the specified FXML file and title.
      *
      * @param fxmlPath The path to the FXML file.
-     * @param title The title of the new stage.
+     * @param title    The title of the new stage.
      * @return Stage The newly created stage.
      * @throws IOException If there is an error loading the FXML file.
      */
@@ -238,5 +239,29 @@ public class MainController {
         return stage;
     }
 
+    @FXML
+    public void btnUpdateAction(ActionEvent actionEvent) throws IOException {
+        if (tblviewMovies.getSelectionModel().getSelectedItem() != null) {
+            Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
 
+            // Loading new stage
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/updateMovieWindow.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller of the new stage
+            UpdateMovieController updateMovieController = loader.getController();
+
+            // Pass the selected movie and reference to MainController to UpdateMovieController
+            updateMovieController.setMovie(selectedMovie, this);
+
+            // Show the window
+            Stage stage = new Stage();
+            stage.setTitle("Update Movie");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } else {
+            errorLbl.setText("Please select a movie first");
+        }
+
+    }
 }
