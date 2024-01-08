@@ -158,12 +158,21 @@ public class MovieDAO {
                 throw new RuntimeException(e);
             }
         }
-        String sql = "DELETE FROM Movie WHERE id = ?";
-        try (Connection conn = databaseConnector.getConnection()) {
-            PreparedStatement stmt = conn.prepareStatement(sql);
 
-            stmt.setInt(1, movie.getId());
-            stmt.executeUpdate();
+        String deleteCatMovieSQL = "DELETE FROM CatMovie WHERE Movieid = ?";
+        String deleteMovieSQL = "DELETE FROM Movie WHERE ID = ?";
+
+        try (Connection conn = databaseConnector.getConnection()) {
+
+            // delete referenced entries from CatMovie table
+            PreparedStatement stmt1 = conn.prepareStatement(deleteCatMovieSQL);
+            stmt1.setInt(1, movie.getId());
+            stmt1.executeUpdate();
+
+            // delete movie from Movie table
+            PreparedStatement stmt2 = conn.prepareStatement(deleteMovieSQL);
+            stmt2.setInt(1, movie.getId());
+            stmt2.executeUpdate();
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not delete movie", ex);

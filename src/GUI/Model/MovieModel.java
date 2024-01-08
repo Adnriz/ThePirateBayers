@@ -45,7 +45,7 @@ public class MovieModel {
         }
 
         List<String> sortedCategories = movie.getCategories().stream()
-                .filter(category -> !category.getName().equalsIgnoreCase("Empty"))
+                .filter(category -> category != null && category.getName() != null && !category.getName().equalsIgnoreCase("Empty"))
                 .map(Category::getName)
                 .sorted()
                 .collect(Collectors.toList());
