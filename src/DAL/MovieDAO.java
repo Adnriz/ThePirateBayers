@@ -109,7 +109,7 @@ public class MovieDAO {
         }
     }
 
-    private void linkMovieWithCategories(Movie movie) throws SQLException {
+    public void linkMovieWithCategories(Movie movie) throws SQLException {
         String sql = "INSERT INTO CatMovie (CategoryId, MovieId) VALUES (?, ?);";
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -173,9 +173,35 @@ public class MovieDAO {
             PreparedStatement stmt2 = conn.prepareStatement(deleteMovieSQL);
             stmt2.setInt(1, movie.getId());
             stmt2.executeUpdate();
+
         } catch (SQLException ex) {
             ex.printStackTrace();
             throw new Exception("Could not delete movie", ex);
         }
     }
+    public void updateMovie(int id, String title, double newPersonalRating, double newImdbRating, String filePath) {
+        // SQL query to update the Movie table
+        String updateQuery = "UPDATE Movie SET Title = ?, PersonalRating = ?, IMDBRating = ?, Filepath = ? WHERE id = ?";
+
+        try (Connection connection = databaseConnector.getConnection()) {
+            // Create a PreparedStatement with the update query
+            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+
+            // Set the values for the placeholders in the query
+            preparedStatement.setString(1, title);
+            preparedStatement.setDouble(2, newPersonalRating);
+            preparedStatement.setDouble(3, newImdbRating);
+            preparedStatement.setString(4, filePath);
+            preparedStatement.setInt(5, id);
+
+            preparedStatement.executeUpdate();
+
+            // Close the resources
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

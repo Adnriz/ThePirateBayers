@@ -258,7 +258,9 @@ public class MainController {
             Stage stage = new Stage();
             stage.setTitle("Update Movie");
             stage.setScene(new Scene(root));
-            stage.show();
+            stage.showAndWait();
+            
+            tblviewMovies.refresh();
         } else {
             errorLbl.setText("Please select a movie first");
         }

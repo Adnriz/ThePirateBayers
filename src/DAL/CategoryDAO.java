@@ -1,6 +1,7 @@
 package DAL;
 
 import BE.Category;
+import com.microsoft.sqlserver.jdbc.SQLServerException;
 
 import java.io.IOException;
 import java.sql.*;
@@ -36,5 +37,16 @@ public class CategoryDAO {
         }
         return categories;
     }
+    public void removeCategoriesFromMovie(int movieId) throws SQLException {
+        String sql = "DELETE FROM CatMovie WHERE Movieid = ?";
+
+        try (Connection conn = databaseConnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, movieId);
+            pstmt.executeUpdate();
+        }
+    }
+
 
 }

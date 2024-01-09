@@ -1,6 +1,9 @@
 package GUI.Controller;
 
+        import BE.CategoriesInMovies;
+        import BE.Category;
         import BE.Movie;
+        import GUI.Model.CategoryModel;
         import GUI.Model.MovieModel;
         import javafx.collections.FXCollections;
         import javafx.collections.ObservableList;
@@ -9,6 +12,10 @@ package GUI.Controller;
         import javafx.scene.control.*;
         import javafx.stage.Stage;
         import javafx.util.converter.DoubleStringConverter;
+
+        import java.sql.SQLException;
+        import java.util.ArrayList;
+        import java.util.List;
 
 public class UpdateMovieController {
     @FXML
@@ -42,6 +49,7 @@ public class UpdateMovieController {
     private MovieModel movieModel;
     private Movie movie;
     private MainController mainController;
+    private CategoriesInMovies categoriesInMovies;
 
 
     public UpdateMovieController() throws Exception {
@@ -111,5 +119,43 @@ public class UpdateMovieController {
             setupCategoryBoxes(movie);
         }
     }
+    public void btnSaveAction(ActionEvent actionEvent) throws SQLException {
+        movieDetailsUpdate(movie);
+        movieCategoryUpdate(movie);
+        //closing the stage
+        Stage stage = (Stage) txtTitle.getScene().getWindow();
+        stage.close();
+    }
 
+    private void movieCategoryUpdate(Movie movie) throws SQLException {
+        int movieid = movie.getId();
+        CategoryModel categoryModel = new CategoryModel();
+        //deleting the old categories
+        categoryModel.removeCategoriesFromMovie(movieid);
+
+        //Adding the new Ids to the movie
+        List<Integer> categoryIds = new ArrayList<>();
+        categoryIds.add(convertCategoryNameToId(cbCategory1.getValue()));
+        categoryIds.add(convertCategoryNameToId(cbCategory2.getValue()));
+        categoryIds.add(convertCategoryNameToId(cbCategory3.getValue()));
+        movie.setCategoryIds(categoryIds);
+        movieModel.linkCatMov(movie);
+    }
+    private int convertCategoryNameToId(String categoryName) {
+        if (categoryName == null || categoryName.isEmpty()) {
+            return -1; // Return -1 or any other default value to indicate "not found"
+        }
+        return movieModel.getCategoryModel().getCategoryIDFromName(categoryName);
+    }
+
+    private void movieDetailsUpdate(Movie movie) {
+        //assigning the information to be updated
+        int id = movie.getId();
+        String title = txtTitle.getText();
+        double newPersonalRating = (double) Math.round(spinnerPersonal.getValue() * 10)/10;
+        double newImdbRating = (double) Math.round(spinnerIMDB.getValue() * 10)/10;
+        String filePath = txtFilepath.getText();
+        //sending in the update
+        movieModel.updateMovie(id, title, newPersonalRating, newImdbRating, filePath);
+    }
 }

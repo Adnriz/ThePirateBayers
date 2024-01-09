@@ -1,10 +1,13 @@
 package BE;
 
+import DAL.CategoryDAO;
+
 public class CategoriesInMovies {
 
     private int id;
     private int categoryId;
     private int movieId;
+
 
     public CategoriesInMovies(int id, int categoryId, int movieId) {
         this.id = id;
@@ -31,4 +34,6 @@ public class CategoriesInMovies {
     public int getMovieId() {
         return movieId;
     }
+
+
 }

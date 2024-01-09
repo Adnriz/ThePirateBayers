@@ -41,4 +41,7 @@ public class CategoryModel {
     public int getCategoryIDFromName(String categoryName) {
         return categoryNameToIdMap.getOrDefault(categoryName, -1);
     }
+    public void removeCategoriesFromMovie(int movieId) throws SQLException {
+        categoryManager.removeCategoriesFromMovie(movieId);
+    }
 }

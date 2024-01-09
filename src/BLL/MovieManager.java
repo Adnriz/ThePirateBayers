@@ -51,7 +51,9 @@ public class MovieManager {
     public Movie createMovie(Movie movie) throws SQLException {
         return movieDAO.createMovie(movie);
     }
-
+    public void updateMovieInfo(int id, String title, double newPersonalRating, double newImdbRating, String filePath) {
+        movieDAO.updateMovie(id, title, newPersonalRating, newImdbRating, filePath);
+    }
     /**
      *  This method performs the search through the MovieSearcher.
      *  And combines the two results
@@ -72,5 +74,8 @@ public class MovieManager {
 
         return movieSearchResult;
 
+    }
+    public void linkCatMov(Movie movie) throws SQLException {
+        movieDAO.linkMovieWithCategories(movie);
     }
 }

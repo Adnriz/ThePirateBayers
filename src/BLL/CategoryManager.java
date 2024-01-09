@@ -22,4 +22,7 @@ public class CategoryManager {
     public Map<String, Integer> getAllCategories() throws SQLException {
         return categoryDAO.getAllCategories();
     }
+    public void removeCategoriesFromMovie(int movieId) throws SQLException {
+        categoryDAO.removeCategoriesFromMovie(movieId);
+    }
 }

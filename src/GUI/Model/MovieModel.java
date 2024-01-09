@@ -95,6 +95,12 @@ public class MovieModel {
         List<Movie> allMovies = movieManager.getAllMoviesWithCategories();
         availableMovies.setAll(allMovies);
     }
+    public void updateMovie(int id, String title, double newPersonalRating, double newImdbRating, String filePath){
+        movieManager.updateMovieInfo(id, title, newPersonalRating, newImdbRating, filePath);
+    }
+    public void linkCatMov(Movie movie) throws SQLException {
+        movieManager.linkCatMov(movie);
+    }
 }
 
 
