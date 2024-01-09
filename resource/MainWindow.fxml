@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="560.0" prefWidth="801.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller.MainController">
+<AnchorPane prefHeight="560.0" prefWidth="801.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GUI.Controller.MainController">
    <children>
       <TableView fx:id="tblviewMovies" layoutX="17.0" layoutY="50.0" prefHeight="342.0" prefWidth="768.0">
         <columns>
@@ -55,5 +55,6 @@
       <Button fx:id="btnClearFilters" layoutX="391.0" layoutY="511.0" mnemonicParsing="false" text="Clear Filters" />
       <Separator layoutX="226.0" layoutY="392.0" orientation="VERTICAL" prefHeight="171.0" prefWidth="5.0" />
       <Label fx:id="errorLbl" alignment="CENTER" layoutX="18.0" layoutY="434.0" prefHeight="17.0" prefWidth="198.0" textFill="#fc0000" />
+      <Button fx:id="btnPlayMovie" layoutX="75.0" layoutY="477.0" mnemonicParsing="false" text="PLAY MOVIE" />
    </children>
 </AnchorPane>
