@@ -52,17 +52,25 @@ public class MovieManager {
         return movieDAO.createMovie(movie);
     }
 
+    /**
+     *  This method performs the search through the MovieSearcher.
+     *  And combines the two results
+     * @param query
+     * @return
+     * @throws Exception
+     */
     public List<Movie> searchMovies(String query) throws Exception {
+        // Retrieves a list with all movies and categories
         List<Movie> allMovies = getAllMoviesWithCategories();
-        List<Movie> titleSearchResult = movieSearcher.search(allMovies, query);
+
+        // Performs the search
+        List<Movie> movieSearchResult = movieSearcher.search(allMovies, query);
         List<Movie> categorySearchResult = movieSearcher.searchByCategory(allMovies, query);
 
-        // Merge the search results (if needed).
-        // For simplicity, the example below appends the category search results to the title search results.
-        titleSearchResult.addAll(categorySearchResult);
+        // Consolidates the results
+        movieSearchResult.addAll(categorySearchResult);
 
-        return titleSearchResult;
-
+        return movieSearchResult;
 
     }
 }
