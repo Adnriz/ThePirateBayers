@@ -45,17 +45,47 @@ public class MovieSearcher {
                 compareToMovieLastView(query, movie);
     }
 
-    private boolean compareToMovieTitle(String query, Movie movie){
-        return movie.getMovieTitle().toLowerCase().contains(query.toLowerCase());
+    private boolean compareToMovieTitle(String query, Movie movie) {
+        String title = movie.getMovieTitle();
+
+        // Check for null or empty title
+        if (title == null || title.isEmpty()) {
+            return false;
+        }
+
+        return title.toLowerCase().contains(query.toLowerCase());
     }
-    private boolean compareToMoviePersonalRating(String query, Movie movie){
-        return Double.toString(movie.getPersonalRating()).contains(query);
+
+    private boolean compareToMoviePersonalRating(String query, Movie movie) {
+        Double personalRating = movie.getPersonalRating();
+
+        // Check for null personalRating
+        if (personalRating == null) {
+            return false;
+        }
+
+        return Double.toString(personalRating).contains(query);
     }
-    private boolean compareToMovieIMDBRating(String query, Movie movie){
-        return Double.toString(movie.getImdbRating()).contains(query);
+
+    private boolean compareToMovieIMDBRating(String query, Movie movie) {
+        Double imdbRating = movie.getImdbRating();
+
+        // Check for null imdbRating
+        if (imdbRating == null) {
+            return false;
+        }
+        return Double.toString(imdbRating).contains(query);
     }
-    private boolean compareToMovieLastView(String query, Movie movie){
-        return movie.getLastView().contains(query);
+
+    private boolean compareToMovieLastView(String query, Movie movie) {
+        String lastView = movie.getLastView();
+
+        // Check for null or empty lastView
+        if (lastView == null || lastView.isEmpty()) {
+            return false;
+        }
+
+        return lastView.contains(query);
     }
 
     /**
