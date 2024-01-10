@@ -1,5 +1,6 @@
 package GUI.Controller;
 import DAL.MovieDAO;
+import GUI.Model.CategoryModel;
 import GUI.Model.MovieModel;
 
 import BE.Movie;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -42,6 +44,8 @@ public class MainController {
     @FXML
     private TableView<Movie> tblviewMovies;
     @FXML
+    private ListView<Category> listCategories;
+    @FXML
     private TableColumn<Movie, String> colTitle;
     @FXML
     private TableColumn<Movie, String> colCategories;
@@ -54,12 +58,16 @@ public class MainController {
     @FXML
     private TextField txtSearch;
     @FXML
+    private TextField txtAddCategory;
+    @FXML
     private Label errorLbl;
     private MovieModel movieModel;
+    private CategoryModel categoryModel;
     private UpdateMovieController updateMovieController;
 
     public MainController() throws Exception {
         movieModel = new MovieModel();
+        categoryModel = new CategoryModel();
     }
 
     /**
@@ -102,6 +110,7 @@ public class MainController {
         setupCategoryBoxes();
         spinnersENGAGE();
         setupMovieTableview();
+        setupListViewCategories();
 
         // Adds a listener to the search field, so that it updates it realtime.
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> onFilterSearch());
@@ -151,20 +160,33 @@ public class MainController {
      * Method to set up all the combo boxes with categories on launch
      */
     private void setupCategoryBoxes() {
-        // A list containing all the movie categories
-        ObservableList<String> movieCategories = FXCollections.observableArrayList("Empty", "Fantasy", "Action", "Western", "Adventure", "Musical", "Comedy", "Romance", "Horror",
-                "Mystery", "Animation", "Documentary", "Drama", "Thriller", "Science Fiction", "Crime", "History", "Sports", "Family", "Film-Noir", "Short", "War", "Game-Show", "Reality");
+        // Fetch categories from the CategoryModel
+        ObservableList<Category> categories = categoryModel.getCategories();
 
+        // Create a list of category names
+        ObservableList<String> categoryNames = categories.stream()
+                // Only get the names and not the ids
+                .map(Category::getName)
+                // consolidate into a list to parse into the comboboxes
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+
+        // Sets the Combo Boxes up, so that "Empty" always is the first option.
         cbCategory1.getItems().clear();
-        cbCategory1.getItems().addAll(movieCategories);
+        cbCategory1.getItems().addAll(categoryNames);
+        cbCategory1.getItems().remove("Empty");
+        cbCategory1.getItems().add(0, "Empty");
         cbCategory1.getSelectionModel().select("Empty");
 
         cbCategory2.getItems().clear();
-        cbCategory2.getItems().addAll(movieCategories);
+        cbCategory2.getItems().addAll(categoryNames);
+        cbCategory2.getItems().remove("Empty");
+        cbCategory2.getItems().add(0, "Empty");
         cbCategory2.getSelectionModel().select("Empty");
 
         cbCategory3.getItems().clear();
-        cbCategory3.getItems().addAll(movieCategories);
+        cbCategory3.getItems().addAll(categoryNames);
+        cbCategory3.getItems().remove("Empty");
+        cbCategory3.getItems().add(0, "Empty");
         cbCategory3.getSelectionModel().select("Empty");
 
     }
@@ -338,4 +360,84 @@ public class MainController {
         //Resetting the tableview to show all movies
         tblviewMovies.setItems(movieModel.getObservableMovies());
     }
+
+
+
+    private void setupListViewCategories() {
+        listCategories.setItems(categoryModel.getCategories());
+    }
+    @FXML
+    private void addCategory()
+    {
+        String categoryName = txtAddCategory.getText();
+        Category newCategory = new Category(-1, categoryName);
+
+        try {
+            boolean confirmCreation = showConfirmationAlert("Add Category",
+                    "Would you like to add the category " + txtAddCategory.getText() + "?");
+            if (confirmCreation) {
+                categoryModel.addCategory(newCategory);
+
+                listCategories.setItems(categoryModel.getCategories());
+                txtAddCategory.clear();
+
+                setupCategoryBoxes();
+            }
+        } catch (SQLException e) {
+            showAlert("CREATION OF NEW CATEGORY",
+                    "Hello friend, it seems there has been a creation error. Tough luck");
+        }
+    }
+
+
+    @FXML
+    private void deleteCategory(ActionEvent actionEvent) {
+        Category selectedCategory = listCategories.getSelectionModel().getSelectedItem();
+
+        if (selectedCategory != null) {
+            try {
+                boolean confirmDelete = showConfirmationAlert("Delete Category",
+                        "Are you sure you want to delete this category " + selectedCategory.getName() + "?");
+                if (confirmDelete)
+                {
+                    categoryModel.deleteCategory(selectedCategory);
+                    listCategories.setItems(categoryModel.getCategories());
+                    txtAddCategory.clear();
+                    setupCategoryBoxes();
+                }
+            } catch (Exception e)
+            {
+                showAlert("ERROR WHILE DELETING",
+                        "Something went wrong while trying to delete this " +
+                                selectedCategory.getName() + " category");
+            }
+        } else {
+            showAlert("Selection Required","Please select a category to delete");
+        }
+
+    }
+
+    /**
+     * Displays a confirmation alert with the specified title and content.
+     *
+     * @param title   The title of the alert dialog.
+     * @param content The content message displayed in the alert dialog.
+     * @return boolean Returns true if the user clicks 'Yes', and false if the user clicks 'No' or closes the dialog.
+     */
+    private boolean showConfirmationAlert(String title, String content) {
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION, content, ButtonType.YES, ButtonType.NO);
+        confirmAlert.setTitle(title);
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.YES;
+    }
+
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+
 }

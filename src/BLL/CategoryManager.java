@@ -1,5 +1,6 @@
 package BLL;
 
+import BE.Category;
 import DAL.CategoryDAO;
 
 import java.io.IOException;
@@ -25,4 +26,15 @@ public class CategoryManager {
     public void removeCategoriesFromMovie(int movieId) throws SQLException {
         categoryDAO.removeCategoriesFromMovie(movieId);
     }
+
+    public Category addCategory(Category newCategory) throws SQLException {
+        return categoryDAO.addCategory(newCategory);
+    }
+
+    public void deleteCategory(Category selectedCategory) throws SQLException {
+        categoryDAO.deleteCategory(selectedCategory);
+    }
+
+
+
 }
