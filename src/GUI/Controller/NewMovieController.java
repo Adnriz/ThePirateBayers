@@ -136,9 +136,6 @@ public class NewMovieController {
         categoryIds.add(convertCategoryNameToId(cbCategory2.getValue()));
         categoryIds.add(convertCategoryNameToId(cbCategory3.getValue()));
 
-        // Remove any invalid category IDs (-1 for not found)
-        categoryIds.removeIf(id -> id == -1 || id == null);
-
         // Creating the Movie object with the collected information
         Movie newMovie = new Movie();
         newMovie.setMovieTitle(title);
@@ -158,7 +155,7 @@ public class NewMovieController {
      */
     private int convertCategoryNameToId(String categoryName) {
         if (categoryName == null || categoryName.isEmpty()) {
-            return -1; // Return -1 or any other default value to indicate "not found"
+            return -1; // Return -1 to indicate "not found"
         }
         return movieModel.getCategoryModel().getCategoryIDFromName(categoryName);
     }

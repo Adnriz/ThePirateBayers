@@ -20,11 +20,15 @@ import javafx.util.converter.DoubleStringConverter;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class MainController {
 
+    public Button btnApplyFilters;
+    public Button btnClearFilters;
     @FXML
     private ComboBox<String> cbCategory1;
     @FXML
@@ -73,7 +77,7 @@ public class MainController {
      */
     @FXML
     private void onNewMovie(ActionEvent actionEvent) throws IOException {
-        // Load the NewMovieWindow
+        // Load NewMovieWindow
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/NewMovieWindow.fxml"));
         Parent root = loader.load();
 
@@ -87,7 +91,7 @@ public class MainController {
         stage.setScene(new Scene(root));
         stage.showAndWait();
 
-        // Refresh the TableView
+        // Refresh the TableView when NewMovieWindow is closed
         tblviewMovies.refresh();
     }
 
@@ -132,11 +136,11 @@ public class MainController {
      */
     private void spinnersENGAGE() {
         // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
-        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 7.0, 0.1);
+        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 0.0, 0.1);
         // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
         valueFactoryIMDB.setConverter(new DoubleStringConverter());
 
-        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 7.0, 0.1);
+        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 0.0, 0.1);
         valueFactoryPersonal.setConverter(new DoubleStringConverter());
         // Sets the parameters for the spinners with the code from above.
         spinnerIMDB.setValueFactory(valueFactoryIMDB);
@@ -265,5 +269,73 @@ public class MainController {
             errorLbl.setText("Please select a movie first");
         }
 
+    }
+
+    /**
+     * Handles the action event triggered when the 'Apply Filters' button is clicked.
+     */
+    @FXML
+    private void onApplyFilters(ActionEvent actionEvent) {
+     filterMovies();
+    }
+
+    /**
+     * Filters the list of movies based on selected categories and rating criteria.
+     */
+    private void filterMovies() {
+        //Get category filters
+        String category1 = cbCategory1.getValue();
+        String category2 = cbCategory2.getValue();
+        String category3 = cbCategory3.getValue();
+
+        //Get rating filters
+        double minIMDBRating = spinnerIMDB.getValue();
+        double minPersonalRating = spinnerPersonal.getValue();
+
+        //Starts a stream of all Movie objects.
+        List<Movie> filteredMovies = movieModel.getObservableMovies().stream()
+
+                //Applies the rating filter
+                .filter(movie -> movie.getImdbRating() >= minIMDBRating && movie.getPersonalRating() >= minPersonalRating)
+
+                //Applies category filter, first it adds selected categories to an Arraylist and then checks for matches.
+                .filter(movie -> {
+                    List<String> selectedCategories = new ArrayList<>();
+                    if (!"Empty".equals(category1)) selectedCategories.add(category1);
+                    if (!"Empty".equals(category2)) selectedCategories.add(category2);
+                    if (!"Empty".equals(category3)) selectedCategories.add(category3);
+
+                    // If no categories are selected, include all movies. No category filters applied, true instructs the filter to include all movies.
+                    if (selectedCategories.isEmpty()) return true;
+
+                    //return a stream of 'Category' objects from the movie
+                    return movie.getCategories().stream()
+                            //converts the stream of Category objects to String objects with the category names.
+                            .map(Category::getName)
+                            //Checks if any of the movie's category list is contained in the list of selected categories.
+                            .anyMatch(selectedCategories::contains);
+                })
+                //collects all the elements from the stream that matched the filters into the Movie list.
+                .collect(Collectors.toList());
+        //sets the tableview with the filtered list of movies.
+        tblviewMovies.setItems(FXCollections.observableList(filteredMovies));
+    }
+
+    /**
+     * Resets all filter controls to their default values and displays all movies in the TableView.
+     */
+    @FXML
+    private void onClearFilters(ActionEvent actionEvent) {
+        //Resetting the comboboxes
+        cbCategory1.getSelectionModel().select("Empty");
+        cbCategory2.getSelectionModel().select("Empty");
+        cbCategory3.getSelectionModel().select("Empty");
+
+        //Resetting the spinners
+        spinnerIMDB.getValueFactory().setValue(0.0);
+        spinnerPersonal.getValueFactory().setValue(0.0);
+
+        //Resetting the tableview to show all movies
+        tblviewMovies.setItems(movieModel.getObservableMovies());
     }
 }
