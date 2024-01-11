@@ -11,7 +11,6 @@ import javafx.collections.ObservableList;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -111,8 +110,7 @@ public class MovieModel {
 
     public void updateLastView(Movie movie) throws SQLException {
         // Updating the last view date in the movie object
-        String dateToday = LocalDate.now().toString();
-        movie.setLastView(dateToday);
+        movie.setLastView((new Date(System.currentTimeMillis())).toString());
 
         // Assuming movieDAO is your MovieDAO instance
         movieManager.updateLastView(movie);
