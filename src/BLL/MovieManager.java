@@ -82,4 +82,13 @@ public class MovieManager {
     public void deleteMovie(Movie selectedMovie) throws SQLException {
         movieDAO.deleteMovie(selectedMovie);
     }
+
+public void updateLastView(Movie movie) throws SQLException {
+        // Updating the last view date in the movie object
+        movie.setLastView((new java.util.Date(System.currentTimeMillis())).toString());
+
+        // Assuming movieDAO is your MovieDAO instance
+        movieDAO.updateLastView(movie);
+    }
+
 }

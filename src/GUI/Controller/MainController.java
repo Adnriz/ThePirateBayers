@@ -430,8 +430,11 @@ public class MainController {
                 new Thread(() -> {
                     try {
                         Desktop.getDesktop().open(movieFile);
+                        updateLastViewDate(selectedMovie);
                     } catch (IOException ex) {
                         System.out.println("An error occurred while trying to play the movie: " + ex.getMessage());
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
                     }
                 }).start();
             }
@@ -459,6 +462,8 @@ public class MainController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
+    private void updateLastViewDate(Movie movie) throws SQLException {
+        movieModel.updateLastView(movie);
+    }
 
 }

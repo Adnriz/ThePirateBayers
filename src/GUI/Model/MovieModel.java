@@ -4,10 +4,12 @@ import BE.Category;
 import BE.Movie;
 import BLL.CategoryManager;
 import BLL.MovieManager;
+import DAL.MovieDAO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -104,6 +106,14 @@ public class MovieModel {
 
     public void deleteMovie(Movie selectedMovie) throws SQLException {
         movieManager.deleteMovie(selectedMovie);
+    }
+
+    public void updateLastView(Movie movie) throws SQLException {
+        // Updating the last view date in the movie object
+        movie.setLastView((new Date(System.currentTimeMillis())).toString());
+
+        // Assuming movieDAO is your MovieDAO instance
+        movieManager.updateLastView(movie);
     }
 }
 
