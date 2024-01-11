@@ -1,5 +1,4 @@
 package GUI.Controller;
-import DAL.MovieDAO;
 import GUI.Model.CategoryModel;
 import GUI.Model.MovieModel;
 
@@ -15,10 +14,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
+import javax.xml.transform.Result;
+import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,8 +33,7 @@ import java.util.stream.Collectors;
 
 public class MainController {
 
-    public Button btnApplyFilters;
-    public Button btnClearFilters;
+
     @FXML
     private ComboBox<String> cbCategory1;
     @FXML
@@ -63,7 +66,7 @@ public class MainController {
     private Label errorLbl;
     private MovieModel movieModel;
     private CategoryModel categoryModel;
-    private UpdateMovieController updateMovieController;
+
 
     public MainController() throws Exception {
         movieModel = new MovieModel();
@@ -191,27 +194,19 @@ public class MainController {
 
     }
 
-    public void deleteMovie(ActionEvent event) throws SQLException, IOException {
+    public void deleteMovie(ActionEvent event) throws SQLException{
         // Retrieve the selected movie from tblviewMovies
         Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
-
         // Ensure a movie was selected
         if (selectedMovie != null) {
-            MovieDAO movieDao = new MovieDAO();
-
-            try {
+            boolean confirmDelete = showConfirmationAlert("Delete movie", "Are you sure would want to delete:" + selectedMovie.getMovieTitle() + "?");
+            if (confirmDelete)
+            {
                 // Delete the selected movie from the database
-                movieDao.deleteMovie(selectedMovie);
-
+                movieModel.deleteMovie(selectedMovie);
+            }
                 // Update the TableView by removing the selected movie
                 tblviewMovies.getItems().remove(selectedMovie);
-            } catch (Exception e) {
-                // Handle the exception (e.g., show an error message)
-                System.out.println("An error occurred: " + e.getMessage());
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("No movie selected!");
         }
     }
 
@@ -414,7 +409,33 @@ public class MainController {
         } else {
             showAlert("Selection Required","Please select a category to delete");
         }
+    }
 
+    /**
+     * This method is used to play the movie.
+     * It gets the selected movie from your TableView.
+     * If a movie has been selected (i.e., the selected movie is not null),
+     * If the user's desktop can open files (which is usually the case),
+     * On this new thread, it tries to open the file with the default system application.
+     * If an IOException is thrown (for example, if the file does not exist),
+     * the catch block prints an error message.
+     */
+    @FXML
+    private void onPlayMovie(){
+        Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
+
+        if (selectedMovie != null) {
+            File movieFile = new File(selectedMovie.getFilePath());
+            if (Desktop.isDesktopSupported()) {
+                new Thread(() -> {
+                    try {
+                        Desktop.getDesktop().open(movieFile);
+                    } catch (IOException ex) {
+                        System.out.println("An error occurred while trying to play the movie: " + ex.getMessage());
+                    }
+                }).start();
+            }
+        }
     }
 
     /**

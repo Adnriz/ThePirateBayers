@@ -101,6 +101,10 @@ public class MovieModel {
     public void linkCatMov(Movie movie) throws SQLException {
         movieManager.linkCatMov(movie);
     }
+
+    public void deleteMovie(Movie selectedMovie) throws SQLException {
+        movieManager.deleteMovie(selectedMovie);
+    }
 }
 
 

@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import java.util.List;
 
 public class NewMovieController {
 
+    @FXML
+    private ComboBox<String> cbFileType;
     @FXML
     private Button btnClose;
 
@@ -75,6 +78,7 @@ public class NewMovieController {
     private void setupInteractable()
     {
         setupCategoryBoxes();
+        setupFileTypeBox();
         spinnersENGAGE();
         // dateLastViewed.setValue(LocalDate.now());  // needs to be moved to when movie is updated, and or update when the movie is played on the database.
     }
@@ -116,8 +120,17 @@ public class NewMovieController {
         cbCategory3.getItems().clear();
         cbCategory3.getItems().addAll(movieCategories);
         cbCategory3.getSelectionModel().select("Empty");
-
     }
+
+    private void setupFileTypeBox(){
+        ObservableList<String> fileTypes = FXCollections.observableArrayList(".mp4", ".mpeg4");
+
+        cbFileType.getItems().clear();
+        cbFileType.getItems().addAll(fileTypes);
+        cbFileType.getSelectionModel().select(null);
+    }
+
+
     // CODE SMELL DONE MAYBE PROBABLY //
     /**
      * Gathers user input from the form fields and creates a new Movie object.
@@ -129,7 +142,20 @@ public class NewMovieController {
         String title = txtTitle.getText();
         double imdbRating = spinnerIMDB.getValue();
         double personalRating = spinnerPersonal.getValue();
-        String filepath = txtFilepath.getText();
+        String fileName = txtFilepath.getText();
+        String fileType = cbFileType.getValue();
+
+        if (fileName.isEmpty() || fileType == null){
+            displayError("Error", "Please enter a filename and select a file type.");
+            return null;
+        }
+
+        String filepath = "Movies/" + fileName + fileType;
+        File movieFile = new File(filepath);
+        if (!movieFile.exists()){
+            displayError("Error", "The file: " + filepath + ", does not exist.");
+            return null;
+        }
 
         List<Integer> categoryIds = new ArrayList<>();
         categoryIds.add(convertCategoryNameToId(cbCategory1.getValue()));
@@ -168,10 +194,12 @@ public class NewMovieController {
     private void onSave() {
         try {
             Movie movie = getUserInput();
-            movieModel.addMovie(movie);
-            closeWindow();
+            if (movie != null){
+                movieModel.addMovie(movie);
+                closeWindow();
+            }
         } catch (SQLException e) {
-            // Handle SQL exceptions, maybe show an error message
+            displayError("Database error", "Error saving movie to database.");
         }
     }
 
@@ -192,4 +220,19 @@ public class NewMovieController {
     }
 
 
+    ////////////////////////
+    //// Helper Methods ////
+    ////    General     ////
+    ////////////////////////
+
+    /**
+     * Shows an alert dialog displaying an error.
+     */
+    private void displayError(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 }

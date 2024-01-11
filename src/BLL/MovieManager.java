@@ -78,4 +78,8 @@ public class MovieManager {
     public void linkCatMov(Movie movie) throws SQLException {
         movieDAO.linkMovieWithCategories(movie);
     }
+
+    public void deleteMovie(Movie selectedMovie) throws SQLException {
+        movieDAO.deleteMovie(selectedMovie);
+    }
 }

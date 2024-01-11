@@ -52,11 +52,11 @@
             <Font size="13.0" />
          </font>
       </Label>
-      <Button fx:id="btnApplyFilters" layoutX="236.0" layoutY="544.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="83.0" text="Apply Filters" />
-      <Button fx:id="btnClearFilters" layoutX="326.0" layoutY="544.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="83.0" text="Clear Filters" />
+      <Button fx:id="btnApplyFilters" layoutX="236.0" layoutY="544.0" mnemonicParsing="false" onAction="#onApplyFilters" prefHeight="25.0" prefWidth="83.0" text="Apply Filters" />
+      <Button fx:id="btnClearFilters" layoutX="326.0" layoutY="544.0" mnemonicParsing="false" onAction="#onClearFilters" prefHeight="25.0" prefWidth="83.0" text="Clear Filters" />
       <Separator layoutX="226.0" layoutY="391.0" orientation="VERTICAL" prefHeight="194.0" prefWidth="6.0" />
       <Label fx:id="errorLbl" alignment="CENTER" layoutX="18.0" layoutY="434.0" prefHeight="17.0" prefWidth="198.0" textFill="#fc0000" />
-      <Button fx:id="btnPlayMovie" layoutX="75.0" layoutY="477.0" mnemonicParsing="false" text="PLAY MOVIE" />
+      <Button fx:id="btnPlayMovie" layoutX="75.0" layoutY="477.0" mnemonicParsing="false" onAction="#onPlayMovie" text="PLAY MOVIE" />
       <Separator layoutX="538.0" layoutY="391.0" orientation="VERTICAL" prefHeight="194.0" prefWidth="6.0" />
       <Label layoutX="606.0" layoutY="392.0" text="Manage Categories">
          <font>

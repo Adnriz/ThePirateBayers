@@ -150,7 +150,7 @@ public class MovieDAO {
         return movie;
     }
 
-    public void deleteMovie(Movie movie) throws Exception {
+    public void deleteMovie(Movie movie) throws SQLException {
         if (databaseConnector == null) {
             try {
                 databaseConnector = new DBConnector();
@@ -176,7 +176,7 @@ public class MovieDAO {
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-            throw new Exception("Could not delete movie", ex);
+            throw new SQLException("Could not delete movie", ex);
         }
     }
     public void updateMovie(int id, String title, double newPersonalRating, double newImdbRating, String filePath) {
