@@ -5,7 +5,9 @@ import BE.Movie;
 import DAL.MovieDAO;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,12 +85,9 @@ public class MovieManager {
         movieDAO.deleteMovie(selectedMovie);
     }
 
-public void updateLastView(Movie movie) throws SQLException {
-        // Updating the last view date in the movie object
-        movie.setLastView((new java.util.Date(System.currentTimeMillis())).toString());
-
+public void updateLastView(Movie movie, String formattedDate) throws SQLException {
         // Assuming movieDAO is your MovieDAO instance
-        movieDAO.updateLastView(movie);
+        movieDAO.updateLastView(movie, formattedDate);
     }
 
 }

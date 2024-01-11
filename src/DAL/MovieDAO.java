@@ -203,17 +203,14 @@ public class MovieDAO {
             e.printStackTrace();
         }
     }
-    public void updateLastView(Movie movie) throws SQLException {
+    public void updateLastView(Movie movie, String formattedDate) throws SQLException {
         String sql = "UPDATE Movie SET Lastview = ? WHERE id = ?";
 
         try (Connection conn = databaseConnector.getConnection();
                  PreparedStatement pstmt = conn.prepareStatement(sql)) {//method to get connection
 
-            // Current time in SQL Server datetime format
-            java.sql.Timestamp currentTimestamp = new java.sql.Timestamp(new java.util.Date().getTime());
-
             // set the corresponding parameters
-            pstmt.setTimestamp(1, currentTimestamp);
+            pstmt.setString(1, formattedDate);
             pstmt.setInt(2, movie.getId());
 
             // update the Movies table

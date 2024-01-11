@@ -25,7 +25,9 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -463,7 +465,11 @@ public class MainController {
         alert.showAndWait();
     }
     private void updateLastViewDate(Movie movie) throws SQLException {
-        movieModel.updateLastView(movie);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String formattedDate = dateFormat.format(new Date(System.currentTimeMillis()));
+        movie.setLastView(formattedDate);
+        movieModel.updateLastView(movie, formattedDate);
+        movieModel.refreshMovies();
     }
 
 }

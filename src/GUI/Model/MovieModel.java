@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import java.io.IOException;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,12 +109,10 @@ public class MovieModel {
         movieManager.deleteMovie(selectedMovie);
     }
 
-    public void updateLastView(Movie movie) throws SQLException {
+    public void updateLastView(Movie movie, String formattedDate) throws SQLException {
         // Updating the last view date in the movie object
-        movie.setLastView((new Date(System.currentTimeMillis())).toString());
-
         // Assuming movieDAO is your MovieDAO instance
-        movieManager.updateLastView(movie);
+        movieManager.updateLastView(movie, formattedDate);
     }
 }
 
