@@ -261,7 +261,7 @@ public class MainController {
     }
 
     @FXML
-    public void btnUpdateAction(ActionEvent actionEvent) throws IOException {
+    public void btnUpdateAction(ActionEvent actionEvent) throws IOException, SQLException {
         if (tblviewMovies.getSelectionModel().getSelectedItem() != null) {
             Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
 
@@ -281,7 +281,7 @@ public class MainController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
             
-            tblviewMovies.refresh();
+            movieModel.refreshMovies();
         } else {
             errorLbl.setText("Please select a movie first");
         }

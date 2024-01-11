@@ -16,11 +16,11 @@ package GUI.Controller;
         import java.sql.SQLException;
         import java.util.ArrayList;
         import java.util.List;
+        import java.util.stream.Collectors;
 
 public class UpdateMovieController {
     @FXML
     private Button btnClose;
-
     @FXML
     private Button btnSave;
 
@@ -50,14 +50,14 @@ public class UpdateMovieController {
     private Movie movie;
     private MainController mainController;
     private CategoriesInMovies categoriesInMovies;
+    private CategoryModel categoryModel;
 
 
     public UpdateMovieController() throws Exception {
         movieModel = new MovieModel();
+        categoryModel = new CategoryModel();
     }
 
-
-    // System.out.println(movie.getId() + " " + movie.getMovieTitle() + " " + movie.getPersonalRating() + " " + movie.getImdbRating());
 
    private void spinnersENGAGE(Movie movie) {
         // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
@@ -74,14 +74,22 @@ public class UpdateMovieController {
 
 
     private void setupCategoryBoxes(Movie movie) {
-        // A list containing all the movie categories
-        ObservableList<String> movieCategories = FXCollections.observableArrayList("Empty", "Fantasy", "Action", "Western", "Adventure", "Musical", "Comedy", "Romance", "Horror",
-                "Mystery", "Animation", "Documentary", "Drama", "Thriller", "Science Fiction", "Crime", "History", "Sports", "Family", "Film-Noir", "Short", "War", "Game-Show", "Reality");
+        // Fetch categories from the CategoryModel
+        ObservableList<Category> categories = categoryModel.getCategories();
+
+        // Create a list of category names
+        ObservableList<String> movieCategories = categories.stream()
+                // Only get the names and not the ids
+                .map(Category::getName)
+                // consolidate into a list to parse into the comboboxes
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
         // Set up ComboBox 1
         cbCategory1.getItems().clear();
         cbCategory1.getItems().addAll(movieCategories);
         if (movie.getCategories().size() > 0) {
+            cbCategory1.getItems().remove("Empty");
+            cbCategory1.getItems().add(0, "Empty");
             cbCategory1.getSelectionModel().select(movie.getCategories().get(0).getName());
         }
 
@@ -89,6 +97,8 @@ public class UpdateMovieController {
         cbCategory2.getItems().clear();
         cbCategory2.getItems().addAll(movieCategories);
         if (movie.getCategories().size() > 1) {
+            cbCategory2.getItems().remove("Empty");
+            cbCategory2.getItems().add(0, "Empty");
             cbCategory2.getSelectionModel().select(movie.getCategories().get(1).getName());
         }
 
@@ -96,6 +106,8 @@ public class UpdateMovieController {
         cbCategory3.getItems().clear();
         cbCategory3.getItems().addAll(movieCategories);
         if (movie.getCategories().size() > 2) {
+            cbCategory3.getItems().remove("Empty");
+            cbCategory3.getItems().add(0, "Empty");
             cbCategory3.getSelectionModel().select(movie.getCategories().get(2).getName());
         }
     }
@@ -119,12 +131,14 @@ public class UpdateMovieController {
             setupCategoryBoxes(movie);
         }
     }
-    public void btnSaveAction(ActionEvent actionEvent) throws SQLException {
+    @FXML
+    private void btnSaveAction(ActionEvent actionEvent) throws SQLException {
         movieDetailsUpdate(movie);
         movieCategoryUpdate(movie);
         //closing the stage
         Stage stage = (Stage) txtTitle.getScene().getWindow();
         stage.close();
+
     }
 
     private void movieCategoryUpdate(Movie movie) throws SQLException {
