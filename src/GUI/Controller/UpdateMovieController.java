@@ -13,12 +13,15 @@ package GUI.Controller;
         import javafx.stage.Stage;
         import javafx.util.converter.DoubleStringConverter;
 
+        import java.io.File;
         import java.sql.SQLException;
         import java.util.ArrayList;
         import java.util.List;
         import java.util.stream.Collectors;
 
 public class UpdateMovieController {
+    @FXML
+    private ComboBox cbFileType;
     @FXML
     private Button btnClose;
     @FXML
@@ -48,8 +51,8 @@ public class UpdateMovieController {
     private TextField txtFilepath;
     private MovieModel movieModel;
     private Movie movie;
-    private MainController mainController;
-    private CategoriesInMovies categoriesInMovies;
+    //private MainController mainController;
+    //private CategoriesInMovies categoriesInMovies;
     private CategoryModel categoryModel;
 
 
@@ -59,7 +62,7 @@ public class UpdateMovieController {
     }
 
 
-   private void spinnersENGAGE(Movie movie) {
+    private void spinnersENGAGE(Movie movie) {
         // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
         SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, movie.getImdbRating(), 0.1);
         // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
@@ -111,13 +114,24 @@ public class UpdateMovieController {
             cbCategory3.getSelectionModel().select(movie.getCategories().get(2).getName());
         }
     }
-    public void btnClose(ActionEvent actionEvent) {
+
+    private void setupFileTypeBox() {
+        ObservableList<String> fileTypes = FXCollections.observableArrayList(".mp4", ".mpeg4");
+
+        cbFileType.getItems().clear();
+        cbFileType.getItems().addAll(fileTypes);
+        cbFileType.getSelectionModel().select(null);
+    }
+
+    @FXML
+    private void btnClose(ActionEvent actionEvent) {
         Stage stage = (Stage) txtTitle.getScene().getWindow();
         stage.close();
     }
-    public void setMovie(Movie movie, MainController mainController) {
+
+    public void setMovie(Movie movie) {
         this.movie = movie;
-        this.mainController = mainController;
+        //this.mainController = mainController;
 
         // Call a method to update the UI components with movie data
         updateUIWithMovieData();
@@ -126,18 +140,33 @@ public class UpdateMovieController {
     private void updateUIWithMovieData() {
         if (movie != null) {
             txtTitle.setText(movie.getMovieTitle());
-            txtFilepath.setText(movie.getFilePath());
             spinnersENGAGE(movie);
             setupCategoryBoxes(movie);
+            setupFileTypeBox();
+
+            String filePath = movie.getFilePath();
+            String filenameWithType = filePath.substring(filePath.lastIndexOf("/") + 1);
+            int filetypeIndex = filenameWithType.lastIndexOf(".");
+
+            if (filetypeIndex != -1) {
+                String filename = filenameWithType.substring(0, filetypeIndex);
+                String filetype = filenameWithType.substring(filetypeIndex);
+
+                txtFilepath.setText(filename);
+                cbFileType.getSelectionModel().select(filetype);
+            }
         }
     }
+
     @FXML
     private void btnSaveAction(ActionEvent actionEvent) throws SQLException {
-        movieDetailsUpdate(movie);
+        boolean updateSuccessful = movieDetailsUpdate(movie);
         movieCategoryUpdate(movie);
-        //closing the stage
-        Stage stage = (Stage) txtTitle.getScene().getWindow();
-        stage.close();
+
+        if (updateSuccessful) {
+            Stage stage = (Stage) txtTitle.getScene().getWindow();
+            stage.close();
+        }
 
     }
 
@@ -155,6 +184,7 @@ public class UpdateMovieController {
         movie.setCategoryIds(categoryIds);
         movieModel.linkCatMov(movie);
     }
+
     private int convertCategoryNameToId(String categoryName) {
         if (categoryName == null || categoryName.isEmpty()) {
             return -1; // Return -1 or any other default value to indicate "not found"
@@ -162,14 +192,41 @@ public class UpdateMovieController {
         return movieModel.getCategoryModel().getCategoryIDFromName(categoryName);
     }
 
-    private void movieDetailsUpdate(Movie movie) {
+    private boolean movieDetailsUpdate(Movie movie) {
         //assigning the information to be updated
         int id = movie.getId();
         String title = txtTitle.getText();
-        double newPersonalRating = (double) Math.round(spinnerPersonal.getValue() * 10)/10;
-        double newImdbRating = (double) Math.round(spinnerIMDB.getValue() * 10)/10;
-        String filePath = txtFilepath.getText();
-        //sending in the update
-        movieModel.updateMovie(id, title, newPersonalRating, newImdbRating, filePath);
+        double newPersonalRating = (double) Math.round(spinnerPersonal.getValue() * 10) / 10;
+        double newImdbRating = (double) Math.round(spinnerIMDB.getValue() * 10) / 10;
+
+        String filename = txtFilepath.getText();
+        String filetype = (String) cbFileType.getValue();
+        String updatedFilePath = "Movies/" + filename + filetype;
+        File updatedMovieFile = new File(updatedFilePath);
+
+        if (!updatedMovieFile.exists()) {
+            displayError("Error", "The file: " + updatedFilePath + ", does not exist.");
+            return false; // Update failed
+        } else {
+            movieModel.updateMovie(id, title, newPersonalRating, newImdbRating, updatedFilePath);
+            return true; // Update successful
+        }
     }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////    General     ////
+    ////////////////////////
+
+    /**
+     * Shows an alert dialog displaying an error.
+     */
+    private void displayError(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 }

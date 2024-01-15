@@ -12,7 +12,7 @@ public class CategoryDAO {
     private DBConnector databaseConnector;
 
     public CategoryDAO() throws SQLException, IOException {
-        this.databaseConnector = new DBConnector();
+        databaseConnector = new DBConnector();
     }
 
     /**

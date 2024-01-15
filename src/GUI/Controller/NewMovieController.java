@@ -1,6 +1,8 @@
 package GUI.Controller;
 
+import BE.Category;
 import BE.Movie;
+import GUI.Model.CategoryModel;
 import GUI.Model.MovieModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -15,6 +17,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NewMovieController {
 
@@ -48,12 +51,14 @@ public class NewMovieController {
     private TextField txtTitle;
     @FXML
     private TextField txtFilepath;
-
-    private MovieModel movieModel;
     private Movie currentMovie;
+    private MovieModel movieModel;
+    private CategoryModel categoryModel;
 
 
     public NewMovieController() throws SQLException, IOException {
+        this.categoryModel = new CategoryModel();
+        this.movieModel = new MovieModel();
     }
 
     /**
@@ -64,15 +69,6 @@ public class NewMovieController {
     }
 
     /**
-     * Sets the MovieModel for this controller.
-     *
-     * @param movieModel The MovieModel to be used.
-     */
-    public void setMovieModel(MovieModel movieModel) {
-        this.movieModel = movieModel;
-    }
-
-    /**
      * Collects all methods that handles the input controls.
      */
     private void setupInteractable()
@@ -80,7 +76,6 @@ public class NewMovieController {
         setupCategoryBoxes();
         setupFileTypeBox();
         spinnersENGAGE();
-        // dateLastViewed.setValue(LocalDate.now());  // needs to be moved to when movie is updated, and or update when the movie is played on the database.
     }
 
     // :) CODE SMELL INCOMING, Maybe move it to another class, and give this one access to the method.
@@ -105,20 +100,33 @@ public class NewMovieController {
      */
     private void setupCategoryBoxes()
     {
-        // A list containing all the movie categories
-        ObservableList<String> movieCategories = FXCollections.observableArrayList("Empty","Fantasy","Action","Western","Adventure","Musical","Comedy","Romance","Horror",
-                "Mystery","Animation","Documentary","Drama","Thriller","Science Fiction","Crime","History","Sports","Family","Film-Noir","Short","War","Game-Show","Reality");
+        // Fetch categories from the CategoryModel
+        ObservableList<Category> categories = categoryModel.getCategories();
 
+        // Create a list of category names
+        ObservableList<String> movieCategories = categories.stream()
+                // Only get the names and not the ids
+                .map(Category::getName)
+                // consolidate into a list to parse into the comboboxes
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+
+        // Sets the Combo Boxes up, so that "Empty" always is the first option.
         cbCategory1.getItems().clear();
         cbCategory1.getItems().addAll(movieCategories);
+        cbCategory1.getItems().remove("Empty");
+        cbCategory1.getItems().add(0, "Empty");
         cbCategory1.getSelectionModel().select("Empty");
 
         cbCategory2.getItems().clear();
         cbCategory2.getItems().addAll(movieCategories);
+        cbCategory2.getItems().remove("Empty");
+        cbCategory2.getItems().add(0, "Empty");
         cbCategory2.getSelectionModel().select("Empty");
 
         cbCategory3.getItems().clear();
         cbCategory3.getItems().addAll(movieCategories);
+        cbCategory3.getItems().remove("Empty");
+        cbCategory3.getItems().add(0, "Empty");
         cbCategory3.getSelectionModel().select("Empty");
     }
 
@@ -131,7 +139,6 @@ public class NewMovieController {
     }
 
 
-    // CODE SMELL DONE MAYBE PROBABLY //
     /**
      * Gathers user input from the form fields and creates a new Movie object.
      *
@@ -215,7 +222,8 @@ public class NewMovieController {
      * Handles the save action when the Close button is clicked.
      * Closes the current window.
      */
-    public void onClose(ActionEvent actionEvent) {
+    @FXML
+    private void onClose(ActionEvent actionEvent) {
         closeWindow();
     }
 
@@ -235,4 +243,6 @@ public class NewMovieController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+
 }

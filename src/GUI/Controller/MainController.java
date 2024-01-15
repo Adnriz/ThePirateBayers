@@ -89,14 +89,13 @@ public class MainController {
      * @throws IOException If the FXML file cannot be loaded.
      */
     @FXML
-    private void onNewMovie(ActionEvent actionEvent) throws IOException {
+    private void onNewMovie(ActionEvent actionEvent) throws IOException, SQLException {
         // Load NewMovieWindow
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/NewMovieWindow.fxml"));
         Parent root = loader.load();
 
-        // Get the controller and pass the current MovieModel
-        NewMovieController newMovieController = loader.getController();
-        newMovieController.setMovieModel(movieModel);
+        //Get the controller
+        //NewMovieController newMovieController = loader.getController();
 
         // Show the window and wait for it to close
         Stage stage = new Stage();
@@ -105,7 +104,35 @@ public class MainController {
         stage.showAndWait();
 
         // Refresh the TableView when NewMovieWindow is closed
-        tblviewMovies.refresh();
+        //tblviewMovies.refresh();
+        movieModel.refreshMovies();
+    }
+
+    @FXML
+    private void btnUpdateAction(ActionEvent actionEvent) throws IOException, SQLException {
+        if (tblviewMovies.getSelectionModel().getSelectedItem() != null) {
+            Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
+
+            // Loading new stage
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/updateMovieWindow.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller of the new stage
+            UpdateMovieController updateMovieController = loader.getController();
+
+            // Pass the selected movie and reference to MainController to UpdateMovieController
+            updateMovieController.setMovie(selectedMovie);
+
+            // Show the window
+            Stage stage = new Stage();
+            stage.setTitle("Update Movie");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+            movieModel.refreshMovies();
+        } else {
+            showAlert("Error", "Please select a movie to update");
+        }
     }
 
     /**
@@ -262,33 +289,7 @@ public class MainController {
         return stage;
     }
 
-    @FXML
-    public void btnUpdateAction(ActionEvent actionEvent) throws IOException, SQLException {
-        if (tblviewMovies.getSelectionModel().getSelectedItem() != null) {
-            Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
 
-            // Loading new stage
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/updateMovieWindow.fxml"));
-            Parent root = loader.load();
-
-            // Get the controller of the new stage
-            UpdateMovieController updateMovieController = loader.getController();
-
-            // Pass the selected movie and reference to MainController to UpdateMovieController
-            updateMovieController.setMovie(selectedMovie, this);
-
-            // Show the window
-            Stage stage = new Stage();
-            stage.setTitle("Update Movie");
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-            
-            movieModel.refreshMovies();
-        } else {
-            errorLbl.setText("Please select a movie first");
-        }
-
-    }
 
     /**
      * Handles the action event triggered when the 'Apply Filters' button is clicked.
