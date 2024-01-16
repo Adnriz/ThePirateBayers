@@ -5,6 +5,7 @@ import GUI.Model.MovieModel;
 import BE.Movie;
 import BE.Category;
 
+import Util.MovieException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -74,16 +75,21 @@ public class MainController {
     private CategoryModel categoryModel;
 
 
-    public MainController() throws Exception {
-        movieModel = new MovieModel();
-        categoryModel = new CategoryModel();
-        outdatedMoviesList = new ArrayList<>();
+    public MainController() {
+        try {
+            movieModel = new MovieModel();
+            categoryModel = new CategoryModel();
+            outdatedMoviesList = new ArrayList<>();
+        }
+        catch (MovieException ex){
+            displayError(ex);
+        }
     }
 
     /**
      * Initializes the controller.
      */
-    public void initialize() throws IOException {
+    public void initialize() throws MovieException {
         setupInteractable();
         movieModel.checkForOldMovies();
     }
@@ -97,27 +103,32 @@ public class MainController {
      * @throws IOException If the FXML file cannot be loaded.
      */
     @FXML
-    private void onNewMovie(ActionEvent actionEvent) throws IOException, SQLException {
-        // Load NewMovieWindow
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/NewMovieWindow.fxml"));
-        Parent root = loader.load();
+    private void onNewMovie(ActionEvent actionEvent) throws MovieException {
 
-        //Get the controller
-        //NewMovieController newMovieController = loader.getController();
+       try {
+           // Load NewMovieWindow
+           FXMLLoader loader = new FXMLLoader(getClass().getResource("/NewMovieWindow.fxml"));
+           Parent root = loader.load();
 
-        // Show the window and wait for it to close
-        Stage stage = new Stage();
-        stage.setTitle("New Movie");
-        stage.setScene(new Scene(root));
-        stage.showAndWait();
+           //Get the controller
+           //NewMovieController newMovieController = loader.getController();
 
-        // Refresh the TableView when NewMovieWindow is closed
-        //tblviewMovies.refresh();
-        movieModel.refreshMovies();
+           // Show the window and wait for it to close
+           Stage stage = new Stage();
+           stage.setTitle("New Movie");
+           stage.setScene(new Scene(root));
+           stage.showAndWait();
+
+           // Refresh the TableView when NewMovieWindow is closed
+           //tblviewMovies.refresh();
+           movieModel.refreshMovies();
+       } catch (IOException ex) {
+           displayError(ex);
+       }
     }
 
     @FXML
-    private void btnUpdateAction(ActionEvent actionEvent) throws IOException, SQLException {
+    private void btnUpdateAction(ActionEvent actionEvent) throws IOException, MovieException {
         if (tblviewMovies.getSelectionModel().getSelectedItem() != null) {
             Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
 
@@ -232,19 +243,24 @@ public class MainController {
 
     }
 
-    public void deleteMovie(ActionEvent event) throws SQLException{
+    public void deleteMovie(ActionEvent event){
         // Retrieve the selected movie from tblviewMovies
         Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
         // Ensure a movie was selected
-        if (selectedMovie != null) {
+        if (selectedMovie != null)
+        {
             boolean confirmDelete = showConfirmationAlert("Delete movie", "Are you sure would want to delete:" + selectedMovie.getMovieTitle() + "?");
             if (confirmDelete)
             {
-                // Delete the selected movie from the database
-                movieModel.deleteMovie(selectedMovie);
+                try {
+                    // Delete the selected movie from the database
+                    movieModel.deleteMovie(selectedMovie);
+                    // Update the TableView by removing the selected movie
+                    tblviewMovies.getItems().remove(selectedMovie);
+                } catch (MovieException ex){
+                    displayError(ex);
+                }
             }
-                // Update the TableView by removing the selected movie
-                tblviewMovies.getItems().remove(selectedMovie);
         }
     }
 
@@ -254,23 +270,23 @@ public class MainController {
             try {
                 List<Movie> searchResult = movieModel.searchMovies(searchText);
                 updateTableView(searchResult);
-            } catch (Exception e) {
-                displayError(e);
+            } catch (MovieException ex) {
+                displayError(ex);
             }
         } else {
             // If the search field is empty, show all movies
             try {
                 movieModel.refreshMovies();
-            } catch (Exception e) {
-                displayError(e);
+            } catch (MovieException ex) {
+                displayError(ex);
             }
         }
     }
 
-    private void displayError(Throwable t) {
+    private void displayError(Throwable ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Application Error");
-        alert.setHeaderText("An error occurred: " + t.getMessage());
+        alert.setHeaderText("An error occurred: " + ex.getMessage());
         alert.setContentText("Please try again or contact support if the problem persists.");
         alert.showAndWait();
     }
@@ -319,9 +335,8 @@ public class MainController {
 
                 setupCategoryBoxes();
             }
-        } catch (SQLException e) {
-            showAlert("CREATION OF NEW CATEGORY",
-                    "Hello friend, it seems there has been a creation error. Tough luck");
+        } catch (MovieException ex) {
+            displayError(ex);
         }
     }
 
@@ -361,6 +376,9 @@ public class MainController {
      * If an IOException is thrown (for example, if the file does not exist),
      * the catch block prints an error message.
      */
+
+    // How to handle exceptions here? CHATGPT suggests to split them up, so that onPlayMovie Handles the higher exception
+    // and the second method just throws the SQL and IO Exception as a MovieException
     @FXML
     private void onPlayMovie(){
         Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
@@ -374,8 +392,8 @@ public class MainController {
                         updateLastViewDate(selectedMovie);
                     } catch (IOException ex) {
                         System.out.println("An error occurred while trying to play the movie: " + ex.getMessage());
-                    } catch (SQLException e) {
-                        throw new RuntimeException(e);
+                    } catch (MovieException ex) {
+                        throw new RuntimeException(ex);
                     }
                 }).start();
             }
@@ -389,15 +407,15 @@ public class MainController {
      */
     @FXML
     private void onApplyFilters(ActionEvent actionEvent) {
-        try {
+
             List<String> selectedCategories = getSelectedCategories();
             double minIMDBRating = spinnerIMDB.getValue();
             double minPersonalRating = spinnerPersonal.getValue();
-
+        try {
             movieModel.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
             tblviewMovies.setItems(movieModel.getMoviesToBeViewed());
-        } catch (SQLException e) {
-
+        } catch (MovieException ex) {
+            displayError(ex);
         }
     }
 
@@ -462,7 +480,7 @@ public class MainController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-    private void updateLastViewDate(Movie movie) throws SQLException {
+    private void updateLastViewDate(Movie movie) throws MovieException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String formattedDate = dateFormat.format(new Date(System.currentTimeMillis()));
         movie.setLastView(formattedDate);

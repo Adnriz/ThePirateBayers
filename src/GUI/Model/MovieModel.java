@@ -4,6 +4,7 @@ import BE.Category;
 import BE.Movie;
 import BLL.MovieManager;
 import GUI.Controller.OutdatedController;
+import Util.MovieException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -32,7 +33,7 @@ public class MovieModel {
     private List<Movie> outdatedMoviesAndBadRatingList;
 
 
-    public MovieModel() throws SQLException, IOException {
+    public MovieModel() throws MovieException {
         movieManager = new MovieManager();
         categoryModel = new CategoryModel();
         availableMovies = FXCollections.observableArrayList(movieManager.getAllMoviesWithCategories());
@@ -94,7 +95,7 @@ public class MovieModel {
      * @param movie The movie to be added.
      * @throws SQLException If a database access error occurs.
      */
-    public void addMovie(Movie movie) throws SQLException {
+    public void addMovie(Movie movie) throws MovieException {
         Movie createdMovie = movieManager.createMovie(movie);
 
         List<Category> categories = movieManager.getCategoriesForMovie(createdMovie.getId());
@@ -102,27 +103,27 @@ public class MovieModel {
 
         availableMovies.add(createdMovie);
     }
-    public List<Movie> searchMovies(String query) throws Exception
+    public List<Movie> searchMovies(String query) throws MovieException
     {
         return movieManager.searchMovies(query);
     }
 
-    public void refreshMovies() throws SQLException {
+    public void refreshMovies() throws MovieException {
         List<Movie> allMovies = movieManager.getAllMoviesWithCategories();
         availableMovies.setAll(allMovies);
     }
-    public void updateMovie(int id, String title, double newPersonalRating, double newImdbRating, String filePath){
+    public void updateMovie(int id, String title, double newPersonalRating, double newImdbRating, String filePath) throws MovieException {
         movieManager.updateMovieInfo(id, title, newPersonalRating, newImdbRating, filePath);
     }
-    public void linkCatMov(Movie movie) throws SQLException {
+    public void linkCatMov(Movie movie) throws MovieException {
         movieManager.linkCatMov(movie);
     }
 
-    public void deleteMovie(Movie selectedMovie) throws SQLException {
+    public void deleteMovie(Movie selectedMovie) throws MovieException {
         movieManager.deleteMovie(selectedMovie);
     }
 
-    public void updateLastView(Movie movie, String formattedDate) throws SQLException {
+    public void updateLastView(Movie movie, String formattedDate) throws MovieException {
         // Updating the last view date in the movie object
         // Assuming movieDAO is your MovieDAO instance
         movieManager.updateLastView(movie, formattedDate);
@@ -133,50 +134,61 @@ public class MovieModel {
     public List<Movie> getOutdatedMoviesAndBadRatingList() {
         return outdatedMoviesAndBadRatingList;
     }
-    public void checkForOldMovies() throws IOException {
-        //First getting a list of all the movies
+
+    public void checkForOldMovies() throws MovieException {
+        // First getting a list of all the movies
         ObservableList<Movie> allMovies = getAvailableMovies();
-        //Setting the date format
+        // Setting the date format
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         boolean oldMovie = false;
 
         List<Movie> outdatedMoviesAndBadRatingList = new ArrayList<>();
-        //Loop that checks all movies, and adding the outdated ones to a list
+        // Loop that checks all movies, and adding the outdated ones to a list
         for (Movie movie : allMovies) {
             try {
                 String lastViewedDateString = movie.getLastView();
                 if (lastViewedDateString != null) {
                     java.util.Date lastViewedDate = dateFormat.parse(lastViewedDateString);
                     java.util.Date currentDate = new Date();
-                    //Finding the difference between currentdate and last viewed date
+                    // Finding the difference between current date and last viewed date
                     long timeDifference = currentDate.getTime() - lastViewedDate.getTime();
                     long twoYearsInMillis = 2 * 365 * 24 * 60 * 60 * 1000L;
-                    //Add the movie to the list if it haven't been seen in two years or has a personal rating under 6.0
+                    // Add the movie to the list if it hasn't been seen in two years or has a personal rating under 6.0
                     if (timeDifference >= twoYearsInMillis || movie.getPersonalRating() < 6.0) {
                         outdatedMoviesAndBadRatingList.add(movie);
                         oldMovie = true;
                     }
                 }
             } catch (ParseException e) {
-                System.out.println("error");
+                // Handle the exception (print or log the error, etc.)
+                System.out.println("An error occurred while processing a movie: " + e.getMessage());
+                // Optionally, throw a MovieException with the original exception as its cause
+                throw new MovieException("An error occurred while processing a movie.", e);
             }
         }
 
         if (oldMovie) {
             setOutdatedMoviesAndBadRatingList(outdatedMoviesAndBadRatingList);
 
-            //Opening the window which shows the outdated movies
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/OutdatedWindow.fxml"));
-            Parent root = loader.load();
+            // Opening the window which shows the outdated movies
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/OutdatedWindow.fxml"));
+                Parent root = loader.load();
 
-            OutdatedController outdatedController = loader.getController();
-            outdatedController.setMovieModel(this);
+                OutdatedController outdatedController = loader.getController();
+                outdatedController.setMovieModel(this);
 
-            //showing the stage
-            Stage stage = new Stage();
-            stage.setTitle("Update Movie");
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
+                // Showing the stage
+                Stage stage = new Stage();
+                stage.setTitle("Update Movie");
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
+            } catch (IOException e) {
+                // Handle the exception (print or log the error, etc.)
+                System.out.println("An error occurred while opening the outdated window: " + e.getMessage());
+                // Optionally, throw a MovieException with the original exception as its cause
+                throw new MovieException("An error occurred while opening the outdated window.", e);
+            }
         }
     }
 
@@ -188,7 +200,7 @@ public class MovieModel {
      * @param selectedCategories The categories to include in the filter.
      * @throws SQLException If there is a problem accessing the movie data.
      */
-    public void filterMovies(double minIMDBRating, double minPersonalRating, List<String> selectedCategories) throws SQLException {
+    public void filterMovies(double minIMDBRating, double minPersonalRating, List<String> selectedCategories) throws MovieException {
         List<Movie> filteredMovies = movieManager.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
         moviesToBeViewed.clear();
         moviesToBeViewed.addAll(filteredMovies);

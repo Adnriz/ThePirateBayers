@@ -2,6 +2,7 @@ package DAL;
 
 import BE.Category;
 import BE.Movie;
+import Util.MovieException;
 
 import java.io.IOException;
 import java.sql.*;
@@ -9,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MovieDAO {
-    private DBConnector databaseConnector;
+    private DBConnector databaseConnector = new DBConnector();
 
-    public MovieDAO() throws SQLException, IOException {
-        databaseConnector = new DBConnector();
+    public MovieDAO() throws MovieException {
+
     }
 
     /**
@@ -21,7 +22,7 @@ public class MovieDAO {
      * @return allMovies
      * @throws SQLException
      */
-    public List<Movie> getAllMoviesWithCategories() throws SQLException {
+    public List<Movie> getAllMoviesWithCategories() throws MovieException {
         List<Movie> allMovies = new ArrayList<>();
         String SQL = "SELECT Movie.id AS MovieId, Movie.Title AS MovieTitle, Movie.PersonalRating, Movie.IMDBRating, Movie.Filepath, Movie.Lastview, Category.id AS CategoryId, Category.Category " +
                      "FROM Movie " +
@@ -47,7 +48,7 @@ public class MovieDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new SQLException("Could not retrieve movies with categories from the database", e);
+            throw new MovieException("Could not retrieve movies with categories from the database", e);
         }
         return allMovies;
     }
@@ -59,7 +60,7 @@ public class MovieDAO {
      * @return A list of categories associated with the movie.
      * @throws SQLException If a database access error occurs.
      */
-    public List<Category> getCategoriesForMovie(int movieId) throws SQLException {
+    public List<Category> getCategoriesForMovie(int movieId) throws MovieException {
         List<Category> categories = new ArrayList<>();
         String sql = "SELECT Category.id, Category.Category FROM CatMovie " +
                 "JOIN Category ON CatMovie.CategoryId = Category.id " +
@@ -76,6 +77,8 @@ public class MovieDAO {
                     categories.add(new Category(categoryId, categoryName));
                 }
             }
+        } catch (SQLException ex){
+            throw new MovieException("Could not get categories in movies from database.", ex);
         }
         return categories;
     }
@@ -87,7 +90,7 @@ public class MovieDAO {
      * @return The Movie object with its generated ID.
      * @throws SQLException If a database access error occurs.
      */
-    public Movie createMovie(Movie movie) throws SQLException {
+    public Movie createMovie(Movie movie) throws MovieException {
         String sql = "INSERT INTO Movie (Title, PersonalRating, IMDBRating, FilePath) VALUES (?, ?, ?, ?);";
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -106,10 +109,12 @@ public class MovieDAO {
 
             linkMovieWithCategories(movie);
             return movie;
+        } catch (SQLException ex){
+            throw new MovieException("Could not create movie in database", ex);
         }
     }
 
-    public void linkMovieWithCategories(Movie movie) throws SQLException {
+    public void linkMovieWithCategories(Movie movie) throws MovieException {
         String sql = "INSERT INTO CatMovie (CategoryId, MovieId) VALUES (?, ?);";
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -119,6 +124,8 @@ public class MovieDAO {
                 pstmt.setInt(2, movie.getId());
                 pstmt.executeUpdate();
             }
+        } catch (SQLException ex){
+            throw new MovieException("Could link movies with categories", ex);
         }
     }
 
@@ -132,7 +139,9 @@ public class MovieDAO {
      * @return Movie
      * @throws SQLException
      */
-    private Movie extractMovie(ResultSet rs) throws SQLException {
+    private Movie extractMovie(ResultSet rs) throws MovieException {
+
+        try {
         int movieId = rs.getInt("MovieId");
         String title = rs.getString("MovieTitle");
         double personalRating = rs.getDouble("PersonalRating");
@@ -148,16 +157,12 @@ public class MovieDAO {
         movie.addCategory(new Category(categoryId, category));
 
         return movie;
+        } catch (SQLException ex){
+            throw new MovieException("Could not get movie data from database",ex);
+        }
     }
 
-    public void deleteMovie(Movie movie) throws SQLException {
-        if (databaseConnector == null) {
-            try {
-                databaseConnector = new DBConnector();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
+    public void deleteMovie(Movie movie) throws MovieException {
 
         String deleteCatMovieSQL = "DELETE FROM CatMovie WHERE Movieid = ?";
         String deleteMovieSQL = "DELETE FROM Movie WHERE ID = ?";
@@ -175,11 +180,10 @@ public class MovieDAO {
             stmt2.executeUpdate();
 
         } catch (SQLException ex) {
-            ex.printStackTrace();
-            throw new SQLException("Could not delete movie", ex);
+            throw new MovieException("Could not delete movie from the database", ex);
         }
     }
-    public void updateMovie(int id, String title, double newPersonalRating, double newImdbRating, String filePath) {
+    public void updateMovie(int id, String title, double newPersonalRating, double newImdbRating, String filePath) throws MovieException {
         // SQL query to update the Movie table
         String updateQuery = "UPDATE Movie SET Title = ?, PersonalRating = ?, IMDBRating = ?, Filepath = ? WHERE id = ?";
 
@@ -199,11 +203,11 @@ public class MovieDAO {
             // Close the resources
             preparedStatement.close();
             connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            throw new MovieException("Could not update movie in database",ex);
         }
     }
-    public void updateLastView(Movie movie, String formattedDate) throws SQLException {
+    public void updateLastView(Movie movie, String formattedDate) throws MovieException {
         String sql = "UPDATE Movie SET Lastview = ? WHERE id = ?";
 
         try (Connection conn = databaseConnector.getConnection();
@@ -216,8 +220,8 @@ public class MovieDAO {
             // update the Movies table
             pstmt.executeUpdate();
 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+        } catch (SQLException ex) {
+            throw new MovieException("Could not update last view in database",ex);
         }
     }
 }

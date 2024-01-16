@@ -5,6 +5,7 @@ package GUI.Controller;
         import BE.Movie;
         import GUI.Model.CategoryModel;
         import GUI.Model.MovieModel;
+        import Util.MovieException;
         import javafx.collections.FXCollections;
         import javafx.collections.ObservableList;
         import javafx.event.ActionEvent;
@@ -159,7 +160,7 @@ public class UpdateMovieController {
     }
 
     @FXML
-    private void btnSaveAction(ActionEvent actionEvent) throws SQLException {
+    private void btnSaveAction(ActionEvent actionEvent) throws MovieException {
         boolean updateSuccessful = movieDetailsUpdate(movie);
         movieCategoryUpdate(movie);
 
@@ -170,7 +171,7 @@ public class UpdateMovieController {
 
     }
 
-    private void movieCategoryUpdate(Movie movie) throws SQLException {
+    private void movieCategoryUpdate(Movie movie) throws MovieException {
         int movieid = movie.getId();
         CategoryModel categoryModel = new CategoryModel();
         //deleting the old categories
@@ -181,8 +182,13 @@ public class UpdateMovieController {
         categoryIds.add(convertCategoryNameToId(cbCategory1.getValue()));
         categoryIds.add(convertCategoryNameToId(cbCategory2.getValue()));
         categoryIds.add(convertCategoryNameToId(cbCategory3.getValue()));
-        movie.setCategoryIds(categoryIds);
-        movieModel.linkCatMov(movie);
+        try {
+            movie.setCategoryIds(categoryIds);
+            movieModel.linkCatMov(movie);
+        } catch (MovieException ex){
+            displayError("Update Category","Error updating categories for this movie");
+        }
+
     }
 
     private int convertCategoryNameToId(String categoryName) {
@@ -192,7 +198,7 @@ public class UpdateMovieController {
         return movieModel.getCategoryModel().getCategoryIDFromName(categoryName);
     }
 
-    private boolean movieDetailsUpdate(Movie movie) {
+    private boolean movieDetailsUpdate(Movie movie) throws MovieException {
         //assigning the information to be updated
         int id = movie.getId();
         String title = txtTitle.getText();

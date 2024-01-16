@@ -3,6 +3,7 @@ package GUI.Model;
 import BE.Category;
 import BLL.CategoryManager;
 import DAL.CategoryDAO;
+import Util.MovieException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -17,26 +18,17 @@ public class CategoryModel {
     private Map<String, Integer> categoryNameToIdMap;
     private ObservableList<Category> categoriesToBeViewed = FXCollections.observableArrayList();
 
-    public CategoryModel() {
-        try {
+    public CategoryModel() throws MovieException {
             this.categoryManager = new CategoryManager();
-
-        } catch (SQLException | IOException e) {
-            e.printStackTrace();
-        }
         loadCategories();
     }
 
     /**
      * Loads category names and their IDs from the database.
      */
-    private void loadCategories() {
-        try {
-            categoryNameToIdMap = categoryManager.getAllCategories();
-            categoriesToBeViewed.setAll(getCategories());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    private void loadCategories() throws MovieException{
+        categoryNameToIdMap = categoryManager.getAllCategories();
+        categoriesToBeViewed.setAll(getCategories());
     }
 
     /**
@@ -48,18 +40,18 @@ public class CategoryModel {
     public int getCategoryIDFromName(String categoryName) {
         return categoryNameToIdMap.getOrDefault(categoryName, -1);
     }
-    public void removeCategoriesFromMovie(int movieId) throws SQLException {
+    public void removeCategoriesFromMovie(int movieId) throws MovieException {
         categoryManager.removeCategoriesFromMovie(movieId);
     }
 
-    public void addCategory(Category newCategory) throws SQLException {
+    public void addCategory(Category newCategory) throws MovieException {
         Category category = categoryManager.addCategory(newCategory);
         categoriesToBeViewed.add(category);
 
         // Refresh the list
         loadCategories();
     }
-    public void deleteCategory(Category selectedCategory) throws SQLException {
+    public void deleteCategory(Category selectedCategory) throws MovieException {
         categoryManager.deleteCategory(selectedCategory);
 
         // Refresh the list

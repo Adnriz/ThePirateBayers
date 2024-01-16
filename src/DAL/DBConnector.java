@@ -1,5 +1,7 @@
 package DAL;
 
+import Util.MovieException;
+
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 import java.io.FileInputStream;
@@ -20,17 +22,24 @@ public class DBConnector {
      * @throws SQLException If the DataSource cannot be made.
      * @throws IOException If the file path cannot be read.
      */
-    public DBConnector() throws SQLException, IOException {
-        Properties databaseProperties = new Properties();
-        databaseProperties.load(new FileInputStream(PROP_FILE));
-        this.dataSource = new SQLServerDataSource();
-        this.dataSource.setServerName(databaseProperties.getProperty("Server"));
-        this.dataSource.setDatabaseName(databaseProperties.getProperty("Database"));
-        this.dataSource.setUser(databaseProperties.getProperty("User"));
-        this.dataSource.setPassword(databaseProperties.getProperty("Password"));
-        this.dataSource.setPortNumber(Integer.parseInt(databaseProperties.getProperty("Port")));
-        this.dataSource.setTrustServerCertificate(true);
+    public DBConnector() throws MovieException {
+
+        try {
+            Properties databaseProperties = new Properties();
+            databaseProperties.load(new FileInputStream(PROP_FILE));
+            this.dataSource = new SQLServerDataSource();
+            this.dataSource.setServerName(databaseProperties.getProperty("Server"));
+            this.dataSource.setDatabaseName(databaseProperties.getProperty("Database"));
+            this.dataSource.setUser(databaseProperties.getProperty("User"));
+            this.dataSource.setPassword(databaseProperties.getProperty("Password"));
+            this.dataSource.setPortNumber(Integer.parseInt(databaseProperties.getProperty("Port")));
+            this.dataSource.setTrustServerCertificate(true);
+        } catch (IOException ex)
+        {
+            throw new MovieException("Could not connect to database", ex);
+        }
     }
+
 
     /**
      * Gets a Connection object with a connection to the database.
@@ -39,6 +48,6 @@ public class DBConnector {
      * @throws SQLServerException If the connection cannot be made.
      */
     public Connection getConnection() throws SQLServerException {
-        return this.dataSource.getConnection();
+        return dataSource.getConnection();
     }
 }

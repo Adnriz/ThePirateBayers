@@ -3,6 +3,7 @@ package BLL;
 import BE.Category;
 import BE.Movie;
 import DAL.MovieDAO;
+import Util.MovieException;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -14,7 +15,7 @@ public class MovieManager {
     private final MovieSearcher movieSearcher;
     private final MovieFilter movieFilter;
 
-    public MovieManager() throws SQLException, IOException {
+    public MovieManager() throws MovieException {
         movieDAO = new MovieDAO();
         movieSearcher = new MovieSearcher();
         movieFilter = new MovieFilter();
@@ -26,7 +27,7 @@ public class MovieManager {
      * @return A list of all movies with their categories.
      * @throws SQLException If there is a problem accessing the database.
      */
-    public List<Movie> getAllMoviesWithCategories() throws SQLException {
+    public List<Movie> getAllMoviesWithCategories() throws MovieException {
         return movieDAO.getAllMoviesWithCategories();
     }
 
@@ -37,7 +38,7 @@ public class MovieManager {
      * @return A list of categories associated with the movie.
      * @throws SQLException If there is a problem accessing the database.
      */
-    public List<Category> getCategoriesForMovie(int movieId) throws SQLException {
+    public List<Category> getCategoriesForMovie(int movieId) throws MovieException {
         return movieDAO.getCategoriesForMovie(movieId);
     }
 
@@ -48,10 +49,10 @@ public class MovieManager {
      * @return The created Movie object.
      * @throws SQLException If there is a problem accessing the database.
      */
-    public Movie createMovie(Movie movie) throws SQLException {
+    public Movie createMovie(Movie movie) throws MovieException {
         return movieDAO.createMovie(movie);
     }
-    public void updateMovieInfo(int id, String title, double newPersonalRating, double newImdbRating, String filePath) {
+    public void updateMovieInfo(int id, String title, double newPersonalRating, double newImdbRating, String filePath) throws MovieException {
         movieDAO.updateMovie(id, title, newPersonalRating, newImdbRating, filePath);
     }
     /**
@@ -61,7 +62,7 @@ public class MovieManager {
      * @return
      * @throws Exception
      */
-    public List<Movie> searchMovies(String query) throws Exception {
+    public List<Movie> searchMovies(String query) throws MovieException {
         // Retrieves a list with all movies and categories
         List<Movie> allMovies = getAllMoviesWithCategories();
 
@@ -75,15 +76,15 @@ public class MovieManager {
         return movieSearchResult;
 
     }
-    public void linkCatMov(Movie movie) throws SQLException {
+    public void linkCatMov(Movie movie) throws MovieException {
         movieDAO.linkMovieWithCategories(movie);
     }
 
-    public void deleteMovie(Movie selectedMovie) throws SQLException {
+    public void deleteMovie(Movie selectedMovie) throws MovieException {
         movieDAO.deleteMovie(selectedMovie);
     }
 
-public void updateLastView(Movie movie, String formattedDate) throws SQLException {
+public void updateLastView(Movie movie, String formattedDate) throws MovieException {
         // Assuming movieDAO is your MovieDAO instance
         movieDAO.updateLastView(movie, formattedDate);
     }
@@ -97,7 +98,7 @@ public void updateLastView(Movie movie, String formattedDate) throws SQLExceptio
      * @return A list of movies that meet the filtering criteria.
      * @throws SQLException If a database access error occurs.
      */
-    public List<Movie> filterMovies(double minIMDBRating, double minPersonalRating, List<String> selectedCategories) throws SQLException {
+    public List<Movie> filterMovies(double minIMDBRating, double minPersonalRating, List<String> selectedCategories) throws MovieException {
         List<Movie> allMovies = getAllMoviesWithCategories();
         return movieFilter.filterMovies(allMovies, minIMDBRating, minPersonalRating, selectedCategories);
     }

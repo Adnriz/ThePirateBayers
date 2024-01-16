@@ -4,6 +4,7 @@ import BE.Category;
 import BE.Movie;
 import GUI.Model.CategoryModel;
 import GUI.Model.MovieModel;
+import Util.MovieException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -56,7 +57,7 @@ public class NewMovieController {
     private CategoryModel categoryModel;
 
 
-    public NewMovieController() throws SQLException, IOException {
+    public NewMovieController() throws MovieException {
         this.categoryModel = new CategoryModel();
         this.movieModel = new MovieModel();
     }
@@ -205,7 +206,7 @@ public class NewMovieController {
                 movieModel.addMovie(movie);
                 closeWindow();
             }
-        } catch (SQLException e) {
+        } catch (MovieException e) {
             displayError("Database error", "Error saving movie to database.");
         }
     }

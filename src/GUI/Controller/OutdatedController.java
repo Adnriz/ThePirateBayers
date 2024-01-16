@@ -2,6 +2,7 @@ package GUI.Controller;
 
 import BE.Movie;
 import GUI.Model.MovieModel;
+import Util.MovieException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -23,7 +24,7 @@ public class OutdatedController {
     private MovieModel movieModel;
 
 
-    public OutdatedController() throws SQLException, IOException {
+    public OutdatedController() throws MovieException {
         this.movieModel = movieModel;
     }
     public void setMovieModel(MovieModel movieModel) {
