@@ -5,21 +5,19 @@ import BE.Movie;
 import DAL.MovieDAO;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class MovieManager {
 
     private final MovieDAO movieDAO;
     private final MovieSearcher movieSearcher;
+    private final MovieFilter movieFilter;
 
     public MovieManager() throws SQLException, IOException {
         movieDAO = new MovieDAO();
         movieSearcher = new MovieSearcher();
+        movieFilter = new MovieFilter();
     }
 
     /**
@@ -88,6 +86,20 @@ public class MovieManager {
 public void updateLastView(Movie movie, String formattedDate) throws SQLException {
         // Assuming movieDAO is your MovieDAO instance
         movieDAO.updateLastView(movie, formattedDate);
+    }
+
+    /**
+     * Filters movies using specified criteria using the MovieFilter utility class.
+     *
+     * @param minIMDBRating The minimum IMDb rating for the filter.
+     * @param minPersonalRating The minimum personal rating for the filter.
+     * @param selectedCategories A list of categories for the filter.
+     * @return A list of movies that meet the filtering criteria.
+     * @throws SQLException If a database access error occurs.
+     */
+    public List<Movie> filterMovies(double minIMDBRating, double minPersonalRating, List<String> selectedCategories) throws SQLException {
+        List<Movie> allMovies = getAllMoviesWithCategories();
+        return movieFilter.filterMovies(allMovies, minIMDBRating, minPersonalRating, selectedCategories);
     }
 
 }

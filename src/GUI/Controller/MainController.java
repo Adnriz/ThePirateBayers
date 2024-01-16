@@ -299,77 +299,6 @@ public class MainController {
     }
 
 
-
-    /**
-     * Handles the action event triggered when the 'Apply Filters' button is clicked.
-     */
-    @FXML
-    private void onApplyFilters(ActionEvent actionEvent) {
-     filterMovies();
-    }
-
-    /**
-     * Filters the list of movies based on selected categories and rating criteria.
-     */
-    private void filterMovies() {
-        //Get category filters
-        String category1 = cbCategory1.getValue();
-        String category2 = cbCategory2.getValue();
-        String category3 = cbCategory3.getValue();
-
-        //Get rating filters
-        double minIMDBRating = spinnerIMDB.getValue();
-        double minPersonalRating = spinnerPersonal.getValue();
-
-        //Starts a stream of all Movie objects.
-        List<Movie> filteredMovies = movieModel.getObservableMovies().stream()
-
-                //Applies the rating filter
-                .filter(movie -> movie.getImdbRating() >= minIMDBRating && movie.getPersonalRating() >= minPersonalRating)
-
-                //Applies category filter, first it adds selected categories to an Arraylist and then checks for matches.
-                .filter(movie -> {
-                    List<String> selectedCategories = new ArrayList<>();
-                    if (!"Empty".equals(category1)) selectedCategories.add(category1);
-                    if (!"Empty".equals(category2)) selectedCategories.add(category2);
-                    if (!"Empty".equals(category3)) selectedCategories.add(category3);
-
-                    // If no categories are selected, include all movies. No category filters applied, true instructs the filter to include all movies.
-                    if (selectedCategories.isEmpty()) return true;
-
-                    //return a stream of 'Category' objects from the movie
-                    return movie.getCategories().stream()
-                            //converts the stream of Category objects to String objects with the category names.
-                            .map(Category::getName)
-                            //Checks if any of the movie's category list is contained in the list of selected categories.
-                            .anyMatch(selectedCategories::contains);
-                })
-                //collects all the elements from the stream that matched the filters into the Movie list.
-                .collect(Collectors.toList());
-        //sets the tableview with the filtered list of movies.
-        tblviewMovies.setItems(FXCollections.observableList(filteredMovies));
-    }
-
-    /**
-     * Resets all filter controls to their default values and displays all movies in the TableView.
-     */
-    @FXML
-    private void onClearFilters(ActionEvent actionEvent) {
-        //Resetting the comboboxes
-        cbCategory1.getSelectionModel().select("Empty");
-        cbCategory2.getSelectionModel().select("Empty");
-        cbCategory3.getSelectionModel().select("Empty");
-
-        //Resetting the spinners
-        spinnerIMDB.getValueFactory().setValue(0.0);
-        spinnerPersonal.getValueFactory().setValue(0.0);
-
-        //Resetting the tableview to show all movies
-        tblviewMovies.setItems(movieModel.getObservableMovies());
-    }
-
-
-
     private void setupListViewCategories() {
         listCategories.setItems(categoryModel.getCategories());
     }
@@ -452,6 +381,65 @@ public class MainController {
             }
         }
     }
+
+    /**
+    * Handles the apply filter action event. Collects filter criteria from the UI, applies them, and updates the UI with the filtered movies.
+     *
+     * @param actionEvent The action event that triggers this method.
+     */
+    @FXML
+    private void onApplyFilters(ActionEvent actionEvent) {
+        try {
+            List<String> selectedCategories = getSelectedCategories();
+            double minIMDBRating = spinnerIMDB.getValue();
+            double minPersonalRating = spinnerPersonal.getValue();
+
+            movieModel.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
+            tblviewMovies.setItems(movieModel.getMoviesToBeViewed());
+        } catch (SQLException e) {
+
+        }
+    }
+
+    /**
+     * Collects the selected categories from the ComboBoxes.
+     *
+     * @return A list of selected category strings.
+     */
+    private List<String> getSelectedCategories() {
+        List<String> selectedCategories = new ArrayList<>();
+
+        if (cbCategory1.getValue() != null && !"Empty".equals(cbCategory1.getValue())) {
+            selectedCategories.add(cbCategory1.getValue());
+        }
+        if (cbCategory2.getValue() != null && !"Empty".equals(cbCategory2.getValue())) {
+            selectedCategories.add(cbCategory2.getValue());
+        }
+        if (cbCategory3.getValue() != null && !"Empty".equals(cbCategory3.getValue())) {
+            selectedCategories.add(cbCategory3.getValue());
+        }
+
+        return selectedCategories;
+    }
+
+    /**
+     * Handles the clear filters action event. Resets the filter UI components and shows all
+     * Resets all filter controls to their default values and displays all movies in the TableView.
+     */
+    @FXML
+    private void onClearFilters(ActionEvent actionEvent) {
+        cbCategory1.getSelectionModel().select("Empty");
+        cbCategory2.getSelectionModel().select("Empty");
+        cbCategory3.getSelectionModel().select("Empty");
+
+        //Resetting the spinners
+        spinnerIMDB.getValueFactory().setValue(0.0);
+        spinnerPersonal.getValueFactory().setValue(0.0);
+
+        //Resetting the tableview to show all movies
+        tblviewMovies.setItems(movieModel.getObservableMovies());
+    }
+    
 
     /**
      * Displays a confirmation alert with the specified title and content.

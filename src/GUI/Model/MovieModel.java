@@ -2,9 +2,7 @@ package GUI.Model;
 
 import BE.Category;
 import BE.Movie;
-import BLL.CategoryManager;
 import BLL.MovieManager;
-import DAL.MovieDAO;
 import GUI.Controller.OutdatedController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,11 +26,13 @@ public class MovieModel {
     private CategoryModel categoryModel;
 
     private List<Movie> outdatedMoviesList;
+    private ObservableList<Movie> moviesToBeViewed;
 
     public MovieModel() throws SQLException, IOException {
         movieManager = new MovieManager();
         categoryModel = new CategoryModel();
         availableMovies = FXCollections.observableArrayList(movieManager.getAllMoviesWithCategories());
+        moviesToBeViewed = FXCollections.observableArrayList();
 
     }
 
@@ -174,8 +174,32 @@ public class MovieModel {
             stage.setScene(new Scene(root));
             stage.showAndWait();
         }
+    }
 
-}}
+    /**
+     * Applies filtering to movies based on given criteria and updates the observable list of movies.
+     *
+     * @param minIMDBRating The minimum IMDb rating for the filter.
+     * @param minPersonalRating The minimum personal rating for the filter.
+     * @param selectedCategories The categories to include in the filter.
+     * @throws SQLException If there is a problem accessing the movie data.
+     */
+    public void filterMovies(double minIMDBRating, double minPersonalRating, List<String> selectedCategories) throws SQLException {
+        List<Movie> filteredMovies = movieManager.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
+        moviesToBeViewed.clear();
+        moviesToBeViewed.addAll(filteredMovies);
+    }
+
+    /**
+     * Retrieves the observable list of movies to be viewed.
+     *
+     * @return An ObservableList of movies that have been filtered.
+     */
+    public ObservableList<Movie> getMoviesToBeViewed() {
+        return moviesToBeViewed;
+    }
+
+}
 
 
 
