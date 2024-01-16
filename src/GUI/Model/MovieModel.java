@@ -5,13 +5,20 @@ import BE.Movie;
 import BLL.CategoryManager;
 import BLL.MovieManager;
 import DAL.MovieDAO;
+import GUI.Controller.OutdatedController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,11 +27,13 @@ public class MovieModel {
     private MovieManager movieManager;
     private CategoryModel categoryModel;
 
+    private List<Movie> outdatedMoviesList;
 
     public MovieModel() throws SQLException, IOException {
         movieManager = new MovieManager();
         categoryModel = new CategoryModel();
         availableMovies = FXCollections.observableArrayList(movieManager.getAllMoviesWithCategories());
+
     }
 
     public ObservableList<Movie> getObservableMovies() {
@@ -114,7 +123,59 @@ public class MovieModel {
         // Assuming movieDAO is your MovieDAO instance
         movieManager.updateLastView(movie, formattedDate);
     }
-}
+    public void setOutdatedMoviesList(List<Movie> outdatedMoviesList) {
+        this.outdatedMoviesList = outdatedMoviesList;
+    }
+    public List<Movie> getOutdatedMoviesList() {
+        return outdatedMoviesList;
+    }
+    public void checkForOldMovies() throws IOException {
+        //First getting a list of all the movies
+        ObservableList<Movie> allMovies = getAvailableMovies();
+        //Setting the date format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        boolean oldMovie = false;
+
+        List<Movie> outdatedMoviesList = new ArrayList<>();
+        //Loop that checks all movies, and adding the outdated ones to a list
+        for (Movie movie : allMovies) {
+            try {
+                String lastViewedDateString = movie.getLastView();
+                if (lastViewedDateString != null) {
+                    java.util.Date lastViewedDate = dateFormat.parse(lastViewedDateString);
+                    java.util.Date currentDate = new Date();
+                    //Finding the difference between currentdate and last viewed date
+                    long timeDifference = currentDate.getTime() - lastViewedDate.getTime();
+                    long twoYearsInMillis = 2 * 365 * 24 * 60 * 60 * 1000L;
+
+                    if (timeDifference >= twoYearsInMillis) {
+                        outdatedMoviesList.add(movie);
+                        oldMovie = true;
+                    }
+                }
+            } catch (ParseException e) {
+                System.out.println("error");
+            }
+        }
+
+        if (oldMovie) {
+            setOutdatedMoviesList(outdatedMoviesList);
+
+            //Opening the window which shows the outdated movies
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/OutdatedWindow.fxml"));
+            Parent root = loader.load();
+
+            OutdatedController outdatedController = loader.getController();
+            outdatedController.setMovieModel(this);
+
+            //showing the stage
+            Stage stage = new Stage();
+            stage.setTitle("Update Movie");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        }
+
+}}
 
 
 

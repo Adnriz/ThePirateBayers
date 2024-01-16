@@ -25,6 +25,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,6 +67,9 @@ public class MainController {
     private TextField txtAddCategory;
     @FXML
     private Label errorLbl;
+    private List<Movie> outdatedMoviesList;
+    @FXML
+    private ListView outdatedMovieView;
     private MovieModel movieModel;
     private CategoryModel categoryModel;
 
@@ -73,15 +77,19 @@ public class MainController {
     public MainController() throws Exception {
         movieModel = new MovieModel();
         categoryModel = new CategoryModel();
+        outdatedMoviesList = new ArrayList<>();
     }
 
     /**
      * Initializes the controller.
      */
-    public void initialize() {
+    public void initialize() throws IOException {
         setupInteractable();
+        movieModel.checkForOldMovies();
     }
 
+    private static void wait(int ms) {
+    }
     /**
      * Handles the action to open the NewMovie window.
      *
@@ -143,6 +151,7 @@ public class MainController {
         spinnersENGAGE();
         setupMovieTableview();
         setupListViewCategories();
+
 
         // Adds a listener to the search field, so that it updates it realtime.
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> onFilterSearch());
@@ -472,5 +481,7 @@ public class MainController {
         movieModel.updateLastView(movie, formattedDate);
         movieModel.refreshMovies();
     }
+
+
 
 }
