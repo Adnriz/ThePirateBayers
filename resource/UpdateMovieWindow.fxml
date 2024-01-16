@@ -2,7 +2,6 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
@@ -34,22 +33,22 @@
                 <Font size="16.0" />
             </font>
         </Label>
-        <Label alignment="CENTER" layoutX="88.0" layoutY="275.0" prefHeight="25.0" prefWidth="119.0" text="Last Viewed:">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
         <ComboBox fx:id="cbCategory1" layoutX="84.0" layoutY="89.0" prefHeight="25.0" prefWidth="125.0" promptText="Comedy" />
         <ComboBox fx:id="cbCategory2" layoutX="84.0" layoutY="115.0" prefHeight="25.0" prefWidth="125.0" promptText="Science Fiction" />
         <ComboBox fx:id="cbCategory3" layoutX="84.0" layoutY="141.0" prefHeight="25.0" prefWidth="125.0" promptText="Crime" />
         <Spinner fx:id="spinnerIMDB" editable="true" layoutX="88.0" layoutY="195.0" prefHeight="25.0" prefWidth="125.0" />
         <Spinner fx:id="spinnerPersonal" editable="true" layoutX="88.0" layoutY="249.0" prefHeight="25.0" prefWidth="125.0" />
-        <DatePicker fx:id="dateLastViewed" layoutX="87.0" layoutY="300.0" prefHeight="25.0" prefWidth="125.0" />
-        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="87.0" layoutY="325.0" prefHeight="25.0" prefWidth="119.0" text="Filepath:" textAlignment="CENTER">
+        <Label alignment="CENTER" contentDisplay="CENTER" layoutX="87.0" layoutY="325.0" prefHeight="25.0" prefWidth="119.0" text="File:" textAlignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
         </Label>
-        <TextField fx:id="txtFilepath" layoutX="54.0" layoutY="350.0" prefHeight="25.0" prefWidth="194.0" promptText="C://Movies/AceVentura2.mpeg4" />
+        <TextField fx:id="txtFilepath" layoutX="54.0" layoutY="350.0" prefHeight="25.0" prefWidth="140.0" promptText="C://Movies/AceVentura2.mpeg4" />
+      <ComboBox fx:id="cbFileType" layoutX="199.0" layoutY="350.0" prefHeight="25.0" prefWidth="69.0" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="199.0" layoutY="325.0" prefHeight="25.0" prefWidth="69.0" text="Type:" textAlignment="CENTER">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
     </children>
 </AnchorPane>
