@@ -25,8 +25,12 @@ public class MovieModel {
     private MovieManager movieManager;
     private CategoryModel categoryModel;
 
+
     private List<Movie> outdatedMoviesList;
     private ObservableList<Movie> moviesToBeViewed;
+
+    private List<Movie> outdatedMoviesAndBadRatingList;
+
 
     public MovieModel() throws SQLException, IOException {
         movieManager = new MovieManager();
@@ -123,11 +127,11 @@ public class MovieModel {
         // Assuming movieDAO is your MovieDAO instance
         movieManager.updateLastView(movie, formattedDate);
     }
-    public void setOutdatedMoviesList(List<Movie> outdatedMoviesList) {
-        this.outdatedMoviesList = outdatedMoviesList;
+    public void setOutdatedMoviesAndBadRatingList(List<Movie> outdatedMoviesAndBadRatingList) {
+        this.outdatedMoviesAndBadRatingList = outdatedMoviesAndBadRatingList;
     }
-    public List<Movie> getOutdatedMoviesList() {
-        return outdatedMoviesList;
+    public List<Movie> getOutdatedMoviesAndBadRatingList() {
+        return outdatedMoviesAndBadRatingList;
     }
     public void checkForOldMovies() throws IOException {
         //First getting a list of all the movies
@@ -136,7 +140,7 @@ public class MovieModel {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         boolean oldMovie = false;
 
-        List<Movie> outdatedMoviesList = new ArrayList<>();
+        List<Movie> outdatedMoviesAndBadRatingList = new ArrayList<>();
         //Loop that checks all movies, and adding the outdated ones to a list
         for (Movie movie : allMovies) {
             try {
@@ -147,9 +151,9 @@ public class MovieModel {
                     //Finding the difference between currentdate and last viewed date
                     long timeDifference = currentDate.getTime() - lastViewedDate.getTime();
                     long twoYearsInMillis = 2 * 365 * 24 * 60 * 60 * 1000L;
-
-                    if (timeDifference >= twoYearsInMillis) {
-                        outdatedMoviesList.add(movie);
+                    //Add the movie to the list if it haven't been seen in two years or has a personal rating under 6.0
+                    if (timeDifference >= twoYearsInMillis || movie.getPersonalRating() < 6.0) {
+                        outdatedMoviesAndBadRatingList.add(movie);
                         oldMovie = true;
                     }
                 }
@@ -159,7 +163,7 @@ public class MovieModel {
         }
 
         if (oldMovie) {
-            setOutdatedMoviesList(outdatedMoviesList);
+            setOutdatedMoviesAndBadRatingList(outdatedMoviesAndBadRatingList);
 
             //Opening the window which shows the outdated movies
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/OutdatedWindow.fxml"));

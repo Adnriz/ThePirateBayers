@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class OutdatedController {
-
-    public Button deleteOutdatedMovies;
+    @FXML
     public Button ignoreMovies;
     @FXML
     private ListView<String> outdatedMovieView;
@@ -34,7 +33,7 @@ public class OutdatedController {
 
     private void setupList() {
         if (outdatedMovieView != null) {
-            List<Movie> movies = movieModel.getOutdatedMoviesList();
+            List<Movie> movies = movieModel.getOutdatedMoviesAndBadRatingList();
 
             //Making the List<Movie> to ObservableList<Movie> for the ListView
             ObservableList<String> movieNames = FXCollections.observableArrayList(
