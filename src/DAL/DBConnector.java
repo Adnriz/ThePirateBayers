@@ -36,7 +36,7 @@ public class DBConnector {
             this.dataSource.setTrustServerCertificate(true);
         } catch (IOException ex)
         {
-            throw new MovieException("Could not connect to database", ex);
+            throw new MovieException("Could not connect to database, recheck login information", ex);
         }
     }
 
@@ -47,7 +47,11 @@ public class DBConnector {
      * @return A Connection object with the connection to the database.
      * @throws SQLServerException If the connection cannot be made.
      */
-    public Connection getConnection() throws SQLServerException {
-        return dataSource.getConnection();
+    public Connection getConnection() throws MovieException {
+        try {
+            return dataSource.getConnection();
+        } catch (SQLServerException ex) {
+            throw new MovieException("Lost connection to the database", ex);
+        }
     }
 }
