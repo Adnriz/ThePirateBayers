@@ -7,15 +7,14 @@ import GUI.Model.MovieModel;
 import Util.MovieException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -111,7 +110,7 @@ public class NewMovieController {
      * Closes the current window.
      */
     @FXML
-    private void onClose(ActionEvent actionEvent) {
+    private void onClose() {
         closeWindow();
     }
 

@@ -25,8 +25,8 @@
       </TableView>
       <TextField fx:id="txtSearch" layoutX="17.0" layoutY="25.0" prefHeight="25.0" prefWidth="198.0" promptText="Search" />
       <Button fx:id="btnNewMovie" layoutX="17.0" layoutY="394.0" mnemonicParsing="false" onAction="#onNewMovie" text="New Movie" />
-      <Button fx:id="btnUpdate" layoutX="97.0" layoutY="394.0" mnemonicParsing="false" onAction="#btnUpdateAction" text="Update" />
-      <Button fx:id="btnDelete" layoutX="156.0" layoutY="394.0" mnemonicParsing="false" onAction="#deleteMovie" prefHeight="25.0" prefWidth="55.0" text="Delete" />
+      <Button fx:id="btnUpdate" layoutX="97.0" layoutY="394.0" mnemonicParsing="false" onAction="#onUpdateAction" text="Update" />
+      <Button fx:id="btnDelete" layoutX="156.0" layoutY="394.0" mnemonicParsing="false" onAction="#onDeleteMovie" prefHeight="25.0" prefWidth="55.0" text="Delete" />
       <Label layoutX="359.0" layoutY="392.0" prefHeight="20.0" prefWidth="55.0" text="Filters:">
          <font>
             <Font size="14.0" />
