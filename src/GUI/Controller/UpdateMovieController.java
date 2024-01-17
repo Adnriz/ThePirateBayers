@@ -75,7 +75,7 @@ public class UpdateMovieController {
     /////////////////////////
 
     @FXML
-    private void btnSaveAction() throws MovieException {
+    private void onSaveAction() throws MovieException {
         boolean updateSuccessful = movieDetailsUpdate(movie);
         movieCategoryUpdate(movie);
 
@@ -86,7 +86,7 @@ public class UpdateMovieController {
     }
     //Method that closes the UI
     @FXML
-    private void btnClose() {
+    private void onClose() {
         Stage stage = (Stage) txtTitle.getScene().getWindow();
         stage.close();
     }

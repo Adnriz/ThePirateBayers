@@ -8,7 +8,7 @@ import BE.Category;
 import Util.MovieException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -108,11 +108,10 @@ public class MainController {
     /**
      * Handles the action to open the NewMovie window.
      *
-     * @param actionEvent The event that triggered the action.
      * @throws IOException If the FXML file cannot be loaded.
      */
     @FXML
-    private void onNewMovie(ActionEvent actionEvent) throws MovieException {
+    private void onNewMovie() throws MovieException {
 
        try {
            // Load NewMovieWindow
@@ -134,7 +133,7 @@ public class MainController {
     }
 
     @FXML
-    private void btnUpdateAction(ActionEvent actionEvent) throws IOException, MovieException {
+    private void onUpdateAction() throws IOException, MovieException {
         if (tblviewMovies.getSelectionModel().getSelectedItem() != null) {
             Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
 
@@ -160,7 +159,7 @@ public class MainController {
         }
     }
 
-    public void deleteMovie(ActionEvent event){
+    public void onDeleteMovie(){
         // Retrieve the selected movie from tblviewMovies
         Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
         // Ensure a movie was selected
@@ -313,10 +312,9 @@ public class MainController {
     /**
      * Handles the apply filter action event. Collects filter criteria from the UI, applies them, and updates the UI with the filtered movies.
      *
-     * @param actionEvent The action event that triggers this method.
      */
     @FXML
-    private void onApplyFilters(ActionEvent actionEvent) {
+    private void onApplyFilters() {
 
         List<String> selectedCategories = getSelectedCategories();
         double minIMDBRating = spinnerIMDB.getValue();
@@ -334,7 +332,7 @@ public class MainController {
      * Resets all filter controls to their default values and displays all movies in the TableView.
      */
     @FXML
-    private void onClearFilters(ActionEvent actionEvent) {
+    private void onClearFilters() {
         cbCategory1.getSelectionModel().select("Empty");
         cbCategory2.getSelectionModel().select("Empty");
         cbCategory3.getSelectionModel().select("Empty");
