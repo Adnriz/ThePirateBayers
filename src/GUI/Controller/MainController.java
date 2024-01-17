@@ -270,10 +270,13 @@ public class MainController {
 
         if (selectedMovie != null) {
             File movieFile = new File(selectedMovie.getFilePath());
+            // Check if the user's desktop can open files
             if (Desktop.isDesktopSupported()) {
+                // Open the movie file with the default system application
                 new Thread(() -> {
                     try {
                         Desktop.getDesktop().open(movieFile);
+                        // If the movie file is opened successfully, update the last view date
                         updateLastViewDate(selectedMovie);
                     } catch (IOException ex) {
                         System.out.println("An error occurred while trying to play the movie: " + ex.getMessage());
