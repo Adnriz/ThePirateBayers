@@ -186,31 +186,43 @@ public class MainController {
     ////   Categories   ////
     ////////////////////////
 
+    /**
+     * Adds a category to the database through the layers.
+     * checks if the input isn't empty.
+     * then shows a message, either to tell user incorrect input, or to confirm input.
+     */
     @FXML
-    private void addCategory()
+    private void onAddCategory()
     {
-        String categoryName = txtAddCategory.getText();
+        String categoryName = txtAddCategory.getText().trim();
+
         Category newCategory = new Category(-1, categoryName);
 
-        try {
-            boolean confirmCreation = showConfirmationAlert("Add Category",
-                    "Would you like to add the category " + txtAddCategory.getText() + "?");
-            if (confirmCreation) {
-                categoryModel.addCategory(newCategory);
+        if (movieModel.inputCheck(categoryName)) {
+            try {
+                boolean confirmCreation = showConfirmationAlert("Add Category",
+                        "Would you like to add the category " + txtAddCategory.getText() + "?");
+                if (confirmCreation) {
+                    categoryModel.addCategory(newCategory);
 
-                listCategories.setItems(categoryModel.getCategories());
-                txtAddCategory.clear();
+                    listCategories.setItems(categoryModel.getCategories());
+                    txtAddCategory.clear();
 
-                setupCategoryBoxes();
+                    setupCategoryBoxes();
+                }
+            } catch (MovieException ex) {
+                displayError(ex);
             }
-        } catch (MovieException ex) {
-            displayError(ex);
-        }
+        }else{showAlert("Invalid Category Name","Category must contain 1-255 letters.");}
     }
 
-
+    /**
+     * Checks if there is a selected category.
+     * Tries to delete it, but first shows a confirmation window.
+     * @param
+     */
     @FXML
-    private void deleteCategory(ActionEvent actionEvent) {
+    private void onDeleteCategory() {
         Category selectedCategory = listCategories.getSelectionModel().getSelectedItem();
 
         if (selectedCategory != null) {
@@ -224,14 +236,12 @@ public class MainController {
                     txtAddCategory.clear();
                     setupCategoryBoxes();
                 }
-            } catch (Exception e)
-            {
+            } catch (MovieException ex){
                 showAlert("ERROR WHILE DELETING",
                         "Something went wrong while trying to delete this " +
                                 selectedCategory.getName() + " category");
             }
-        } else {
-            showAlert("Selection Required","Please select a category to delete");
+        } else {showAlert("Selection Required","Please select a category to delete");
         }
     }
 
@@ -391,20 +401,17 @@ public class MainController {
         // Sets the Combo Boxes up, so that "Empty" always is the first option.
         cbCategory1.getItems().clear();
         cbCategory1.getItems().addAll(categoryNames);
-        cbCategory1.getItems().remove("Empty");
-        cbCategory1.getItems().add(0, "Empty");
+        cbCategory1.getItems().set(0, "Empty");
         cbCategory1.getSelectionModel().select("Empty");
 
         cbCategory2.getItems().clear();
         cbCategory2.getItems().addAll(categoryNames);
-        cbCategory2.getItems().remove("Empty");
-        cbCategory2.getItems().add(0, "Empty");
+        cbCategory2.getItems().set(0, "Empty");
         cbCategory2.getSelectionModel().select("Empty");
 
         cbCategory3.getItems().clear();
         cbCategory3.getItems().addAll(categoryNames);
-        cbCategory3.getItems().remove("Empty");
-        cbCategory3.getItems().add(0, "Empty");
+        cbCategory3.getItems().set(0, "Empty");
         cbCategory3.getSelectionModel().select("Empty");
     }
 

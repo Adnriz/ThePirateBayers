@@ -135,6 +135,20 @@ public class MovieModel {
         return outdatedMoviesAndBadRatingList;
     }
 
+    public boolean inputCheck(String userInput){
+
+        if (userInput == null || userInput.trim().isEmpty()){
+            return false;
+        }
+
+        if (userInput.length() > 255){
+            return false;
+        }
+        return true;
+    }
+
+
+
     public void checkForOldMovies() throws MovieException {
         // First getting a list of all the movies
         ObservableList<Movie> allMovies = getAvailableMovies();
