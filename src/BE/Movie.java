@@ -69,6 +69,8 @@ public class Movie {
         this.lastView = lastView;
     }
 
+    public String getLastView(String lastView){return lastView;}
+
     public int getId() {
         return id;
     }
