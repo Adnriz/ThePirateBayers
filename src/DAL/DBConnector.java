@@ -13,6 +13,7 @@ import java.util.Properties;
 public class DBConnector {
     // It's important that the user makes a config.settings file from the example in the config folder.
     // With the information filled.
+    private static DBConnector INSTANCE = null;
     private static final String PROP_FILE = "config/config.settings";
     private SQLServerDataSource dataSource;
 
@@ -54,4 +55,17 @@ public class DBConnector {
             throw new MovieException("Lost connection to the database", ex);
         }
     }
+
+    /**
+     * Makes it so the DBConnector adheres to the singleton pattern
+     * @return
+     * @throws MovieException
+     */
+    public static DBConnector getInstance() throws MovieException {
+        if (INSTANCE != null)
+            return INSTANCE;
+        else
+            return INSTANCE = new DBConnector();
+    }
+
 }

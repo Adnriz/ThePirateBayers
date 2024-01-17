@@ -3,18 +3,15 @@ package DAL.DAO;
 import BE.Category;
 import DAL.DBConnector;
 import Util.MovieException;
-import com.microsoft.sqlserver.jdbc.SQLServerException;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CategoryDAO {
-    private DBConnector databaseConnector;
+    private DBConnector databaseConnector = DBConnector.getInstance();
 
     public CategoryDAO() throws MovieException {
-        databaseConnector = new DBConnector();
     }
 
     /**
@@ -58,6 +55,12 @@ public class CategoryDAO {
         }
     }
 
+    /**
+     * Method for adding a category to the database
+     * @param category
+     * @return
+     * @throws MovieException
+     */
     public Category addCategory(Category category) throws  MovieException{
         String sql = "INSERT INTO Category (Category) VALUES (?)";
 
@@ -79,6 +82,11 @@ public class CategoryDAO {
 
     }
 
+    /**
+     * Method for deleting a category from database.
+     * @param category
+     * @throws MovieException
+     */
     public void deleteCategory(Category category) throws MovieException
     {
         String deleteCatMovieSQL = "DELETE FROM CatMovie WHERE Categoryid = ?";

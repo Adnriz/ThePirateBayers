@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MovieDAO {
-    private DBConnector databaseConnector = new DBConnector();
+    private DBConnector databaseConnector =  DBConnector.getInstance();
 
     public MovieDAO() throws MovieException {
 
