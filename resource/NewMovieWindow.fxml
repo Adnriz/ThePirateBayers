@@ -36,8 +36,8 @@
       <ComboBox fx:id="cbCategory1" layoutX="84.0" layoutY="89.0" prefHeight="25.0" prefWidth="125.0" />
       <ComboBox fx:id="cbCategory2" layoutX="84.0" layoutY="115.0" prefHeight="25.0" prefWidth="125.0" />
       <ComboBox fx:id="cbCategory3" layoutX="84.0" layoutY="141.0" prefHeight="25.0" prefWidth="125.0" />
-      <Spinner fx:id="spinnerIMDB" editable="true" layoutX="88.0" layoutY="195.0" prefHeight="25.0" prefWidth="125.0" />
-      <Spinner fx:id="spinnerPersonal" editable="true" layoutX="88.0" layoutY="249.0" prefHeight="25.0" prefWidth="125.0" />
+      <Spinner fx:id="spinnerIMDB" layoutX="88.0" layoutY="195.0" prefHeight="25.0" prefWidth="125.0" />
+      <Spinner fx:id="spinnerPersonal" layoutX="88.0" layoutY="249.0" prefHeight="25.0" prefWidth="125.0" />
       <Label alignment="CENTER" contentDisplay="CENTER" layoutX="87.0" layoutY="325.0" prefHeight="25.0" prefWidth="119.0" text="File:" textAlignment="CENTER">
          <font>
             <Font size="16.0" />

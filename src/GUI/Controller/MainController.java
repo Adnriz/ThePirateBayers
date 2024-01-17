@@ -427,11 +427,11 @@ public class MainController {
      */
     private void spinnersENGAGE() {
         // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
-        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 0.0, 0.1);
+        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 5.0, 0.1);
         // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
         valueFactoryIMDB.setConverter(new DoubleStringConverter());
 
-        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 0.0, 0.1);
+        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 5.0, 0.1);
         valueFactoryPersonal.setConverter(new DoubleStringConverter());
         // Sets the parameters for the spinners with the code from above.
         spinnerIMDB.setValueFactory(valueFactoryIMDB);
