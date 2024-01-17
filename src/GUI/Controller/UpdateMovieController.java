@@ -1,6 +1,5 @@
 package GUI.Controller;
 
-        import BE.CategoriesInMovies;
         import BE.Category;
         import BE.Movie;
         import GUI.Model.CategoryModel;
@@ -8,14 +7,12 @@ package GUI.Controller;
         import Util.MovieException;
         import javafx.collections.FXCollections;
         import javafx.collections.ObservableList;
-        import javafx.event.ActionEvent;
         import javafx.fxml.FXML;
         import javafx.scene.control.*;
         import javafx.stage.Stage;
         import javafx.util.converter.DoubleStringConverter;
 
         import java.io.File;
-        import java.sql.SQLException;
         import java.util.ArrayList;
         import java.util.List;
         import java.util.stream.Collectors;
@@ -53,8 +50,6 @@ public class UpdateMovieController {
     private TextField txtFilepath;
     private MovieModel movieModel;
     private Movie movie;
-    //private MainController mainController;
-    //private CategoriesInMovies categoriesInMovies;
     private CategoryModel categoryModel;
 
 
@@ -70,9 +65,7 @@ public class UpdateMovieController {
 
     public void setMovie(Movie movie) {
         this.movie = movie;
-        //this.mainController = mainController;
-
-        // Call a method to update the UI components with movie data
+        //Calling method to update the ui
         updateUIWithMovieData();
     }
 
@@ -82,7 +75,7 @@ public class UpdateMovieController {
     /////////////////////////
 
     @FXML
-    private void btnSaveAction(ActionEvent actionEvent) throws MovieException {
+    private void btnSaveAction() throws MovieException {
         boolean updateSuccessful = movieDetailsUpdate(movie);
         movieCategoryUpdate(movie);
 
@@ -91,9 +84,9 @@ public class UpdateMovieController {
             stage.close();
         }
     }
-
+    //Method that closes the UI
     @FXML
-    private void btnClose(ActionEvent actionEvent) {
+    private void btnClose() {
         Stage stage = (Stage) txtTitle.getScene().getWindow();
         stage.close();
     }
@@ -104,7 +97,9 @@ public class UpdateMovieController {
     ////////////////////////
 
     private void updateUIWithMovieData() {
+        //Checks if a movie object is parsed
         if (movie != null) {
+            //Sets the data from the movie to the fields in the update UI
             txtTitle.setText(movie.getMovieTitle());
             spinnersENGAGE(movie);
             setupCategoryBoxes(movie);
@@ -125,14 +120,14 @@ public class UpdateMovieController {
     }
 
     private void spinnersENGAGE(Movie movie) {
-        // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
+        //Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1 & with the movies current ratings as default
         SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, movie.getImdbRating(), 0.1);
-        // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
+        //Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
         valueFactoryIMDB.setConverter(new DoubleStringConverter());
 
         SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, movie.getPersonalRating(), 0.1);
         valueFactoryPersonal.setConverter(new DoubleStringConverter());
-        // Sets the parameters for the spinners with the code from above.
+        //Sets the parameters for the spinners with the code from above.
         spinnerIMDB.setValueFactory(valueFactoryIMDB);
         spinnerPersonal.setValueFactory(valueFactoryPersonal);
     }
@@ -190,23 +185,29 @@ public class UpdateMovieController {
     ////////////////////////
 
     private boolean movieDetailsUpdate(Movie movie) throws MovieException {
-        //assigning the information to be updated
-        int id = movie.getId();
-        String title = txtTitle.getText();
-        double newPersonalRating = (double) Math.round(spinnerPersonal.getValue() * 10) / 10;
-        double newImdbRating = (double) Math.round(spinnerIMDB.getValue() * 10) / 10;
+        if (!txtTitle.getText().isEmpty() && spinnerPersonal.getValue() != null && spinnerIMDB.getValue() != null) {
+            //assigning the information to be updated
+            int id = movie.getId();
+            String title = txtTitle.getText();
+            double newPersonalRating = (double) Math.round(spinnerPersonal.getValue() * 10) / 10;
+            double newImdbRating = (double) Math.round(spinnerIMDB.getValue() * 10) / 10;
 
-        String filename = txtFilepath.getText();
-        String filetype = (String) cbFileType.getValue();
-        String updatedFilePath = "Movies/" + filename + filetype;
-        File updatedMovieFile = new File(updatedFilePath);
+            String filename = txtFilepath.getText();
+            String filetype = (String) cbFileType.getValue();
+            String updatedFilePath = "Movies/" + filename + filetype;
+            File updatedMovieFile = new File(updatedFilePath);
 
-        if (!updatedMovieFile.exists()) {
-            displayError("Error", "The file: " + updatedFilePath + ", does not exist.");
-            return false; // Update failed
-        } else {
-            movieModel.updateMovie(id, title, newPersonalRating, newImdbRating, updatedFilePath);
-            return true; // Update successful
+            if (!updatedMovieFile.exists()) {
+                displayError("Error", "The file: " + updatedFilePath + ", does not exist.");
+                return false; // Update failed
+            } else {
+                movieModel.updateMovie(id, title, newPersonalRating, newImdbRating, updatedFilePath);
+                return true; // Update successful
+            }
+        }
+        else {
+            showAlert("Error", "Please fill out all the information");
+            return false; // update failed
         }
     }
 
@@ -231,8 +232,9 @@ public class UpdateMovieController {
 
     private int convertCategoryNameToId(String categoryName) {
         if (categoryName == null || categoryName.isEmpty()) {
-            return -1; // Return -1 or any other default value to indicate "not found"
+            return -1; //Return -1 to tell that the category is not found
         }
+        //Return the id of the category with set name
         return movieModel.getCategoryModel().getCategoryIDFromName(categoryName);
     }
 
@@ -246,6 +248,16 @@ public class UpdateMovieController {
      */
     private void displayError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    /**
+     * Shows an alert dialog displaying information.
+     */
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);

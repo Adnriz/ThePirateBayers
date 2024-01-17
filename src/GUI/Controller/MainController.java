@@ -179,6 +179,9 @@ public class MainController {
                 }
             }
         }
+        else {
+            showAlert("Error", "Please select a movie to delete");
+        }
     }
 
     ////////////////////////
@@ -279,6 +282,9 @@ public class MainController {
                     }
                 }).start();
             }
+        }
+        else {
+            showAlert("Error", "Please select a movie to play");
         }
     }
     @FXML
