@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class NewMovieController {
@@ -56,6 +57,10 @@ public class NewMovieController {
     private MovieModel movieModel;
     private CategoryModel categoryModel;
 
+    ////////////////////////
+    ////   Initialize   ////
+    // NewMovieController //
+    ////////////////////////
 
     public NewMovieController() throws MovieException {
         this.categoryModel = new CategoryModel();
@@ -79,22 +84,41 @@ public class NewMovieController {
         spinnersENGAGE();
     }
 
-    // :) CODE SMELL INCOMING, Maybe move it to another class, and give this one access to the method.
-    /**
-     * Method to set up the Spinners on launch.
-     */
-    private void spinnersENGAGE() {
-        // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
-        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 7.0, 0.1);
-        // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
-        valueFactoryIMDB.setConverter(new DoubleStringConverter());
+    ////////////////////////
+    ////     Handle     ////
+    ////    New Movie   ////
+    ////////////////////////
 
-        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 7.0, 0.1);
-        valueFactoryPersonal.setConverter(new DoubleStringConverter());
-        // Sets the parameters for the spinners with the code from above.
-        spinnerIMDB.setValueFactory(valueFactoryIMDB);
-        spinnerPersonal.setValueFactory(valueFactoryPersonal);
+    /**
+     * Handles the save action when the Save button is clicked.
+     * It gathers user input, adds the movie to the model, and closes the window.
+     */
+    @FXML
+    private void onSave() {
+        try {
+            Movie movie = getUserInput();
+            if (movie != null){
+                movieModel.addMovie(movie);
+                closeWindow();
+            }
+        } catch (MovieException e) {
+            displayError("Database error", "Error saving movie to database.");
+        }
     }
+
+    /**
+     * Handles the save action when the Close button is clicked.
+     * Closes the current window.
+     */
+    @FXML
+    private void onClose(ActionEvent actionEvent) {
+        closeWindow();
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////   Initialize   ////
+    ////////////////////////
 
     /**
      * Method to set up all the combo boxes with categories on launch
@@ -139,13 +163,32 @@ public class NewMovieController {
         cbFileType.getSelectionModel().select(null);
     }
 
+    /**
+     * Method to set up the Spinners on launch.
+     */
+    private void spinnersENGAGE() {
+        // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
+        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 7.0, 0.1);
+        // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
+        valueFactoryIMDB.setConverter(new DoubleStringConverter());
+
+        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 7.0, 0.1);
+        valueFactoryPersonal.setConverter(new DoubleStringConverter());
+        // Sets the parameters for the spinners with the code from above.
+        spinnerIMDB.setValueFactory(valueFactoryIMDB);
+        spinnerPersonal.setValueFactory(valueFactoryPersonal);
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////   New Movie    ////
+    ////////////////////////
 
     /**
      * Gathers user input from the form fields and creates a new Movie object.
      *
      * @return A Movie object populated with user input.
      */
-    @FXML
     private Movie getUserInput() {
         String title = txtTitle.getText();
         double imdbRating = spinnerIMDB.getValue();
@@ -195,23 +238,6 @@ public class NewMovieController {
     }
 
     /**
-     * Handles the save action when the Save button is clicked.
-     * It gathers user input, adds the movie to the model, and closes the window.
-     */
-    @FXML
-    private void onSave() {
-        try {
-            Movie movie = getUserInput();
-            if (movie != null){
-                movieModel.addMovie(movie);
-                closeWindow();
-            }
-        } catch (MovieException e) {
-            displayError("Database error", "Error saving movie to database.");
-        }
-    }
-
-    /**
      * Closes the current window.
      */
     private void closeWindow() {
@@ -219,20 +245,24 @@ public class NewMovieController {
         stage.close();
     }
 
-    /**
-     * Handles the save action when the Close button is clicked.
-     * Closes the current window.
-     */
-    @FXML
-    private void onClose(ActionEvent actionEvent) {
-        closeWindow();
-    }
-
-
     ////////////////////////
     //// Helper Methods ////
     ////    General     ////
     ////////////////////////
+
+    /**
+     * Displays a confirmation alert with the specified title and content.
+     *
+     * @param title   The title of the alert dialog.
+     * @param content The content message displayed in the alert dialog.
+     * @return boolean Returns true if the user clicks 'Yes', and false if the user clicks 'No' or closes the dialog.
+     */
+    private boolean showConfirmationAlert(String title, String content) {
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION, content, ButtonType.YES, ButtonType.NO);
+        confirmAlert.setTitle(title);
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        return result.isPresent() && result.get() == ButtonType.YES;
+    }
 
     /**
      * Shows an alert dialog displaying an error.
@@ -245,5 +275,11 @@ public class NewMovieController {
         alert.showAndWait();
     }
 
-
+    private void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
 }

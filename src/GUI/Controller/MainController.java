@@ -74,6 +74,10 @@ public class MainController {
     private MovieModel movieModel;
     private CategoryModel categoryModel;
 
+    ////////////////////////
+    ////   Initialize   ////
+    //// MainController ////
+    ////////////////////////
 
     public MainController() {
         try {
@@ -96,6 +100,11 @@ public class MainController {
 
     private static void wait(int ms) {
     }
+
+    ////////////////////////
+    ////  Manage Movies ////
+    ////////////////////////
+
     /**
      * Handles the action to open the NewMovie window.
      *
@@ -110,8 +119,6 @@ public class MainController {
            FXMLLoader loader = new FXMLLoader(getClass().getResource("/NewMovieWindow.fxml"));
            Parent root = loader.load();
 
-           //Get the controller
-           //NewMovieController newMovieController = loader.getController();
 
            // Show the window and wait for it to close
            Stage stage = new Stage();
@@ -120,7 +127,6 @@ public class MainController {
            stage.showAndWait();
 
            // Refresh the TableView when NewMovieWindow is closed
-           //tblviewMovies.refresh();
            movieModel.refreshMovies();
        } catch (IOException ex) {
            displayError(ex);
@@ -154,95 +160,6 @@ public class MainController {
         }
     }
 
-    /**
-     * Collects all methods that handles the input controls.
-     */
-    private void setupInteractable() {
-        setupCategoryBoxes();
-        spinnersENGAGE();
-        setupMovieTableview();
-        setupListViewCategories();
-
-
-        // Adds a listener to the search field, so that it updates it realtime.
-        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> onFilterSearch());
-    }
-
-
-    private void setupMovieTableview() {
-        tblviewMovies.setItems(movieModel.getObservableMovies());
-        colTitle.setCellValueFactory(new PropertyValueFactory<>("MovieTitle"));
-        colPersonal.setCellValueFactory(new PropertyValueFactory<>("PersonalRating"));
-        colIMDB.setCellValueFactory(new PropertyValueFactory<>("ImdbRating"));
-        colLastView.setCellValueFactory(new PropertyValueFactory<>("lastView"));
-
-        /**
-         * Cell value factory for the colCategories TableColumn. It retrieves the list of categories
-         * from the Movie object and sets the cell value to a formatted, sorted, and filtered string
-         * of category names. If the list of categories is null, it sets an empty string as the cell value.
-         */
-        colCategories.setCellValueFactory(cellData -> {
-            List<Category> categories = cellData.getValue().getCategories();
-            if (categories != null) {
-                return new SimpleStringProperty(movieModel.getCategoriesAsStringSorted(cellData.getValue()));
-            } else {
-                return new SimpleStringProperty("");
-            }
-        });
-    }
-
-
-    /**
-     * Method to set up the Spinners on launch.
-     */
-    private void spinnersENGAGE() {
-        // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
-        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 0.0, 0.1);
-        // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
-        valueFactoryIMDB.setConverter(new DoubleStringConverter());
-
-        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 0.0, 0.1);
-        valueFactoryPersonal.setConverter(new DoubleStringConverter());
-        // Sets the parameters for the spinners with the code from above.
-        spinnerIMDB.setValueFactory(valueFactoryIMDB);
-        spinnerPersonal.setValueFactory(valueFactoryPersonal);
-    }
-
-    /**
-     * Method to set up all the combo boxes with categories on launch
-     */
-    private void setupCategoryBoxes() {
-        // Fetch categories from the CategoryModel
-        ObservableList<Category> categories = categoryModel.getCategories();
-
-        // Create a list of category names
-        ObservableList<String> categoryNames = categories.stream()
-                // Only get the names and not the ids
-                .map(Category::getName)
-                // consolidate into a list to parse into the comboboxes
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
-
-        // Sets the Combo Boxes up, so that "Empty" always is the first option.
-        cbCategory1.getItems().clear();
-        cbCategory1.getItems().addAll(categoryNames);
-        cbCategory1.getItems().remove("Empty");
-        cbCategory1.getItems().add(0, "Empty");
-        cbCategory1.getSelectionModel().select("Empty");
-
-        cbCategory2.getItems().clear();
-        cbCategory2.getItems().addAll(categoryNames);
-        cbCategory2.getItems().remove("Empty");
-        cbCategory2.getItems().add(0, "Empty");
-        cbCategory2.getSelectionModel().select("Empty");
-
-        cbCategory3.getItems().clear();
-        cbCategory3.getItems().addAll(categoryNames);
-        cbCategory3.getItems().remove("Empty");
-        cbCategory3.getItems().add(0, "Empty");
-        cbCategory3.getSelectionModel().select("Empty");
-
-    }
-
     public void deleteMovie(ActionEvent event){
         // Retrieve the selected movie from tblviewMovies
         Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
@@ -264,60 +181,11 @@ public class MainController {
         }
     }
 
-    private void onFilterSearch() {
-        String searchText = txtSearch.getText();
-        if (!searchText.isEmpty()) {
-            try {
-                List<Movie> searchResult = movieModel.searchMovies(searchText);
-                updateTableView(searchResult);
-            } catch (MovieException ex) {
-                displayError(ex);
-            }
-        } else {
-            // If the search field is empty, show all movies
-            try {
-                movieModel.refreshMovies();
-            } catch (MovieException ex) {
-                displayError(ex);
-            }
-        }
-    }
+    ////////////////////////
+    ////     Manage     ////
+    ////   Categories   ////
+    ////////////////////////
 
-    private void displayError(Throwable ex) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Application Error");
-        alert.setHeaderText("An error occurred: " + ex.getMessage());
-        alert.setContentText("Please try again or contact support if the problem persists.");
-        alert.showAndWait();
-    }
-
-    private void updateTableView(List<Movie> movies) {
-        tblviewMovies.getItems().clear();
-        tblviewMovies.getItems().addAll(movies);
-    }
-
-    /**
-     * Loads a new stage (window) with the specified FXML file and title.
-     *
-     * @param fxmlPath The path to the FXML file.
-     * @param title    The title of the new stage.
-     * @return Stage The newly created stage.
-     * @throws IOException If there is an error loading the FXML file.
-     */
-    private Stage loadStage(String fxmlPath, String title) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-        Parent root = loader.load();
-
-        Stage stage = new Stage();
-        stage.setTitle(title);
-        stage.setScene(new Scene(root));
-        return stage;
-    }
-
-
-    private void setupListViewCategories() {
-        listCategories.setItems(categoryModel.getCategories());
-    }
     @FXML
     private void addCategory()
     {
@@ -367,6 +235,10 @@ public class MainController {
         }
     }
 
+    ////////////////////////
+    ////  Miscellaneous ////
+    ////////////////////////
+
     /**
      * This method is used to play the movie.
      * It gets the selected movie from your TableView.
@@ -399,24 +271,176 @@ public class MainController {
             }
         }
     }
+    @FXML
+    private void onFilterSearch() {
+        String searchText = txtSearch.getText();
+        if (!searchText.isEmpty()) {
+            try {
+                List<Movie> searchResult = movieModel.searchMovies(searchText);
+                updateTableView(searchResult);
+            } catch (MovieException ex) {
+                displayError(ex);
+            }
+        } else {
+            // If the search field is empty, show all movies
+            try {
+                movieModel.refreshMovies();
+            } catch (MovieException ex) {
+                displayError(ex);
+            }
+        }
+    }
 
     /**
-    * Handles the apply filter action event. Collects filter criteria from the UI, applies them, and updates the UI with the filtered movies.
+     * Handles the apply filter action event. Collects filter criteria from the UI, applies them, and updates the UI with the filtered movies.
      *
      * @param actionEvent The action event that triggers this method.
      */
     @FXML
     private void onApplyFilters(ActionEvent actionEvent) {
 
-            List<String> selectedCategories = getSelectedCategories();
-            double minIMDBRating = spinnerIMDB.getValue();
-            double minPersonalRating = spinnerPersonal.getValue();
+        List<String> selectedCategories = getSelectedCategories();
+        double minIMDBRating = spinnerIMDB.getValue();
+        double minPersonalRating = spinnerPersonal.getValue();
         try {
             movieModel.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
             tblviewMovies.setItems(movieModel.getMoviesToBeViewed());
         } catch (MovieException ex) {
             displayError(ex);
         }
+    }
+
+    /**
+     * Handles the clear filters action event. Resets the filter UI components and shows all
+     * Resets all filter controls to their default values and displays all movies in the TableView.
+     */
+    @FXML
+    private void onClearFilters(ActionEvent actionEvent) {
+        cbCategory1.getSelectionModel().select("Empty");
+        cbCategory2.getSelectionModel().select("Empty");
+        cbCategory3.getSelectionModel().select("Empty");
+
+        //Resetting the spinners
+        spinnerIMDB.getValueFactory().setValue(0.0);
+        spinnerPersonal.getValueFactory().setValue(0.0);
+
+        //Resetting the tableview to show all movies
+        tblviewMovies.setItems(movieModel.getObservableMovies());
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////   Initialize   ////
+    ////////////////////////
+
+    /**
+     * Collects all methods that handles the input controls.
+     */
+    private void setupInteractable() {
+        setupMovieTableview();
+        setupListViewCategories();
+        setupCategoryBoxes();
+        spinnersENGAGE();
+
+
+        // Adds a listener to the search field, so that it updates it realtime.
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> onFilterSearch());
+    }
+
+
+    private void setupMovieTableview() {
+        tblviewMovies.setItems(movieModel.getObservableMovies());
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("MovieTitle"));
+        colPersonal.setCellValueFactory(new PropertyValueFactory<>("PersonalRating"));
+        colIMDB.setCellValueFactory(new PropertyValueFactory<>("ImdbRating"));
+        colLastView.setCellValueFactory(new PropertyValueFactory<>("lastView"));
+
+        /**
+         * Cell value factory for the colCategories TableColumn. It retrieves the list of categories
+         * from the Movie object and sets the cell value to a formatted, sorted, and filtered string
+         * of category names. If the list of categories is null, it sets an empty string as the cell value.
+         */
+        colCategories.setCellValueFactory(cellData -> {
+            List<Category> categories = cellData.getValue().getCategories();
+            if (categories != null) {
+                return new SimpleStringProperty(movieModel.getCategoriesAsStringSorted(cellData.getValue()));
+            } else {
+                return new SimpleStringProperty("");
+            }
+        });
+    }
+
+    private void setupListViewCategories() {
+        listCategories.setItems(categoryModel.getCategories());
+    }
+
+    /**
+     * Method to set up all the combo boxes with categories on launch
+     */
+    private void setupCategoryBoxes() {
+        // Fetch categories from the CategoryModel
+        ObservableList<Category> categories = categoryModel.getCategories();
+
+        // Create a list of category names
+        ObservableList<String> categoryNames = categories.stream()
+                // Only get the names and not the ids
+                .map(Category::getName)
+                // consolidate into a list to parse into the comboboxes
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+
+        // Sets the Combo Boxes up, so that "Empty" always is the first option.
+        cbCategory1.getItems().clear();
+        cbCategory1.getItems().addAll(categoryNames);
+        cbCategory1.getItems().remove("Empty");
+        cbCategory1.getItems().add(0, "Empty");
+        cbCategory1.getSelectionModel().select("Empty");
+
+        cbCategory2.getItems().clear();
+        cbCategory2.getItems().addAll(categoryNames);
+        cbCategory2.getItems().remove("Empty");
+        cbCategory2.getItems().add(0, "Empty");
+        cbCategory2.getSelectionModel().select("Empty");
+
+        cbCategory3.getItems().clear();
+        cbCategory3.getItems().addAll(categoryNames);
+        cbCategory3.getItems().remove("Empty");
+        cbCategory3.getItems().add(0, "Empty");
+        cbCategory3.getSelectionModel().select("Empty");
+    }
+
+    /**
+     * Method to set up the Spinners on launch.
+     */
+    private void spinnersENGAGE() {
+        // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
+        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 0.0, 0.1);
+        // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
+        valueFactoryIMDB.setConverter(new DoubleStringConverter());
+
+        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 0.0, 0.1);
+        valueFactoryPersonal.setConverter(new DoubleStringConverter());
+        // Sets the parameters for the spinners with the code from above.
+        spinnerIMDB.setValueFactory(valueFactoryIMDB);
+        spinnerPersonal.setValueFactory(valueFactoryPersonal);
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    //// Miscellaneous  ////
+    ////////////////////////
+
+    private void updateLastViewDate(Movie movie) throws MovieException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String formattedDate = dateFormat.format(new Date(System.currentTimeMillis()));
+        movie.setLastView(formattedDate);
+        movieModel.updateLastView(movie, formattedDate);
+        movieModel.refreshMovies();
+    }
+
+
+    private void updateTableView(List<Movie> movies) {
+        tblviewMovies.getItems().clear();
+        tblviewMovies.getItems().addAll(movies);
     }
 
     /**
@@ -440,24 +464,28 @@ public class MainController {
         return selectedCategories;
     }
 
+    ////////////////////////
+    //// Helper Methods ////
+    ////    General     ////
+    ////////////////////////
+
     /**
-     * Handles the clear filters action event. Resets the filter UI components and shows all
-     * Resets all filter controls to their default values and displays all movies in the TableView.
+     * Loads a new stage (window) with the specified FXML file and title.
+     *
+     * @param fxmlPath The path to the FXML file.
+     * @param title    The title of the new stage.
+     * @return Stage The newly created stage.
+     * @throws IOException If there is an error loading the FXML file.
      */
-    @FXML
-    private void onClearFilters(ActionEvent actionEvent) {
-        cbCategory1.getSelectionModel().select("Empty");
-        cbCategory2.getSelectionModel().select("Empty");
-        cbCategory3.getSelectionModel().select("Empty");
+    private Stage loadStage(String fxmlPath, String title) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+        Parent root = loader.load();
 
-        //Resetting the spinners
-        spinnerIMDB.getValueFactory().setValue(0.0);
-        spinnerPersonal.getValueFactory().setValue(0.0);
-
-        //Resetting the tableview to show all movies
-        tblviewMovies.setItems(movieModel.getObservableMovies());
+        Stage stage = new Stage();
+        stage.setTitle(title);
+        stage.setScene(new Scene(root));
+        return stage;
     }
-    
 
     /**
      * Displays a confirmation alert with the specified title and content.
@@ -473,6 +501,14 @@ public class MainController {
         return result.isPresent() && result.get() == ButtonType.YES;
     }
 
+    private void displayError(Throwable ex) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Application Error");
+        alert.setHeaderText("An error occurred: " + ex.getMessage());
+        alert.setContentText("Please try again or contact support if the problem persists.");
+        alert.showAndWait();
+    }
+
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -480,14 +516,4 @@ public class MainController {
         alert.setContentText(content);
         alert.showAndWait();
     }
-    private void updateLastViewDate(Movie movie) throws MovieException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String formattedDate = dateFormat.format(new Date(System.currentTimeMillis()));
-        movie.setLastView(formattedDate);
-        movieModel.updateLastView(movie, formattedDate);
-        movieModel.refreshMovies();
-    }
-
-
-
 }

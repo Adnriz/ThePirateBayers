@@ -1,7 +1,5 @@
 package BE;
 
-import DAL.CategoryDAO;
-
 public class CategoriesInMovies {
 
     private int id;

@@ -2,7 +2,7 @@ package GUI.Model;
 
 import BE.Category;
 import BE.Movie;
-import BLL.MovieManager;
+import BLL.Managers.MovieManager;
 import GUI.Controller.OutdatedController;
 import Util.MovieException;
 import javafx.collections.FXCollections;

@@ -1,10 +1,9 @@
-package BLL;
+package BLL.Managers;
 
 import BE.Category;
-import DAL.CategoryDAO;
+import DAL.DAO.CategoryDAO;
 import Util.MovieException;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Map;
 

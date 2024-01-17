@@ -21,6 +21,7 @@ package GUI.Controller;
         import java.util.stream.Collectors;
 
 public class UpdateMovieController {
+
     @FXML
     private ComboBox cbFileType;
     @FXML
@@ -57,11 +58,71 @@ public class UpdateMovieController {
     private CategoryModel categoryModel;
 
 
+    ///////////////////////////
+    ////    Initialize     ////
+    // UpdateMovieController //
+    ///////////////////////////
+
     public UpdateMovieController() throws Exception {
         movieModel = new MovieModel();
         categoryModel = new CategoryModel();
     }
 
+    public void setMovie(Movie movie) {
+        this.movie = movie;
+        //this.mainController = mainController;
+
+        // Call a method to update the UI components with movie data
+        updateUIWithMovieData();
+    }
+
+    /////////////////////////
+    ////      Handle     ////
+    ////   Update Movie  ////
+    /////////////////////////
+
+    @FXML
+    private void btnSaveAction(ActionEvent actionEvent) throws MovieException {
+        boolean updateSuccessful = movieDetailsUpdate(movie);
+        movieCategoryUpdate(movie);
+
+        if (updateSuccessful) {
+            Stage stage = (Stage) txtTitle.getScene().getWindow();
+            stage.close();
+        }
+    }
+
+    @FXML
+    private void btnClose(ActionEvent actionEvent) {
+        Stage stage = (Stage) txtTitle.getScene().getWindow();
+        stage.close();
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////   Initialize   ////
+    ////////////////////////
+
+    private void updateUIWithMovieData() {
+        if (movie != null) {
+            txtTitle.setText(movie.getMovieTitle());
+            spinnersENGAGE(movie);
+            setupCategoryBoxes(movie);
+            setupFileTypeBox();
+
+            String filePath = movie.getFilePath();
+            String filenameWithType = filePath.substring(filePath.lastIndexOf("/") + 1);
+            int filetypeIndex = filenameWithType.lastIndexOf(".");
+
+            if (filetypeIndex != -1) {
+                String filename = filenameWithType.substring(0, filetypeIndex);
+                String filetype = filenameWithType.substring(filetypeIndex);
+
+                txtFilepath.setText(filename);
+                cbFileType.getSelectionModel().select(filetype);
+            }
+        }
+    }
 
     private void spinnersENGAGE(Movie movie) {
         // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
@@ -75,7 +136,6 @@ public class UpdateMovieController {
         spinnerIMDB.setValueFactory(valueFactoryIMDB);
         spinnerPersonal.setValueFactory(valueFactoryPersonal);
     }
-
 
     private void setupCategoryBoxes(Movie movie) {
         // Fetch categories from the CategoryModel
@@ -124,79 +184,10 @@ public class UpdateMovieController {
         cbFileType.getSelectionModel().select(null);
     }
 
-    @FXML
-    private void btnClose(ActionEvent actionEvent) {
-        Stage stage = (Stage) txtTitle.getScene().getWindow();
-        stage.close();
-    }
-
-    public void setMovie(Movie movie) {
-        this.movie = movie;
-        //this.mainController = mainController;
-
-        // Call a method to update the UI components with movie data
-        updateUIWithMovieData();
-    }
-
-    private void updateUIWithMovieData() {
-        if (movie != null) {
-            txtTitle.setText(movie.getMovieTitle());
-            spinnersENGAGE(movie);
-            setupCategoryBoxes(movie);
-            setupFileTypeBox();
-
-            String filePath = movie.getFilePath();
-            String filenameWithType = filePath.substring(filePath.lastIndexOf("/") + 1);
-            int filetypeIndex = filenameWithType.lastIndexOf(".");
-
-            if (filetypeIndex != -1) {
-                String filename = filenameWithType.substring(0, filetypeIndex);
-                String filetype = filenameWithType.substring(filetypeIndex);
-
-                txtFilepath.setText(filename);
-                cbFileType.getSelectionModel().select(filetype);
-            }
-        }
-    }
-
-    @FXML
-    private void btnSaveAction(ActionEvent actionEvent) throws MovieException {
-        boolean updateSuccessful = movieDetailsUpdate(movie);
-        movieCategoryUpdate(movie);
-
-        if (updateSuccessful) {
-            Stage stage = (Stage) txtTitle.getScene().getWindow();
-            stage.close();
-        }
-
-    }
-
-    private void movieCategoryUpdate(Movie movie) throws MovieException {
-        int movieid = movie.getId();
-        CategoryModel categoryModel = new CategoryModel();
-        //deleting the old categories
-        categoryModel.removeCategoriesFromMovie(movieid);
-
-        //Adding the new Ids to the movie
-        List<Integer> categoryIds = new ArrayList<>();
-        categoryIds.add(convertCategoryNameToId(cbCategory1.getValue()));
-        categoryIds.add(convertCategoryNameToId(cbCategory2.getValue()));
-        categoryIds.add(convertCategoryNameToId(cbCategory3.getValue()));
-        try {
-            movie.setCategoryIds(categoryIds);
-            movieModel.linkCatMov(movie);
-        } catch (MovieException ex){
-            displayError("Update Category","Error updating categories for this movie");
-        }
-
-    }
-
-    private int convertCategoryNameToId(String categoryName) {
-        if (categoryName == null || categoryName.isEmpty()) {
-            return -1; // Return -1 or any other default value to indicate "not found"
-        }
-        return movieModel.getCategoryModel().getCategoryIDFromName(categoryName);
-    }
+    ////////////////////////
+    //// Helper Methods ////
+    ////  Update Movie  ////
+    ////////////////////////
 
     private boolean movieDetailsUpdate(Movie movie) throws MovieException {
         //assigning the information to be updated
@@ -217,6 +208,32 @@ public class UpdateMovieController {
             movieModel.updateMovie(id, title, newPersonalRating, newImdbRating, updatedFilePath);
             return true; // Update successful
         }
+    }
+
+    private void movieCategoryUpdate(Movie movie) throws MovieException {
+        int movieid = movie.getId();
+        CategoryModel categoryModel = new CategoryModel();
+        //deleting the old categories
+        categoryModel.removeCategoriesFromMovie(movieid);
+
+        //Adding the new Ids to the movie
+        List<Integer> categoryIds = new ArrayList<>();
+        categoryIds.add(convertCategoryNameToId(cbCategory1.getValue()));
+        categoryIds.add(convertCategoryNameToId(cbCategory2.getValue()));
+        categoryIds.add(convertCategoryNameToId(cbCategory3.getValue()));
+        try {
+            movie.setCategoryIds(categoryIds);
+            movieModel.linkCatMov(movie);
+        } catch (MovieException ex){
+            displayError("Update Category","Error updating categories for this movie");
+        }
+    }
+
+    private int convertCategoryNameToId(String categoryName) {
+        if (categoryName == null || categoryName.isEmpty()) {
+            return -1; // Return -1 or any other default value to indicate "not found"
+        }
+        return movieModel.getCategoryModel().getCategoryIDFromName(categoryName);
     }
 
     ////////////////////////

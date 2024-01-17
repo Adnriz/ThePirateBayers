@@ -1,7 +1,8 @@
-package DAL;
+package DAL.DAO;
 
 import BE.Category;
 import BE.Movie;
+import DAL.DBConnector;
 import Util.MovieException;
 
 import java.io.IOException;

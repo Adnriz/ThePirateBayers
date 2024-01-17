@@ -1,6 +1,7 @@
-package DAL;
+package DAL.DAO;
 
 import BE.Category;
+import DAL.DBConnector;
 import Util.MovieException;
 import com.microsoft.sqlserver.jdbc.SQLServerException;
 

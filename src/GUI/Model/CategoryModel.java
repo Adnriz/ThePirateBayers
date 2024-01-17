@@ -1,16 +1,12 @@
 package GUI.Model;
 
 import BE.Category;
-import BLL.CategoryManager;
-import DAL.CategoryDAO;
+import BLL.Managers.CategoryManager;
 import Util.MovieException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
 
 public class CategoryModel {

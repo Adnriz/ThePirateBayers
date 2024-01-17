@@ -1,4 +1,4 @@
-package BLL;
+package BLL.Util;
 
 import BE.Category;
 import BE.Movie;

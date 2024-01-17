@@ -1,11 +1,12 @@
-package BLL;
+package BLL.Managers;
 
 import BE.Category;
 import BE.Movie;
-import DAL.MovieDAO;
+import BLL.Util.MovieFilter;
+import BLL.Util.MovieSearcher;
+import DAL.DAO.MovieDAO;
 import Util.MovieException;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 

@@ -23,6 +23,10 @@ public class OutdatedController {
     private ListView<String> outdatedMovieView;
     private MovieModel movieModel;
 
+    ////////////////////////
+    ////   Initialize   ////
+    // OutdatedController //
+    ////////////////////////
 
     public OutdatedController() throws MovieException {
         this.movieModel = movieModel;
@@ -31,6 +35,22 @@ public class OutdatedController {
         this.movieModel = movieModel;
         setupList();
     }
+
+    ////////////////////////
+    ////      Manage    ////
+    ///  Outdated Movies ///
+    ////////////////////////
+
+    @FXML
+    private void benIgnoreMovies(ActionEvent actionEvent) {
+        Stage stage = (Stage) outdatedMovieView.getScene().getWindow();
+        stage.close();
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////   Initialize   ////
+    ////////////////////////
 
     private void setupList() {
         if (outdatedMovieView != null) {
@@ -44,10 +64,6 @@ public class OutdatedController {
             outdatedMovieView.setItems(movieNames);
         }
     }
-    @FXML
-    private void benIgnoreMovies(ActionEvent actionEvent) {
-        Stage stage = (Stage) outdatedMovieView.getScene().getWindow();
-        stage.close();
-    }
+
 
 }
