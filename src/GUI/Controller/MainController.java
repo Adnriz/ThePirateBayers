@@ -1,14 +1,11 @@
 package GUI.Controller;
 import GUI.Model.CategoryModel;
 import GUI.Model.MovieModel;
-
 import BE.Movie;
 import BE.Category;
-
 import Util.MovieException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
-
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,13 +17,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
-
-import javax.xml.transform.Result;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,11 +59,6 @@ public class MainController {
     private TextField txtSearch;
     @FXML
     private TextField txtAddCategory;
-    @FXML
-    private Label errorLbl;
-    private List<Movie> outdatedMoviesList;
-    @FXML
-    private ListView outdatedMovieView;
     private MovieModel movieModel;
     private CategoryModel categoryModel;
 
@@ -83,7 +71,6 @@ public class MainController {
         try {
             movieModel = new MovieModel();
             categoryModel = new CategoryModel();
-            outdatedMoviesList = new ArrayList<>();
         }
         catch (MovieException ex){
             displayError(ex);
@@ -158,8 +145,8 @@ public class MainController {
             showAlert("Error", "Please select a movie to update");
         }
     }
-
-    public void onDeleteMovie(){
+    @FXML
+    private void onDeleteMovie(){
         // Retrieve the selected movie from tblviewMovies
         Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
         // Ensure a movie was selected
@@ -408,17 +395,20 @@ public class MainController {
         // Sets the Combo Boxes up, so that "Empty" always is the first option.
         cbCategory1.getItems().clear();
         cbCategory1.getItems().addAll(categoryNames);
-        cbCategory1.getItems().set(0, "Empty");
+        cbCategory1.getItems().remove("Empty");
+        cbCategory1.getItems().add(0, "Empty");
         cbCategory1.getSelectionModel().select("Empty");
 
         cbCategory2.getItems().clear();
         cbCategory2.getItems().addAll(categoryNames);
-        cbCategory2.getItems().set(0, "Empty");
+        cbCategory2.getItems().remove("Empty");
+        cbCategory2.getItems().add(0, "Empty");
         cbCategory2.getSelectionModel().select("Empty");
 
         cbCategory3.getItems().clear();
         cbCategory3.getItems().addAll(categoryNames);
-        cbCategory3.getItems().set(0, "Empty");
+        cbCategory3.getItems().remove("Empty");
+        cbCategory3.getItems().add(0, "Empty");
         cbCategory3.getSelectionModel().select("Empty");
     }
 
@@ -483,23 +473,6 @@ public class MainController {
     ////    General     ////
     ////////////////////////
 
-    /**
-     * Loads a new stage (window) with the specified FXML file and title.
-     *
-     * @param fxmlPath The path to the FXML file.
-     * @param title    The title of the new stage.
-     * @return Stage The newly created stage.
-     * @throws IOException If there is an error loading the FXML file.
-     */
-    private Stage loadStage(String fxmlPath, String title) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
-        Parent root = loader.load();
-
-        Stage stage = new Stage();
-        stage.setTitle(title);
-        stage.setScene(new Scene(root));
-        return stage;
-    }
 
     /**
      * Displays a confirmation alert with the specified title and content.

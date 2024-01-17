@@ -24,8 +24,6 @@ public class NewMovieController {
 
     @FXML
     private ComboBox<String> cbFileType;
-    @FXML
-    private Button btnClose;
 
     @FXML
     private Button btnSave;
@@ -40,9 +38,6 @@ public class NewMovieController {
     private ComboBox<String> cbCategory3;
 
     @FXML
-    private DatePicker dateLastViewed;
-
-    @FXML
     private Spinner<Double> spinnerIMDB;
 
     @FXML
@@ -52,7 +47,6 @@ public class NewMovieController {
     private TextField txtTitle;
     @FXML
     private TextField txtFilepath;
-    private Movie currentMovie;
     private MovieModel movieModel;
     private CategoryModel categoryModel;
 
@@ -248,20 +242,6 @@ public class NewMovieController {
     //// Helper Methods ////
     ////    General     ////
     ////////////////////////
-
-    /**
-     * Displays a confirmation alert with the specified title and content.
-     *
-     * @param title   The title of the alert dialog.
-     * @param content The content message displayed in the alert dialog.
-     * @return boolean Returns true if the user clicks 'Yes', and false if the user clicks 'No' or closes the dialog.
-     */
-    private boolean showConfirmationAlert(String title, String content) {
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION, content, ButtonType.YES, ButtonType.NO);
-        confirmAlert.setTitle(title);
-        Optional<ButtonType> result = confirmAlert.showAndWait();
-        return result.isPresent() && result.get() == ButtonType.YES;
-    }
 
     /**
      * Shows an alert dialog displaying an error.

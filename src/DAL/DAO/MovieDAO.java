@@ -5,7 +5,6 @@ import BE.Movie;
 import DAL.DBConnector;
 import Util.MovieException;
 
-import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +41,7 @@ public class MovieDAO {
                     currentMovie = extractMovie(rs);
                     allMovies.add(currentMovie);
                 } else {
-                    // If its a new Movie object, means it need to populate the Categories of the new movie.
+                    // If it's a new Movie object, means it need to populate the Categories of the new movie.
                     int categoryId = rs.getInt("CategoryId");
                     String category = rs.getString("Category");
                     currentMovie.addCategory(new Category(categoryId, category));

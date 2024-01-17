@@ -126,8 +126,4 @@ public class MovieSearcher {
         }
         return searchResult;
     }
-
-
-
-
 }

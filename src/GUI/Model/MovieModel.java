@@ -26,8 +26,6 @@ public class MovieModel {
     private MovieManager movieManager;
     private CategoryModel categoryModel;
 
-
-    private List<Movie> outdatedMoviesList;
     private ObservableList<Movie> moviesToBeViewed;
 
     private List<Movie> outdatedMoviesAndBadRatingList;
@@ -124,11 +122,9 @@ public class MovieModel {
     }
 
     public void updateLastView(Movie movie, String formattedDate) throws MovieException {
-        // Updating the last view date in the movie object
-        // Assuming movieDAO is your MovieDAO instance
         movieManager.updateLastView(movie, formattedDate);
     }
-    public void setOutdatedMoviesAndBadRatingList(List<Movie> outdatedMoviesAndBadRatingList) {
+    private void setOutdatedMoviesAndBadRatingList(List<Movie> outdatedMoviesAndBadRatingList) {
         this.outdatedMoviesAndBadRatingList = outdatedMoviesAndBadRatingList;
     }
     public List<Movie> getOutdatedMoviesAndBadRatingList() {

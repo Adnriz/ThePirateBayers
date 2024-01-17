@@ -85,8 +85,7 @@ public class MovieManager {
         movieDAO.deleteMovie(selectedMovie);
     }
 
-public void updateLastView(Movie movie, String formattedDate) throws MovieException {
-        // Assuming movieDAO is your MovieDAO instance
+    public void updateLastView(Movie movie, String formattedDate) throws MovieException {
         movieDAO.updateLastView(movie, formattedDate);
     }
 

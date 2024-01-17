@@ -11,8 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +27,7 @@ public class OutdatedController {
     ////////////////////////
 
     public OutdatedController() throws MovieException {
-        this.movieModel = movieModel;
+
     }
     public void setMovieModel(MovieModel movieModel) {
         this.movieModel = movieModel;
@@ -51,20 +49,6 @@ public class OutdatedController {
     //// Helper Methods ////
     ////   Initialize   ////
     ////////////////////////
-
-    /*private void setupList() {
-        if (outdatedMovieView != null) {
-            List<Movie> movies = movieModel.getOutdatedMoviesAndBadRatingList();
-
-
-            //Making the List<Movie> to ObservableList<Movie> for the ListView
-            ObservableList<String> movieNames = FXCollections.observableArrayList(
-                    movies.stream().map(Movie::getMovieTitle).collect(Collectors.toList())
-            );
-            //Setting the movie titles in the ListView
-            outdatedMovieView.setItems(movieNames);
-        }
-    }*/
 
     /**
      * Sets up the list view with movies that are outdated and/or have bad personal ratings.
