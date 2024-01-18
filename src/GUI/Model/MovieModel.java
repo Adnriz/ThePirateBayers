@@ -30,6 +30,8 @@ public class MovieModel {
 
     private List<Movie> outdatedMoviesAndBadRatingList;
 
+    private List<Movie> filteredMovies = null;
+
 
     public MovieModel() throws MovieException {
         movieManager = new MovieManager();
@@ -103,7 +105,13 @@ public class MovieModel {
     }
     public List<Movie> searchMovies(String query) throws MovieException
     {
-        return movieManager.searchMovies(query);
+        //return movieManager.searchMovies(query);
+        List<Movie> searchList;
+        if (filteredMovies != null){
+            searchList = filteredMovies;
+        } else {
+            searchList = movieManager.getAllMoviesWithCategories();
+        } return movieManager.searchMovies(searchList, query);
     }
 
     public void refreshMovies() throws MovieException {
@@ -210,10 +218,9 @@ public class MovieModel {
      * @param selectedCategories The categories to include in the filter.
      * @throws SQLException If there is a problem accessing the movie data.
      */
-    public void filterMovies(double minIMDBRating, double minPersonalRating, List<String> selectedCategories) throws MovieException {
-        List<Movie> filteredMovies = movieManager.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
-        moviesToBeViewed.clear();
-        moviesToBeViewed.addAll(filteredMovies);
+    public List<Movie> filterMovies(double minIMDBRating, double minPersonalRating, List<String> selectedCategories) throws MovieException {
+        filteredMovies = movieManager.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
+        return filteredMovies;
     }
 
     /**
@@ -221,10 +228,14 @@ public class MovieModel {
      *
      * @return An ObservableList of movies that have been filtered.
      */
-    public ObservableList<Movie> getMoviesToBeViewed() {
+    /*public ObservableList<Movie> getMoviesToBeViewed() {
         return moviesToBeViewed;
-    }
+    }*/
 
+    public List<Movie> resetFilters() throws MovieException {
+        filteredMovies = null;
+        return movieManager.getAllMoviesWithCategories();
+    }
 }
 
 

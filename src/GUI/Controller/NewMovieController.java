@@ -189,11 +189,14 @@ public class NewMovieController {
         String fileName = txtFilepath.getText();
         String fileType = cbFileType.getValue();
 
-        if (fileName.isEmpty() || fileType == null){
-            displayError("Error", "Please enter a filename and select a file type.");
+        if (title.isEmpty()){
+            showAlert("Missing input", "Please enter a movie title and try again.");
             return null;
         }
-
+        if (fileName.isEmpty() || fileType == null){
+            showAlert("Missing input", "Please enter a filename, select a filetype and try again.");
+            return null;
+        }
         String filepath = "Movies/" + fileName + fileType;
         File movieFile = new File(filepath);
         if (!movieFile.exists()){

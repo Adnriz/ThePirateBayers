@@ -63,18 +63,20 @@ public class MovieManager {
      * @return
      * @throws Exception
      */
-    public List<Movie> searchMovies(String query) throws MovieException {
+    public List<Movie> searchMovies(List<Movie> searchList, String query) throws MovieException {
         // Retrieves a list with all movies and categories
-        List<Movie> allMovies = getAllMoviesWithCategories();
+        //List<Movie> allMovies = getAllMoviesWithCategories();
 
         // Performs the search
-        List<Movie> movieSearchResult = movieSearcher.search(allMovies, query);
-        List<Movie> categorySearchResult = movieSearcher.searchByCategory(allMovies, query);
+        //List<Movie> movieSearchResult = movieSearcher.search(allMovies, query);
+        //List<Movie> categorySearchResult = movieSearcher.searchByCategory(allMovies, query);
 
         // Consolidates the results
-        movieSearchResult.addAll(categorySearchResult);
+        //movieSearchResult.addAll(categorySearchResult);
 
-        return movieSearchResult;
+        //return movieSearchResult;
+
+        return movieSearcher.search(searchList, query);
 
     }
     public void linkCatMov(Movie movie) throws MovieException {
@@ -99,8 +101,8 @@ public class MovieManager {
      * @throws SQLException If a database access error occurs.
      */
     public List<Movie> filterMovies(double minIMDBRating, double minPersonalRating, List<String> selectedCategories) throws MovieException {
-        List<Movie> allMovies = getAllMoviesWithCategories();
-        return movieFilter.filterMovies(allMovies, minIMDBRating, minPersonalRating, selectedCategories);
+        //List<Movie> allMovies = getAllMoviesWithCategories();
+        return movieFilter.filterMovies(getAllMoviesWithCategories(), minIMDBRating, minPersonalRating, selectedCategories);
     }
 
 }

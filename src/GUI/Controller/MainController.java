@@ -279,21 +279,21 @@ public class MainController {
     @FXML
     private void onFilterSearch() {
         String searchText = txtSearch.getText();
-        if (!searchText.isEmpty()) {
-            try {
-                List<Movie> searchResult = movieModel.searchMovies(searchText);
-                updateTableView(searchResult);
-            } catch (MovieException ex) {
+       // if (!searchText.isEmpty()) {
+        try {
+            List<Movie> searchResult = movieModel.searchMovies(searchText);
+            updateTableView(searchResult);
+        } catch (MovieException ex) {
                 displayError(ex);
-            }
-        } else {
+        }
+        /*} else {
             // If the search field is empty, show all movies
             try {
                 movieModel.refreshMovies();
             } catch (MovieException ex) {
                 displayError(ex);
             }
-        }
+        }*/
     }
 
     /**
@@ -307,8 +307,10 @@ public class MainController {
         double minIMDBRating = spinnerIMDB.getValue();
         double minPersonalRating = spinnerPersonal.getValue();
         try {
-            movieModel.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
-            tblviewMovies.setItems(movieModel.getMoviesToBeViewed());
+            //movieModel.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
+            //tblviewMovies.setItems(movieModel.getMoviesToBeViewed());
+            List<Movie> filteredMovies = movieModel.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
+            updateTableView(filteredMovies);
         } catch (MovieException ex) {
             displayError(ex);
         }
@@ -325,11 +327,18 @@ public class MainController {
         cbCategory3.getSelectionModel().select("Empty");
 
         //Resetting the spinners
-        spinnerIMDB.getValueFactory().setValue(0.0);
-        spinnerPersonal.getValueFactory().setValue(0.0);
+        spinnerIMDB.getValueFactory().setValue(5.0);
+        spinnerPersonal.getValueFactory().setValue(5.0);
 
         //Resetting the tableview to show all movies
-        tblviewMovies.setItems(movieModel.getObservableMovies());
+        //tblviewMovies.setItems(movieModel.getObservableMovies());
+        try {
+            List<Movie> allMovies = movieModel.resetFilters();
+            updateTableView(allMovies);
+        } catch (MovieException ex){
+            displayError(ex);
+        }
+
     }
 
     ////////////////////////
