@@ -153,12 +153,17 @@ public class MovieModel {
         }
         return true;
     }
-
-    public void checkForOldMovies() throws MovieException{
+    public void checkForOldMovies() throws MovieException {
         ObservableList<Movie> allMovies = getAvailableMovies();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        List<Movie> outdatedMoviesAndBadRatingList = findOutdatedMoviesAndBadRating(allMovies);
+        if (!outdatedMoviesAndBadRatingList.isEmpty()) {
+            handleOutdatedMoviesAndBadRating(outdatedMoviesAndBadRatingList);
+        }
+    }
+    private List<Movie> findOutdatedMoviesAndBadRating(ObservableList<Movie> allMovies) throws MovieException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"); //dd = day, MM = month, yyyy = year
         List<Movie> outdatedMoviesAndBadRatingList = new ArrayList<>();
-
+        //Loop which checks if a movie hasn't been seen in 2 years, or has a personal rating under 6.0
         for (Movie movie : allMovies) {
             try {
                 String lastViewedDateString = movie.getLastView();
@@ -166,7 +171,7 @@ public class MovieModel {
                     Date lastViewedDate = dateFormat.parse(lastViewedDateString);
                     long timeDifference = System.currentTimeMillis() - lastViewedDate.getTime();
                     long twoYearsInMillis = 2 * 365 * 24 * 60 * 60 * 1000L;
-                    //Adding movies that hasn't been viewed in two years or have a bad rating
+                    //Adds the bad movies and not seen movies to a new list
                     if (timeDifference >= twoYearsInMillis || movie.getPersonalRating() < 6.0) {
                         outdatedMoviesAndBadRatingList.add(movie);
                     }
@@ -175,25 +180,25 @@ public class MovieModel {
                 throw new MovieException("An error occurred while processing a movie.", e);
             }
         }
-        //If the list with outdated movies || bad rated movies is not empty it adds it to a list.
-        if (!outdatedMoviesAndBadRatingList.isEmpty()) {
-            setOutdatedMoviesAndBadRatingList(outdatedMoviesAndBadRatingList);
-            try {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/OutdatedWindow.fxml"));
-                Parent root = loader.load();
-                //Parsing the moviemodel to OutdatedController
-                OutdatedController outdatedController = loader.getController();
-                outdatedController.setMovieModel(this);
-                Stage stage = new Stage();
-                stage.setTitle("Update Movie");
-                stage.setScene(new Scene(root));
-                stage.showAndWait();
-            } catch (IOException e) {
-                displayError("Error occurred while opening the program", e.getMessage());
-            }
+        return outdatedMoviesAndBadRatingList;
+    }
+    private void handleOutdatedMoviesAndBadRating(List<Movie> outdatedMoviesAndBadRatingList) {
+        setOutdatedMoviesAndBadRatingList(outdatedMoviesAndBadRatingList);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/OutdatedWindow.fxml"));
+            Parent root = loader.load();
+
+            OutdatedController outdatedController = loader.getController();
+            outdatedController.setMovieModel(this);
+
+            Stage stage = new Stage();
+            stage.setTitle("Update Movie");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (IOException e) {
+            displayError("Error occurred while opening the program", e.getMessage());
         }
     }
-
     /**
      * Applies filtering to movies based on given criteria and updates the observable list of movies.
      *
@@ -211,6 +216,7 @@ public class MovieModel {
         filteredMovies = null;
         return movieManager.getAllMoviesWithCategories();
     }
+
     private void displayError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
