@@ -265,8 +265,6 @@ public class MainController {
                         updateLastViewDate(selectedMovie);
                     } catch (IOException ex) {
                         System.out.println("An error occurred while trying to play the movie: " + ex.getMessage());
-                    } catch (MovieException ex) {
-                        throw new RuntimeException(ex);
                     }
                 }).start();
             }
@@ -441,14 +439,25 @@ public class MainController {
     //// Miscellaneous  ////
     ////////////////////////
 
-    private void updateLastViewDate(Movie movie) throws MovieException {
+    /*private void updateLastViewDate(Movie movie) throws MovieException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String formattedDate = dateFormat.format(new Date(System.currentTimeMillis()));
         movie.setLastView(formattedDate);
         movieModel.updateLastView(movie, formattedDate);
         movieModel.refreshMovies();
     }
-
+*/
+    private void updateLastViewDate(Movie movie) throws RuntimeException{
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            String formattedDate = dateFormat.format(new Date(System.currentTimeMillis()));
+            movie.setLastView(formattedDate);
+            movieModel.updateLastView(movie, formattedDate);
+            movieModel.refreshMovies();
+        }catch (MovieException ex){
+            displayError(ex);
+        }
+    }
     private void updateTableView(List<Movie> movies) {
         tblviewMovies.getItems().clear();
         tblviewMovies.getItems().addAll(movies);

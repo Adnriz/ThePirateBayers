@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -153,59 +154,42 @@ public class MovieModel {
         return true;
     }
 
-    public void checkForOldMovies() throws MovieException {
-        // First getting a list of all the movies
+    public void checkForOldMovies() throws MovieException{
         ObservableList<Movie> allMovies = getAvailableMovies();
-        // Setting the date format
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        boolean oldMovie = false;
-
         List<Movie> outdatedMoviesAndBadRatingList = new ArrayList<>();
-        // Loop that checks all movies, and adding the outdated ones to a list
+
         for (Movie movie : allMovies) {
             try {
                 String lastViewedDateString = movie.getLastView();
                 if (lastViewedDateString != null) {
-                    java.util.Date lastViewedDate = dateFormat.parse(lastViewedDateString);
-                    java.util.Date currentDate = new Date();
-                    // Finding the difference between current date and last viewed date
-                    long timeDifference = currentDate.getTime() - lastViewedDate.getTime();
+                    Date lastViewedDate = dateFormat.parse(lastViewedDateString);
+                    long timeDifference = System.currentTimeMillis() - lastViewedDate.getTime();
                     long twoYearsInMillis = 2 * 365 * 24 * 60 * 60 * 1000L;
-                    // Add the movie to the list if it hasn't been seen in two years or has a personal rating under 6.0
+                    //Adding movies that hasn't been viewed in two years or have a bad rating
                     if (timeDifference >= twoYearsInMillis || movie.getPersonalRating() < 6.0) {
                         outdatedMoviesAndBadRatingList.add(movie);
-                        oldMovie = true;
                     }
                 }
             } catch (ParseException e) {
-                // Handle the exception (print or log the error, etc.)
-                System.out.println("An error occurred while processing a movie: " + e.getMessage());
-                // Optionally, throw a MovieException with the original exception as its cause
                 throw new MovieException("An error occurred while processing a movie.", e);
             }
         }
-
-        if (oldMovie) {
+        //If the list with outdated movies || bad rated movies is not empty it adds it to a list.
+        if (!outdatedMoviesAndBadRatingList.isEmpty()) {
             setOutdatedMoviesAndBadRatingList(outdatedMoviesAndBadRatingList);
-
-            // Opening the window which shows the outdated movies
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/OutdatedWindow.fxml"));
                 Parent root = loader.load();
-
+                //Parsing the moviemodel to OutdatedController
                 OutdatedController outdatedController = loader.getController();
                 outdatedController.setMovieModel(this);
-
-                // Showing the stage
                 Stage stage = new Stage();
                 stage.setTitle("Update Movie");
                 stage.setScene(new Scene(root));
                 stage.showAndWait();
             } catch (IOException e) {
-                // Handle the exception (print or log the error, etc.)
-                System.out.println("An error occurred while opening the outdated window: " + e.getMessage());
-                // Optionally, throw a MovieException with the original exception as its cause
-                throw new MovieException("An error occurred while opening the outdated window.", e);
+                displayError("Error occurred while opening the program", e.getMessage());
             }
         }
     }
@@ -226,6 +210,13 @@ public class MovieModel {
     public List<Movie> resetFilters() throws MovieException {
         filteredMovies = null;
         return movieManager.getAllMoviesWithCategories();
+    }
+    private void displayError(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
 
