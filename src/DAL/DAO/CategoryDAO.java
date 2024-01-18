@@ -2,13 +2,14 @@ package DAL.DAO;
 
 import BE.Category;
 import DAL.DBConnector;
+import DAL.Interfaces.ICategoryDAO;
 import Util.MovieException;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CategoryDAO {
+public class CategoryDAO implements ICategoryDAO {
     private DBConnector databaseConnector = DBConnector.getInstance();
 
     public CategoryDAO() throws MovieException {
@@ -18,8 +19,9 @@ public class CategoryDAO {
      * Retrieves all categories from the database.
      *
      * @return A map of category names to their respective IDs.
-     * @throws SQLException If there is a problem with the database access.
+     * @throws MovieException if there is an error executing the SQL command.
      */
+    @Override
     public Map<String, Integer> getAllCategories() throws MovieException {
         Map<String, Integer> categories = new HashMap<>();
         String sql = "SELECT id, Category FROM Category;";
@@ -44,8 +46,9 @@ public class CategoryDAO {
     /**
      * Removes the movie from CatMovie table.
      * @param movieId
-     * @throws MovieException
+     * @throws MovieException if there is an error executing the SQL commands.
      */
+    @Override
     public void removeCategoriesFromMovie(int movieId) throws MovieException {
         String sql = "DELETE FROM CatMovie WHERE Movieid = ?";
 
@@ -62,9 +65,10 @@ public class CategoryDAO {
     /**
      * Method for adding a category to the database
      * @param category
-     * @return
-     * @throws MovieException
+     * @return category
+     * @throws MovieException if there is an error executing the SQL commands.
      */
+    @Override
     public Category addCategory(Category category) throws  MovieException{
         String sql = "INSERT INTO Category (Category) VALUES (?)";
 
@@ -90,8 +94,9 @@ public class CategoryDAO {
      * Method for deleting a category from database.
      * and also removes the connections in the CatMovie table.
      * @param category
-     * @throws MovieException
+     * @throws MovieException if there is an error executing the SQL commands.
      */
+    @Override
     public void deleteCategory(Category category) throws MovieException
     {
         String deleteCatMovieSQL = "DELETE FROM CatMovie WHERE Categoryid = ?";

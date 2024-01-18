@@ -264,7 +264,7 @@ public class MainController {
                         // If the movie file is opened successfully, update the last view date
                         updateLastViewDate(selectedMovie);
                     } catch (IOException ex) {
-                        System.out.println("An error occurred while trying to play the movie: " + ex.getMessage());
+                        displayError(ex);
                     }
                 }).start();
             }
@@ -276,21 +276,12 @@ public class MainController {
     @FXML
     private void onFilterSearch() {
         String searchText = txtSearch.getText();
-       // if (!searchText.isEmpty()) {
         try {
             List<Movie> searchResult = movieModel.searchMovies(searchText);
             updateTableView(searchResult);
         } catch (MovieException ex) {
                 displayError(ex);
         }
-        /*} else {
-            // If the search field is empty, show all movies
-            try {
-                movieModel.refreshMovies();
-            } catch (MovieException ex) {
-                displayError(ex);
-            }
-        }*/
     }
 
     /**
@@ -304,8 +295,6 @@ public class MainController {
         double minIMDBRating = spinnerIMDB.getValue();
         double minPersonalRating = spinnerPersonal.getValue();
         try {
-            //movieModel.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
-            //tblviewMovies.setItems(movieModel.getMoviesToBeViewed());
             List<Movie> filteredMovies = movieModel.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
             updateTableView(filteredMovies);
         } catch (MovieException ex) {
@@ -328,14 +317,12 @@ public class MainController {
         spinnerPersonal.getValueFactory().setValue(5.0);
 
         //Resetting the tableview to show all movies
-        //tblviewMovies.setItems(movieModel.getObservableMovies());
         try {
             List<Movie> allMovies = movieModel.resetFilters();
             updateTableView(allMovies);
         } catch (MovieException ex){
             displayError(ex);
         }
-
     }
 
     ////////////////////////
@@ -439,15 +426,8 @@ public class MainController {
     //// Miscellaneous  ////
     ////////////////////////
 
-    /*private void updateLastViewDate(Movie movie) throws MovieException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        String formattedDate = dateFormat.format(new Date(System.currentTimeMillis()));
-        movie.setLastView(formattedDate);
-        movieModel.updateLastView(movie, formattedDate);
-        movieModel.refreshMovies();
-    }
-*/
-    private void updateLastViewDate(Movie movie) throws RuntimeException{
+
+    private void updateLastViewDate(Movie movie) {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
             String formattedDate = dateFormat.format(new Date(System.currentTimeMillis()));
