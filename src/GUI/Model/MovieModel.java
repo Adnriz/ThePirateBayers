@@ -5,6 +5,7 @@ import BE.Movie;
 import BLL.Managers.MovieManager;
 import GUI.Controller.OutdatedController;
 import Util.MovieException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -103,6 +104,7 @@ public class MovieModel {
 
         availableMovies.add(createdMovie);
     }
+
     public List<Movie> searchMovies(String query) throws MovieException
     {
         //return movieManager.searchMovies(query);
@@ -150,8 +152,6 @@ public class MovieModel {
         }
         return true;
     }
-
-
 
     public void checkForOldMovies() throws MovieException {
         // First getting a list of all the movies
@@ -222,15 +222,6 @@ public class MovieModel {
         filteredMovies = movieManager.filterMovies(minIMDBRating, minPersonalRating, selectedCategories);
         return filteredMovies;
     }
-
-    /**
-     * Retrieves the observable list of movies to be viewed.
-     *
-     * @return An ObservableList of movies that have been filtered.
-     */
-    /*public ObservableList<Movie> getMoviesToBeViewed() {
-        return moviesToBeViewed;
-    }*/
 
     public List<Movie> resetFilters() throws MovieException {
         filteredMovies = null;

@@ -3,6 +3,7 @@ package GUI.Model;
 import BE.Category;
 import BLL.Managers.CategoryManager;
 import Util.MovieException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -36,6 +37,7 @@ public class CategoryModel {
     public int getCategoryIDFromName(String categoryName) {
         return categoryNameToIdMap.getOrDefault(categoryName, -1);
     }
+
     public void removeCategoriesFromMovie(int movieId) throws MovieException {
         categoryManager.removeCategoriesFromMovie(movieId);
     }
@@ -47,12 +49,17 @@ public class CategoryModel {
         // Refresh the list
         loadCategories();
     }
+
     public void deleteCategory(Category selectedCategory) throws MovieException {
         categoryManager.deleteCategory(selectedCategory);
 
         // Refresh the list
         loadCategories();
     }
+
+    /**
+     * @return categories as a list.
+     */
     public ObservableList<Category> getCategories() {
         ObservableList<Category> categories = FXCollections.observableArrayList();
 

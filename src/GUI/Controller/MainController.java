@@ -1,9 +1,11 @@
 package GUI.Controller;
+// Classes
 import GUI.Model.CategoryModel;
 import GUI.Model.MovieModel;
 import BE.Movie;
 import BE.Category;
 import Util.MovieException;
+// JavaFX
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -12,15 +14,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.util.converter.DoubleStringConverter;
+// Java Imports
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+// Util
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -85,9 +88,6 @@ public class MainController {
         movieModel.checkForOldMovies();
     }
 
-    private static void wait(int ms) {
-    }
-
     ////////////////////////
     ////  Manage Movies ////
     ////////////////////////
@@ -119,6 +119,7 @@ public class MainController {
        }
     }
 
+    // Opens new window to process updating the movie
     @FXML
     private void onUpdateAction() throws IOException, MovieException {
         if (tblviewMovies.getSelectionModel().getSelectedItem() != null) {
@@ -247,9 +248,7 @@ public class MainController {
      * If an IOException is thrown (for example, if the file does not exist),
      * the catch block prints an error message.
      */
-
-    // How to handle exceptions here? CHATGPT suggests to split them up, so that onPlayMovie Handles the higher exception
-    // and the second method just throws the SQL and IO Exception as a MovieException
+    // FIXME Bad Exception Handling.
     @FXML
     private void onPlayMovie(){
         Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
@@ -353,7 +352,7 @@ public class MainController {
         setupMovieTableview();
         setupListViewCategories();
         setupCategoryBoxes();
-        spinnersENGAGE();
+        setupSpinners();
 
 
         // Adds a listener to the search field, so that it updates it realtime.
@@ -368,7 +367,7 @@ public class MainController {
         colIMDB.setCellValueFactory(new PropertyValueFactory<>("ImdbRating"));
         colLastView.setCellValueFactory(new PropertyValueFactory<>("lastView"));
 
-        /**
+        /*
          * Cell value factory for the colCategories TableColumn. It retrieves the list of categories
          * from the Movie object and sets the cell value to a formatted, sorted, and filtered string
          * of category names. If the list of categories is null, it sets an empty string as the cell value.
@@ -398,10 +397,10 @@ public class MainController {
         ObservableList<String> categoryNames = categories.stream()
                 // Only get the names and not the ids
                 .map(Category::getName)
-                // consolidate into a list to parse into the comboboxes
+                // consolidate into a list to parse into the combo boxes
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-        // Sets the Combo Boxes up, so that "Empty" always is the first option.
+        // Sets the Combo Boxes up, so that "Empty" is always the first option.
         cbCategory1.getItems().clear();
         cbCategory1.getItems().addAll(categoryNames);
         cbCategory1.getItems().remove("Empty");
@@ -424,7 +423,7 @@ public class MainController {
     /**
      * Method to set up the Spinners on launch.
      */
-    private void spinnersENGAGE() {
+    private void setupSpinners() {
         // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
         SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 5.0, 0.1);
         // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
@@ -449,7 +448,6 @@ public class MainController {
         movieModel.updateLastView(movie, formattedDate);
         movieModel.refreshMovies();
     }
-
 
     private void updateTableView(List<Movie> movies) {
         tblviewMovies.getItems().clear();

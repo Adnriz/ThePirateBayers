@@ -20,9 +20,5 @@ public class MovieException extends Exception {
     // Exception that is just a throwable object.
     public MovieException(Throwable cause) { super(cause); }
 
-    // ?? Fancy
-    public MovieException(String msg, Throwable cause, boolean enableSuppresion, boolean writableStackTrace) {
-        super(msg, cause, enableSuppresion, writableStackTrace);
-    }
-
 }
+

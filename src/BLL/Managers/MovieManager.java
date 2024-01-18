@@ -53,6 +53,7 @@ public class MovieManager {
     public Movie createMovie(Movie movie) throws MovieException {
         return movieDAO.createMovie(movie);
     }
+
     public void updateMovieInfo(int id, String title, double newPersonalRating, double newImdbRating, String filePath) throws MovieException {
         movieDAO.updateMovie(id, title, newPersonalRating, newImdbRating, filePath);
     }
@@ -79,6 +80,7 @@ public class MovieManager {
         return movieSearcher.search(searchList, query);
 
     }
+
     public void linkCatMov(Movie movie) throws MovieException {
         movieDAO.linkMovieWithCategories(movie);
     }

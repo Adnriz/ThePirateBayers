@@ -1,21 +1,22 @@
 package GUI.Controller;
 
-        import BE.Category;
-        import BE.Movie;
-        import GUI.Model.CategoryModel;
-        import GUI.Model.MovieModel;
-        import Util.MovieException;
-        import javafx.collections.FXCollections;
-        import javafx.collections.ObservableList;
-        import javafx.fxml.FXML;
-        import javafx.scene.control.*;
-        import javafx.stage.Stage;
-        import javafx.util.converter.DoubleStringConverter;
+import BE.Category;
+import BE.Movie;
+import GUI.Model.CategoryModel;
+import GUI.Model.MovieModel;
+import Util.MovieException;
 
-        import java.io.File;
-        import java.util.ArrayList;
-        import java.util.List;
-        import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import javafx.util.converter.DoubleStringConverter;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class UpdateMovieController {
 
@@ -77,6 +78,7 @@ public class UpdateMovieController {
             stage.close();
         }
     }
+
     //Method that closes the UI
     @FXML
     private void onClose() {
@@ -94,7 +96,7 @@ public class UpdateMovieController {
         if (movie != null) {
             //Sets the data from the movie to the fields in the update UI
             txtTitle.setText(movie.getMovieTitle());
-            spinnersENGAGE(movie);
+            setupSpinners(movie);
             setupCategoryBoxes(movie);
             setupFileTypeBox();
 
@@ -112,7 +114,7 @@ public class UpdateMovieController {
         }
     }
 
-    private void spinnersENGAGE(Movie movie) {
+    private void setupSpinners(Movie movie) {
         //Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1 & with the movies current ratings as default
         SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, movie.getImdbRating(), 0.1);
         //Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7

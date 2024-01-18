@@ -3,9 +3,9 @@ package GUI.Controller;
 import BE.Movie;
 import GUI.Model.MovieModel;
 import Util.MovieException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;

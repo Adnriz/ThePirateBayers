@@ -41,7 +41,11 @@ public class CategoryDAO {
 
     }
 
-
+    /**
+     * Removes the movie from CatMovie table.
+     * @param movieId
+     * @throws MovieException
+     */
     public void removeCategoriesFromMovie(int movieId) throws MovieException {
         String sql = "DELETE FROM CatMovie WHERE Movieid = ?";
 
@@ -51,7 +55,7 @@ public class CategoryDAO {
             pstmt.setInt(1, movieId);
             pstmt.executeUpdate();
         } catch (SQLException ex){
-            throw new MovieException("Could not remove category from database");
+            throw new MovieException("Could not delete movie from database");
         }
     }
 
@@ -84,6 +88,7 @@ public class CategoryDAO {
 
     /**
      * Method for deleting a category from database.
+     * and also removes the connections in the CatMovie table.
      * @param category
      * @throws MovieException
      */

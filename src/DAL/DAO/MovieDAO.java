@@ -125,7 +125,7 @@ public class MovieDAO {
                 pstmt.executeUpdate();
             }
         } catch (SQLException ex){
-            throw new MovieException("Could link movies with categories", ex);
+            throw new MovieException("Could not link movies with categories", ex);
         }
     }
 

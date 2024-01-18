@@ -5,9 +5,9 @@ import BE.Movie;
 import GUI.Model.CategoryModel;
 import GUI.Model.MovieModel;
 import Util.MovieException;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -17,36 +17,29 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class NewMovieController {
 
     @FXML
     private ComboBox<String> cbFileType;
-
     @FXML
     private Button btnSave;
-
     @FXML
     private ComboBox<String> cbCategory1;
-
     @FXML
     private ComboBox<String> cbCategory2;
-
     @FXML
     private ComboBox<String> cbCategory3;
-
     @FXML
     private Spinner<Double> spinnerIMDB;
-
     @FXML
     private Spinner<Double> spinnerPersonal;
-
     @FXML
     private TextField txtTitle;
     @FXML
     private TextField txtFilepath;
+
     private MovieModel movieModel;
     private CategoryModel categoryModel;
 
@@ -74,7 +67,7 @@ public class NewMovieController {
     {
         setupCategoryBoxes();
         setupFileTypeBox();
-        spinnersENGAGE();
+        setupSpinners();
     }
 
     ////////////////////////
@@ -159,7 +152,7 @@ public class NewMovieController {
     /**
      * Method to set up the Spinners on launch.
      */
-    private void spinnersENGAGE() {
+    private void setupSpinners() {
         // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
         SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 7.0, 0.1);
         // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
