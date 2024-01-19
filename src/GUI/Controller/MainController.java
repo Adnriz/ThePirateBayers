@@ -205,9 +205,6 @@ public class MainController {
 
     /**
      * Handles the action to open the NewMovie window.
-     *
-     * @throws IOException If the FXML file cannot be loaded.
-     * @throws MovieException If there's a problem refreshing the tableview.
      */
     @FXML
     private void onNewMovie(){
@@ -234,9 +231,6 @@ public class MainController {
 
     /**
      * Opens new window to process updating the movie.
-     *
-     * @throws IOException
-     * @throws MovieException
      */
     @FXML
     private void onUpdateAction() {
@@ -269,6 +263,10 @@ public class MainController {
             showAlert("Error", "Please select a movie to update");
         }
     }
+
+    /**
+     * Handles the action of deleting a movie.
+     */
     @FXML
     private void onDeleteMovie(){
         // Retrieve the selected movie from tblviewMovies
@@ -332,7 +330,6 @@ public class MainController {
     /**
      * Checks if there is a selected category.
      * Tries to delete it, but first shows a confirmation window.
-     * @param
      */
     @FXML
     private void onDeleteCategory() {
