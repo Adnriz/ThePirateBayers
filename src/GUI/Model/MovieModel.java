@@ -110,8 +110,8 @@ public class MovieModel {
     }
 
     public void refreshMovies() throws MovieException {
-        List<Movie> allMovies = movieManager.getAllMoviesWithCategories();
-        availableMovies.setAll(allMovies);
+            List<Movie> allMovies = movieManager.getAllMoviesWithCategories();
+            availableMovies.setAll(allMovies);
     }
     public void updateMovie(int id, String title, double newPersonalRating, double newImdbRating, String filePath) throws MovieException {
         movieManager.updateMovieInfo(id, title, newPersonalRating, newImdbRating, filePath);

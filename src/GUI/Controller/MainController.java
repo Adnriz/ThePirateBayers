@@ -74,18 +74,15 @@ public class MainController {
         try {
             movieModel = new MovieModel();
             categoryModel = new CategoryModel();
+            movieModel.checkForOldOrBadRatedMovies();
         }
         catch (MovieException ex){
             displayError(ex);
         }
     }
 
-    /**
-     * Initializes the controller.
-     */
-    public void initialize() throws MovieException {
+    public void initialize(){
         setupInteractable();
-        movieModel.checkForOldOrBadRatedMovies();
         checkAndUpdateOutdatedMovies();
     }
 
@@ -104,10 +101,9 @@ public class MainController {
         setupSpinners();
 
 
-        // Adds a listener to the search field, so that it updates in realtime.
+        // Adds a listener to the search field, so that it updates the tblview in realtime.
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> onFilterSearch());
     }
-
 
     private void setupMovieTableview() {
         tblviewMovies.setItems(movieModel.getObservableMovies());
@@ -135,9 +131,6 @@ public class MainController {
         listCategories.setItems(categoryModel.getCategories());
     }
 
-    /**
-     * Method to set up all the combo boxes with categories on launch
-     */
     private void setupCategoryBoxes() {
         // Fetch categories from the CategoryModel
         ObservableList<Category> categories = categoryModel.getCategories();
@@ -149,29 +142,21 @@ public class MainController {
                 // consolidate into a list to parse into the combo boxes
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
-        // Sets the Combo Boxes up, so that "Empty" is always the first option.
-        cbCategory1.getItems().clear();
-        cbCategory1.getItems().addAll(categoryNames);
-        cbCategory1.getItems().remove("Empty");
-        cbCategory1.getItems().add(0, "Empty");
-        cbCategory1.getSelectionModel().select("Empty");
+        // Sets the Combo Boxes up, so that "Empty" always is the first option.
+        categoryNames.remove("Empty");
+        categoryNames.add(0, "Empty");
 
-        cbCategory2.getItems().clear();
-        cbCategory2.getItems().addAll(categoryNames);
-        cbCategory2.getItems().remove("Empty");
-        cbCategory2.getItems().add(0, "Empty");
-        cbCategory2.getSelectionModel().select("Empty");
-
-        cbCategory3.getItems().clear();
-        cbCategory3.getItems().addAll(categoryNames);
-        cbCategory3.getItems().remove("Empty");
-        cbCategory3.getItems().add(0, "Empty");
-        cbCategory3.getSelectionModel().select("Empty");
+        configureComboBox(cbCategory1, categoryNames);
+        configureComboBox(cbCategory2, categoryNames);
+        configureComboBox(cbCategory3, categoryNames);
     }
 
-    /**
-     * Method to set up the Spinners on launch.
-     */
+    private void configureComboBox(ComboBox<String> comboBox, ObservableList<String> categoryOptions) {
+        comboBox.getItems().clear();
+        comboBox.setItems(categoryOptions);
+        comboBox.getSelectionModel().select("Empty");
+    }
+
     private void setupSpinners() {
         // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
         SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 5.0, 0.1);
@@ -185,7 +170,7 @@ public class MainController {
         spinnerPersonal.setValueFactory(valueFactoryPersonal);
     }
 
-    public void checkAndUpdateOutdatedMovies() throws MovieException {
+    public void checkAndUpdateOutdatedMovies(){
         try {
             List<Movie> outdatedMovies = movieModel.checkForOldOrBadRatedMovies();
             if (!outdatedMovies.isEmpty()){
@@ -222,10 +207,10 @@ public class MainController {
      * Handles the action to open the NewMovie window.
      *
      * @throws IOException If the FXML file cannot be loaded.
+     * @throws MovieException If there's a problem refreshing the tableview.
      */
     @FXML
-    private void onNewMovie() throws MovieException {
-
+    private void onNewMovie(){
        try {
            // Load NewMovieWindow
            FXMLLoader loader = new FXMLLoader(getClass().getResource("/NewMovieWindow.fxml"));
@@ -242,32 +227,44 @@ public class MainController {
            movieModel.refreshMovies();
        } catch (IOException ex) {
            displayError(ex);
+       } catch (MovieException e) {
+           displayError(e);
        }
     }
 
-    // Opens new window to process updating the movie
+    /**
+     * Opens new window to process updating the movie.
+     *
+     * @throws IOException
+     * @throws MovieException
+     */
     @FXML
-    private void onUpdateAction() throws IOException, MovieException {
+    private void onUpdateAction() {
         if (tblviewMovies.getSelectionModel().getSelectedItem() != null) {
             Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
+            try {
+                // Loading new stage
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/updateMovieWindow.fxml"));
+                Parent root = loader.load();
 
-            // Loading new stage
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/updateMovieWindow.fxml"));
-            Parent root = loader.load();
+                // Get the controller of the new stage
+                UpdateMovieController updateMovieController = loader.getController();
 
-            // Get the controller of the new stage
-            UpdateMovieController updateMovieController = loader.getController();
+                // Pass the selected movie and reference to MainController to UpdateMovieController
+                updateMovieController.setMovie(selectedMovie);
 
-            // Pass the selected movie and reference to MainController to UpdateMovieController
-            updateMovieController.setMovie(selectedMovie);
+                // Show the window
+                Stage stage = new Stage();
+                stage.setTitle("Update Movie");
+                stage.setScene(new Scene(root));
+                stage.showAndWait();
 
-            // Show the window
-            Stage stage = new Stage();
-            stage.setTitle("Update Movie");
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-
-            movieModel.refreshMovies();
+                movieModel.refreshMovies();
+            } catch (IOException e) {
+                displayError(e);
+            } catch (MovieException e) {
+                displayError(e);
+            }
         } else {
             showAlert("Error", "Please select a movie to update");
         }

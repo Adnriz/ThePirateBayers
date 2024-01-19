@@ -53,9 +53,6 @@ public class NewMovieController {
         this.movieModel = new MovieModel();
     }
 
-    /**
-     * Initializes the controller.
-     */
     public void initialize(){
         setupInteractable();
     }
@@ -75,9 +72,6 @@ public class NewMovieController {
     ////   Initialize   ////
     ////////////////////////
 
-    /**
-     * Method to set up all the combo boxes with categories on launch
-     */
     private void setupCategoryBoxes()
     {
         // Fetch categories from the CategoryModel
@@ -91,23 +85,18 @@ public class NewMovieController {
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
         // Sets the Combo Boxes up, so that "Empty" always is the first option.
-        cbCategory1.getItems().clear();
-        cbCategory1.getItems().addAll(movieCategories);
-        cbCategory1.getItems().remove("Empty");
-        cbCategory1.getItems().add(0, "Empty");
-        cbCategory1.getSelectionModel().select("Empty");
+        movieCategories.remove("Empty");
+        movieCategories.add(0, "Empty");
 
-        cbCategory2.getItems().clear();
-        cbCategory2.getItems().addAll(movieCategories);
-        cbCategory2.getItems().remove("Empty");
-        cbCategory2.getItems().add(0, "Empty");
-        cbCategory2.getSelectionModel().select("Empty");
+        configureComboBox(cbCategory1, movieCategories);
+        configureComboBox(cbCategory2, movieCategories);
+        configureComboBox(cbCategory3, movieCategories);
+    }
 
-        cbCategory3.getItems().clear();
-        cbCategory3.getItems().addAll(movieCategories);
-        cbCategory3.getItems().remove("Empty");
-        cbCategory3.getItems().add(0, "Empty");
-        cbCategory3.getSelectionModel().select("Empty");
+    private void configureComboBox(ComboBox<String> comboBox, ObservableList<String> categoryOptions) {
+        comboBox.getItems().clear();
+        comboBox.setItems(categoryOptions);
+        comboBox.getSelectionModel().select("Empty");
     }
 
     private void setupFileTypeBox(){
@@ -118,9 +107,6 @@ public class NewMovieController {
         cbFileType.getSelectionModel().select(null);
     }
 
-    /**
-     * Method to set up the Spinners on launch.
-     */
     private void setupSpinners() {
         // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
         SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 7.0, 0.1);
@@ -139,10 +125,6 @@ public class NewMovieController {
     ////    New Movie   ////
     ////////////////////////
 
-    /**
-     * Handles the save action when the Save button is clicked.
-     * It gathers user input, adds the movie to the model, and closes the window.
-     */
     @FXML
     private void onSave() {
         try {
@@ -156,10 +138,6 @@ public class NewMovieController {
         }
     }
 
-    /**
-     * Handles the save action when the Close button is clicked.
-     * Closes the current window.
-     */
     @FXML
     private void onClose() {
         closeWindow();
@@ -172,54 +150,48 @@ public class NewMovieController {
     ////////////////////////
 
     /**
-     * Gathers user input from the form fields and creates a new Movie object.
+     * Gathers user input from the input fields and creates a new Movie object.
      *
      * @return A Movie object populated with user input.
      */
     private Movie getUserInput() {
         String title = txtTitle.getText();
-        double imdbRating = spinnerIMDB.getValue();
-        double personalRating = spinnerPersonal.getValue();
-        String fileName = txtFilepath.getText();
-        String fileType = cbFileType.getValue();
-
         if (title.isEmpty()){
             showAlert("Missing input", "Please enter a movie title and try again.");
-            return null;
-        }
+            return null;}
+
+        String filePath = construcFilePath();
+        if (filePath == null) return null;
+
+        List<Integer> categoryIds = getCategoryIds();
+
+        return createMovieFromInput(title, spinnerIMDB.getValue(), spinnerPersonal.getValue(), filePath, categoryIds);
+    }
+
+    private String construcFilePath() {
+        String fileName = txtFilepath.getText();
+        String fileType = cbFileType.getValue();
         if (fileName.isEmpty() || fileType == null){
             showAlert("Missing input", "Please enter a filename, select a filetype and try again.");
-            return null;
-        }
-        String filepath = "Movies/" + fileName + fileType;
-        File movieFile = new File(filepath);
-        if (!movieFile.exists()){
-            displayError("Error", "The file: " + filepath + ", does not exist.");
-            return null;
-        }
+            return null;}
 
+        String filePath = "Movies/" + fileName + fileType;
+        File movieFile = new File(filePath);
+        if (!movieFile.exists()){
+            displayError("Error", "The file: " + filePath + ", does not exist.");
+            return null;
+        }
+        return filePath;
+    }
+
+    private List<Integer> getCategoryIds() {
         List<Integer> categoryIds = new ArrayList<>();
         categoryIds.add(convertCategoryNameToId(cbCategory1.getValue()));
         categoryIds.add(convertCategoryNameToId(cbCategory2.getValue()));
         categoryIds.add(convertCategoryNameToId(cbCategory3.getValue()));
-
-        // Creating the Movie object with the collected information
-        Movie newMovie = new Movie();
-        newMovie.setMovieTitle(title);
-        newMovie.setImdbRating(imdbRating);
-        newMovie.setPersonalRating(personalRating);
-        newMovie.setFilePath(filepath);
-        newMovie.setCategoryIds(categoryIds);
-
-        return newMovie;
+        return categoryIds;
     }
 
-    /**
-     * Converts a category name to its ID.
-     *
-     * @param categoryName The name of the category.
-     * @return The ID of the category, or -1 if not found.
-     */
     private int convertCategoryNameToId(String categoryName) {
         if (categoryName == null || categoryName.isEmpty()) {
             return -1; // Return -1 to indicate "not found"
@@ -227,9 +199,16 @@ public class NewMovieController {
         return movieModel.getCategoryModel().getCategoryIDFromName(categoryName);
     }
 
-    /**
-     * Closes the current window.
-     */
+    private Movie createMovieFromInput(String title, Double iMDBRating, Double personalRating, String filePath, List<Integer> categoryIds) {
+        Movie newMovie = new Movie();
+        newMovie.setMovieTitle(title);
+        newMovie.setImdbRating(iMDBRating);
+        newMovie.setPersonalRating(personalRating);
+        newMovie.setFilePath(filePath);
+        newMovie.setCategoryIds(categoryIds);
+        return newMovie;
+    }
+
     private void closeWindow() {
         Stage stage = (Stage) btnSave.getScene().getWindow();
         stage.close();
@@ -240,9 +219,6 @@ public class NewMovieController {
     ////    General     ////
     ////////////////////////
 
-    /**
-     * Shows an alert dialog displaying an error.
-     */
     private void displayError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);

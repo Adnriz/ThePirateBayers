@@ -111,10 +111,27 @@ public class UpdateMovieController {
         // Create a list of category names
         ObservableList<String> movieCategories = categories.stream()
                 // Only get the names and not the ids
+
                 .map(Category::getName)
+
                 // consolidate into a list to parse into the comboboxes
                 .collect(Collectors.toCollection(FXCollections::observableArrayList));
 
+        movieCategories.remove("Empty");
+        movieCategories.add(0, "Empty");
+
+        configureComboBox(cbCategory1, movieCategories, 0);
+        configureComboBox(cbCategory2, movieCategories, 1);
+        configureComboBox(cbCategory3, movieCategories, 2);
+    }
+
+    private void configureComboBox(ComboBox<String> comboBox, ObservableList<String> categoryOptions, int index) {
+        comboBox.getItems().clear();
+        comboBox.setItems(categoryOptions);
+        comboBox.getSelectionModel().select(movie.getCategories().get(index).getName());
+    }
+
+        /*
         // Set up ComboBox 1
         cbCategory1.getItems().clear();
         cbCategory1.getItems().addAll(movieCategories);
@@ -140,8 +157,8 @@ public class UpdateMovieController {
             cbCategory3.getItems().remove("Empty");
             cbCategory3.getItems().add(0, "Empty");
             cbCategory3.getSelectionModel().select(movie.getCategories().get(2).getName());
-        }
-    }
+        }*/
+
 
     private void setupFileTypeBox() {
         ObservableList<String> fileTypes = FXCollections.observableArrayList(".mp4", ".mpeg4");
