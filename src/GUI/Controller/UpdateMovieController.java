@@ -63,29 +63,6 @@ public class UpdateMovieController {
         updateUIWithMovieData();
     }
 
-    /////////////////////////
-    ////      Handle     ////
-    ////   Update Movie  ////
-    /////////////////////////
-
-    @FXML
-    private void onSaveAction() throws MovieException {
-        boolean updateSuccessful = movieDetailsUpdate(movie);
-        movieCategoryUpdate(movie);
-
-        if (updateSuccessful) {
-            Stage stage = (Stage) txtTitle.getScene().getWindow();
-            stage.close();
-        }
-    }
-
-    //Method that closes the UI
-    @FXML
-    private void onClose() {
-        Stage stage = (Stage) txtTitle.getScene().getWindow();
-        stage.close();
-    }
-
     ////////////////////////
     //// Helper Methods ////
     ////   Initialize   ////
@@ -172,6 +149,28 @@ public class UpdateMovieController {
         cbFileType.getItems().clear();
         cbFileType.getItems().addAll(fileTypes);
         cbFileType.getSelectionModel().select(null);
+    }
+
+    /////////////////////////
+    ////      Handle     ////
+    ////   Update Movie  ////
+    /////////////////////////
+
+    @FXML
+    private void onSaveAction() throws MovieException {
+        boolean updateSuccessful = movieDetailsUpdate(movie);
+        movieCategoryUpdate(movie);
+
+        if (updateSuccessful) {
+            Stage stage = (Stage) txtTitle.getScene().getWindow();
+            stage.close();
+        }
+    }
+
+    @FXML
+    private void onClose() {
+        Stage stage = (Stage) txtTitle.getScene().getWindow();
+        stage.close();
     }
 
     ////////////////////////

@@ -28,6 +28,11 @@ public class MovieSearcher {
         return searchResult;
     }
 
+    ////////////////////////
+    //// Helper Methods ////
+    ////     search     ////
+    ////////////////////////
+
     /**
      * This compares the query to the move object
      * by calling methods that uses a getter,

@@ -85,7 +85,133 @@ public class MainController {
      */
     public void initialize() throws MovieException {
         setupInteractable();
-        movieModel.checkForOldMovies();
+        movieModel.checkForOldOrBadRatedMovies();
+        checkAndUpdateOutdatedMovies();
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////   Initialize   ////
+    ////////////////////////
+
+    /**
+     * Collects all methods that handles the input controls.
+     */
+    private void setupInteractable() {
+        setupMovieTableview();
+        setupListViewCategories();
+        setupCategoryBoxes();
+        setupSpinners();
+
+
+        // Adds a listener to the search field, so that it updates it realtime.
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> onFilterSearch());
+    }
+
+
+    private void setupMovieTableview() {
+        tblviewMovies.setItems(movieModel.getObservableMovies());
+        colTitle.setCellValueFactory(new PropertyValueFactory<>("MovieTitle"));
+        colPersonal.setCellValueFactory(new PropertyValueFactory<>("PersonalRating"));
+        colIMDB.setCellValueFactory(new PropertyValueFactory<>("ImdbRating"));
+        colLastView.setCellValueFactory(new PropertyValueFactory<>("lastView"));
+
+        /*
+         * Cell value factory for the colCategories TableColumn. It retrieves the list of categories
+         * from the Movie object and sets the cell value to a formatted, sorted, and filtered string
+         * of category names. If the list of categories is null, it sets an empty string as the cell value.
+         */
+        colCategories.setCellValueFactory(cellData -> {
+            List<Category> categories = cellData.getValue().getCategories();
+            if (categories != null) {
+                return new SimpleStringProperty(movieModel.getCategoriesAsStringSorted(cellData.getValue()));
+            } else {
+                return new SimpleStringProperty("");
+            }
+        });
+    }
+
+    private void setupListViewCategories() {
+        listCategories.setItems(categoryModel.getCategories());
+    }
+
+    /**
+     * Method to set up all the combo boxes with categories on launch
+     */
+    private void setupCategoryBoxes() {
+        // Fetch categories from the CategoryModel
+        ObservableList<Category> categories = categoryModel.getCategories();
+
+        // Create a list of category names
+        ObservableList<String> categoryNames = categories.stream()
+                // Only get the names and not the ids
+                .map(Category::getName)
+                // consolidate into a list to parse into the combo boxes
+                .collect(Collectors.toCollection(FXCollections::observableArrayList));
+
+        // Sets the Combo Boxes up, so that "Empty" is always the first option.
+        cbCategory1.getItems().clear();
+        cbCategory1.getItems().addAll(categoryNames);
+        cbCategory1.getItems().remove("Empty");
+        cbCategory1.getItems().add(0, "Empty");
+        cbCategory1.getSelectionModel().select("Empty");
+
+        cbCategory2.getItems().clear();
+        cbCategory2.getItems().addAll(categoryNames);
+        cbCategory2.getItems().remove("Empty");
+        cbCategory2.getItems().add(0, "Empty");
+        cbCategory2.getSelectionModel().select("Empty");
+
+        cbCategory3.getItems().clear();
+        cbCategory3.getItems().addAll(categoryNames);
+        cbCategory3.getItems().remove("Empty");
+        cbCategory3.getItems().add(0, "Empty");
+        cbCategory3.getSelectionModel().select("Empty");
+    }
+
+    /**
+     * Method to set up the Spinners on launch.
+     */
+    private void setupSpinners() {
+        // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
+        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 5.0, 0.1);
+        // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
+        valueFactoryIMDB.setConverter(new DoubleStringConverter());
+
+        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 5.0, 0.1);
+        valueFactoryPersonal.setConverter(new DoubleStringConverter());
+        // Sets the parameters for the spinners with the code from above.
+        spinnerIMDB.setValueFactory(valueFactoryIMDB);
+        spinnerPersonal.setValueFactory(valueFactoryPersonal);
+    }
+
+    public void checkAndUpdateOutdatedMovies() throws MovieException {
+        try {
+            List<Movie> outdatedMovies = movieModel.checkForOldOrBadRatedMovies();
+            if (!outdatedMovies.isEmpty()){
+                openOutdatedMoviesWindow(outdatedMovies);
+            }
+        } catch (MovieException e) {
+            displayError(e);
+        }
+    }
+
+    private void openOutdatedMoviesWindow(List<Movie> outdatedMovies){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/OutdatedWindow.fxml"));
+            Parent root = loader.load();
+
+            OutdatedController outdatedController = loader.getController();
+            outdatedController.setMovieModel(this.movieModel);
+            outdatedController.setOutdatedMovies(outdatedMovies);
+
+            Stage stage = new Stage();
+            stage.setTitle("Outdated/bad rated movies");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (IOException e) {
+            displayError(e);
+        }
     }
 
     ////////////////////////
@@ -323,102 +449,6 @@ public class MainController {
         } catch (MovieException ex){
             displayError(ex);
         }
-    }
-
-    ////////////////////////
-    //// Helper Methods ////
-    ////   Initialize   ////
-    ////////////////////////
-
-    /**
-     * Collects all methods that handles the input controls.
-     */
-    private void setupInteractable() {
-        setupMovieTableview();
-        setupListViewCategories();
-        setupCategoryBoxes();
-        setupSpinners();
-
-
-        // Adds a listener to the search field, so that it updates it realtime.
-        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> onFilterSearch());
-    }
-
-
-    private void setupMovieTableview() {
-        tblviewMovies.setItems(movieModel.getObservableMovies());
-        colTitle.setCellValueFactory(new PropertyValueFactory<>("MovieTitle"));
-        colPersonal.setCellValueFactory(new PropertyValueFactory<>("PersonalRating"));
-        colIMDB.setCellValueFactory(new PropertyValueFactory<>("ImdbRating"));
-        colLastView.setCellValueFactory(new PropertyValueFactory<>("lastView"));
-
-        /*
-         * Cell value factory for the colCategories TableColumn. It retrieves the list of categories
-         * from the Movie object and sets the cell value to a formatted, sorted, and filtered string
-         * of category names. If the list of categories is null, it sets an empty string as the cell value.
-         */
-        colCategories.setCellValueFactory(cellData -> {
-            List<Category> categories = cellData.getValue().getCategories();
-            if (categories != null) {
-                return new SimpleStringProperty(movieModel.getCategoriesAsStringSorted(cellData.getValue()));
-            } else {
-                return new SimpleStringProperty("");
-            }
-        });
-    }
-
-    private void setupListViewCategories() {
-        listCategories.setItems(categoryModel.getCategories());
-    }
-
-    /**
-     * Method to set up all the combo boxes with categories on launch
-     */
-    private void setupCategoryBoxes() {
-        // Fetch categories from the CategoryModel
-        ObservableList<Category> categories = categoryModel.getCategories();
-
-        // Create a list of category names
-        ObservableList<String> categoryNames = categories.stream()
-                // Only get the names and not the ids
-                .map(Category::getName)
-                // consolidate into a list to parse into the combo boxes
-                .collect(Collectors.toCollection(FXCollections::observableArrayList));
-
-        // Sets the Combo Boxes up, so that "Empty" is always the first option.
-        cbCategory1.getItems().clear();
-        cbCategory1.getItems().addAll(categoryNames);
-        cbCategory1.getItems().remove("Empty");
-        cbCategory1.getItems().add(0, "Empty");
-        cbCategory1.getSelectionModel().select("Empty");
-
-        cbCategory2.getItems().clear();
-        cbCategory2.getItems().addAll(categoryNames);
-        cbCategory2.getItems().remove("Empty");
-        cbCategory2.getItems().add(0, "Empty");
-        cbCategory2.getSelectionModel().select("Empty");
-
-        cbCategory3.getItems().clear();
-        cbCategory3.getItems().addAll(categoryNames);
-        cbCategory3.getItems().remove("Empty");
-        cbCategory3.getItems().add(0, "Empty");
-        cbCategory3.getSelectionModel().select("Empty");
-    }
-
-    /**
-     * Method to set up the Spinners on launch.
-     */
-    private void setupSpinners() {
-        // Sets the parameters for the values, from 0.0 to 10.0, and the increment to 0.1
-        SpinnerValueFactory<Double> valueFactoryIMDB = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 5.0, 0.1);
-        // Is a builtin class from javaFX, that formats the numbers to they display 7.0 instead of 7
-        valueFactoryIMDB.setConverter(new DoubleStringConverter());
-
-        SpinnerValueFactory<Double> valueFactoryPersonal = new SpinnerValueFactory.DoubleSpinnerValueFactory(0.0, 10.0, 5.0, 0.1);
-        valueFactoryPersonal.setConverter(new DoubleStringConverter());
-        // Sets the parameters for the spinners with the code from above.
-        spinnerIMDB.setValueFactory(valueFactoryIMDB);
-        spinnerPersonal.setValueFactory(valueFactoryPersonal);
     }
 
     ////////////////////////

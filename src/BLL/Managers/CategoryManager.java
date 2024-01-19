@@ -13,12 +13,6 @@ public class CategoryManager {
     public CategoryManager() throws MovieException {categoryDAO = new CategoryDAO();
     }
 
-    /**
-     * Retrieves all categories from the database.
-     *
-     * @return A map of category names and their IDs.
-     * @throws SQLException If there is a problem with the database access.
-     */
     public Map<String, Integer> getAllCategories() throws MovieException {
         return categoryDAO.getAllCategories();
     }

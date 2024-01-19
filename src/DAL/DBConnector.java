@@ -21,7 +21,7 @@ public class DBConnector {
      * Sets sensitive login information for the database connection.
      *
      * @throws SQLException If the DataSource cannot be made.
-     * @throws IOException If the file path cannot be read.
+     * @throws MovieException If the file path cannot be read.
      */
     public DBConnector() throws MovieException {
 
@@ -46,7 +46,7 @@ public class DBConnector {
      * Gets a Connection object with a connection to the database.
      *
      * @return A Connection object with the connection to the database.
-     * @throws SQLServerException If the connection cannot be made.
+     * @throws MovieException If the connection cannot be made.
      */
     public Connection getConnection() throws MovieException {
         try {
@@ -58,8 +58,8 @@ public class DBConnector {
 
     /**
      * Makes it so the DBConnector adheres to the singleton pattern
-     * @return
-     * @throws MovieException
+     * @return The single instance of DBConnector
+     * @throws MovieException if there is a problem initializing the database connection.
      */
     public static DBConnector getInstance() throws MovieException {
         if (INSTANCE != null)
@@ -67,5 +67,4 @@ public class DBConnector {
         else
             return INSTANCE = new DBConnector();
     }
-
 }

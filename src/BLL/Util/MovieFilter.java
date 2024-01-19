@@ -25,9 +25,13 @@ public class MovieFilter {
                 filteredMovies.add(movie);
             }
         }
-
         return filteredMovies;
     }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////  filterMovies  ////
+    ////////////////////////
 
     private boolean meetsRatingCriteria(Movie movie, double minIMDBRating, double minPersonalRating) {
         return movie.getImdbRating() >= minIMDBRating && movie.getPersonalRating() >= minPersonalRating;

@@ -55,6 +55,41 @@ public class MovieDAO implements IMovieDAO {
         return allMovies;
     }
 
+    //////////////////////////////////
+    ////       Helper Methods     ////
+    /// getAllMoviesWithCategories ///
+    //////////////////////////////////
+
+    /**
+     * Method created a movie object with all the data from the DB. and then returns the Movie object.
+     *
+     * @param rs
+     * @return the Movie object made from extracted details.
+     * @throws MovieException If there is a problem with the database access.
+     */
+    private Movie extractMovie(ResultSet rs) throws MovieException {
+
+        try {
+            int movieId = rs.getInt("MovieId");
+            String title = rs.getString("MovieTitle");
+            double personalRating = rs.getDouble("PersonalRating");
+            double imdbRating = rs.getDouble("IMDBRating");
+            String filePath = rs.getString("Filepath");
+            String lastView = rs.getString("Lastview");
+
+            int categoryId = rs.getInt("CategoryId");
+            String category = rs.getString("Category");
+
+            Movie movie = new Movie(title, personalRating, imdbRating, filePath, lastView, movieId);
+
+            movie.addCategory(new Category(categoryId, category));
+
+            return movie;
+        } catch (SQLException ex) {
+            throw new MovieException("Could not get movie data from database", ex);
+        }
+    }
+
     /**
      * Fetches categories for a specific movie based on its ID.
      *
@@ -96,26 +131,33 @@ public class MovieDAO implements IMovieDAO {
     @Override
     public Movie createMovie(Movie movie) throws MovieException {
         String sql = "INSERT INTO Movie (Title, PersonalRating, IMDBRating, FilePath) VALUES (?, ?, ?, ?);";
+
         try (Connection conn = databaseConnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            pstmt.setString(1, movie.getMovieTitle());
-            pstmt.setDouble(2, movie.getPersonalRating());
-            pstmt.setDouble(3, movie.getImdbRating());
-            pstmt.setString(4, movie.getFilePath());
+            setMovieStatementParameters(pstmt, movie);
             pstmt.executeUpdate();
-
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     movie.setId(generatedKeys.getInt(1));
                 }
             }
-
             linkMovieWithCategories(movie);
             return movie;
         } catch (SQLException ex) {
             throw new MovieException("Could not create movie in database", ex);
         }
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////  createMovie   ////
+    ////////////////////////
+
+    private void setMovieStatementParameters(PreparedStatement pstmt, Movie movie) throws SQLException{
+        pstmt.setString(1, movie.getMovieTitle());
+        pstmt.setDouble(2, movie.getPersonalRating());
+        pstmt.setDouble(3, movie.getImdbRating());
+        pstmt.setString(4, movie.getFilePath());
     }
 
     public void linkMovieWithCategories(Movie movie) throws MovieException {
@@ -133,7 +175,6 @@ public class MovieDAO implements IMovieDAO {
         }
     }
 
-
     /**
      * Deletes a movie from the database.
      * Deletes any references to the movie in the CatMovie table, then deletes the movie from the Movie table.
@@ -148,19 +189,24 @@ public class MovieDAO implements IMovieDAO {
         String deleteMovieSQL = "DELETE FROM Movie WHERE ID = ?";
 
         try (Connection conn = databaseConnector.getConnection()) {
-
             // delete referenced entries from CatMovie table
-            PreparedStatement stmt1 = conn.prepareStatement(deleteCatMovieSQL);
-            stmt1.setInt(1, movie.getId());
-            stmt1.executeUpdate();
-
+            executeUpdate(conn, deleteCatMovieSQL, movie.getId());
             // delete movie from Movie table
-            PreparedStatement stmt2 = conn.prepareStatement(deleteMovieSQL);
-            stmt2.setInt(1, movie.getId());
-            stmt2.executeUpdate();
-
+            executeUpdate(conn, deleteMovieSQL, movie.getId());
         } catch (SQLException ex) {
             throw new MovieException("Could not delete movie from the database", ex);
+        }
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    ////  deleteMovie   ////
+    ////////////////////////
+
+    private void executeUpdate(Connection conn, String sql, int id) throws SQLException{
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)){
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
         }
     }
 
@@ -179,9 +225,8 @@ public class MovieDAO implements IMovieDAO {
         // SQL query to update the Movie table
         String updateQuery = "UPDATE Movie SET Title = ?, PersonalRating = ?, IMDBRating = ?, Filepath = ? WHERE id = ?";
 
-        try (Connection connection = databaseConnector.getConnection()) {
-            // Create a PreparedStatement with the update query
-            PreparedStatement preparedStatement = connection.prepareStatement(updateQuery);
+        try (Connection connection = databaseConnector.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
             // Set the values for the placeholders in the query
             preparedStatement.setString(1, title);
@@ -189,12 +234,8 @@ public class MovieDAO implements IMovieDAO {
             preparedStatement.setDouble(3, newImdbRating);
             preparedStatement.setString(4, filePath);
             preparedStatement.setInt(5, id);
-
             preparedStatement.executeUpdate();
 
-            // Close the resources
-            preparedStatement.close();
-            connection.close();
         } catch (SQLException ex) {
             throw new MovieException("Could not update movie in database", ex);
         }
@@ -226,37 +267,4 @@ public class MovieDAO implements IMovieDAO {
         }
     }
 
-    ////////////////////////
-    //// Helper Methods ////
-    ////////////////////////
-
-    /**
-     * Method created a movie object with all the data from the DB. and then returns the Movie object.
-     *
-     * @param rs
-     * @return the Movie object made from extracted details.
-     * @throws MovieException If there is a problem with the database access.
-     */
-    private Movie extractMovie(ResultSet rs) throws MovieException {
-
-        try {
-            int movieId = rs.getInt("MovieId");
-            String title = rs.getString("MovieTitle");
-            double personalRating = rs.getDouble("PersonalRating");
-            double imdbRating = rs.getDouble("IMDBRating");
-            String filePath = rs.getString("Filepath");
-            String lastView = rs.getString("Lastview");
-
-            int categoryId = rs.getInt("CategoryId");
-            String category = rs.getString("Category");
-
-            Movie movie = new Movie(title, personalRating, imdbRating, filePath, lastView, movieId);
-
-            movie.addCategory(new Category(categoryId, category));
-
-            return movie;
-        } catch (SQLException ex) {
-            throw new MovieException("Could not get movie data from database", ex);
-        }
-    }
 }

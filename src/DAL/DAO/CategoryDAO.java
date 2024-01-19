@@ -38,7 +38,7 @@ public class CategoryDAO implements ICategoryDAO {
             }
             return categories;
         }catch (SQLException ex){
-            throw new MovieException("Could not get categories from database");
+            throw new MovieException("Could not get categories from database", ex);
         }
 
     }
@@ -58,7 +58,7 @@ public class CategoryDAO implements ICategoryDAO {
             pstmt.setInt(1, movieId);
             pstmt.executeUpdate();
         } catch (SQLException ex){
-            throw new MovieException("Could not delete movie from database");
+            throw new MovieException("Could not delete movie from database", ex);
         }
     }
 
@@ -85,7 +85,7 @@ public class CategoryDAO implements ICategoryDAO {
             }
             return category;
         }catch (SQLException ex){
-            throw new MovieException("Could not add category to database");
+            throw new MovieException("Could not add category to database", ex);
         }
 
     }
@@ -105,16 +105,32 @@ public class CategoryDAO implements ICategoryDAO {
         try (Connection conn = databaseConnector.getConnection()){
 
             // Delete referenced entries from the CatMovie table
-            PreparedStatement stmtDeleteReferences = conn.prepareStatement(deleteCatMovieSQL);
-            stmtDeleteReferences.setInt(1,category.getId());
-            stmtDeleteReferences.executeUpdate();
+            deleteReferences(conn, deleteCatMovieSQL, category.getId());
 
             // Delete category from the Category table
-            PreparedStatement stmtDeleteCategory = conn.prepareStatement(deleteCategorySQL);
-            stmtDeleteCategory.setInt(1,category.getId());
-            stmtDeleteCategory.executeUpdate();
+            deleteTheCategory(conn, deleteCategorySQL, category.getId());
+
         } catch (SQLException ex){
-            throw new MovieException("Could not delete category from database");
+            throw new MovieException("Could not delete category from database", ex);
+        }
+    }
+
+    ////////////////////////
+    //// Helper Methods ////
+    //// deleteCategory ////
+    ////////////////////////
+
+    private void deleteReferences(Connection conn, String sql, int id) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+        }
+    }
+
+    private void deleteTheCategory(Connection conn, String sql, int id) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
         }
     }
 

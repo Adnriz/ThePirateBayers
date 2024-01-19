@@ -71,37 +71,6 @@ public class NewMovieController {
     }
 
     ////////////////////////
-    ////     Handle     ////
-    ////    New Movie   ////
-    ////////////////////////
-
-    /**
-     * Handles the save action when the Save button is clicked.
-     * It gathers user input, adds the movie to the model, and closes the window.
-     */
-    @FXML
-    private void onSave() {
-        try {
-            Movie movie = getUserInput();
-            if (movie != null){
-                movieModel.addMovie(movie);
-                closeWindow();
-            }
-        } catch (MovieException e) {
-            displayError("Database error", "Error saving movie to database.");
-        }
-    }
-
-    /**
-     * Handles the save action when the Close button is clicked.
-     * Closes the current window.
-     */
-    @FXML
-    private void onClose() {
-        closeWindow();
-    }
-
-    ////////////////////////
     //// Helper Methods ////
     ////   Initialize   ////
     ////////////////////////
@@ -164,6 +133,38 @@ public class NewMovieController {
         spinnerIMDB.setValueFactory(valueFactoryIMDB);
         spinnerPersonal.setValueFactory(valueFactoryPersonal);
     }
+
+    ////////////////////////
+    ////     Handle     ////
+    ////    New Movie   ////
+    ////////////////////////
+
+    /**
+     * Handles the save action when the Save button is clicked.
+     * It gathers user input, adds the movie to the model, and closes the window.
+     */
+    @FXML
+    private void onSave() {
+        try {
+            Movie movie = getUserInput();
+            if (movie != null){
+                movieModel.addMovie(movie);
+                closeWindow();
+            }
+        } catch (MovieException e) {
+            displayError("Database error", "Error saving movie to database.");
+        }
+    }
+
+    /**
+     * Handles the save action when the Close button is clicked.
+     * Closes the current window.
+     */
+    @FXML
+    private void onClose() {
+        closeWindow();
+    }
+
 
     ////////////////////////
     //// Helper Methods ////

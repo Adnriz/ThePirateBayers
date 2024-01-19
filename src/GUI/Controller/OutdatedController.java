@@ -26,12 +26,33 @@ public class OutdatedController {
     // OutdatedController //
     ////////////////////////
 
-    public OutdatedController() throws MovieException {
-
+    public OutdatedController(){
     }
+
     public void setMovieModel(MovieModel movieModel) {
         this.movieModel = movieModel;
-        setupList();
+    }
+
+    /**
+     * Sets up the list view with movies that are outdated and/or have bad personal ratings.
+     * Each item in the list view will display the movie's title, personal rating, and last viewed date.
+     */
+    public void setOutdatedMovies(List<Movie> outdatedMovies) {
+        final int maxTitleLength = 20;
+
+        ObservableList<String> movieDetails = FXCollections.observableArrayList(
+                outdatedMovies.stream()
+                        .map(movie -> {
+                            String movieTitle = movie.getMovieTitle();
+                            if (movieTitle.length() > maxTitleLength) {
+                                movieTitle = movieTitle.substring(0, maxTitleLength) + "...";
+                            }
+                            return movieTitle + " - Last viewed: " + movie.getLastView() + ", Personal rating: " + movie.getPersonalRating();
+                        })
+                        .collect(Collectors.toList())
+        );
+
+        outdatedMovieView.setItems(movieDetails);
     }
 
     ////////////////////////
@@ -44,39 +65,4 @@ public class OutdatedController {
         Stage stage = (Stage) outdatedMovieView.getScene().getWindow();
         stage.close();
     }
-
-    ////////////////////////
-    //// Helper Methods ////
-    ////   Initialize   ////
-    ////////////////////////
-
-    /**
-     * Sets up the list view with movies that are outdated and/or have bad personal ratings.
-     * Each item in the list view will display the movie's title, personal rating, and last viewed date.
-     */
-    private void setupList() {
-        if (outdatedMovieView != null) {
-            List<Movie> movies = movieModel.getOutdatedMoviesAndBadRatingList();
-
-            final int maxTitleLength = 20;
-
-            // Concatenating movie title, personal rating, and last viewed into a single string for each movie
-            ObservableList<String> movieDetails = FXCollections.observableArrayList(
-                    movies.stream()
-                            .map(movie -> {
-                                String movieTitle = movie.getMovieTitle();
-
-                                if (movieTitle.length() > maxTitleLength){
-                                    movieTitle = movieTitle.substring(0, maxTitleLength) + "...";
-                                }
-                                return movieTitle + " - Last viewed: " + movie.getLastView() + ", Personal rating: " + movie.getPersonalRating();
-                            })
-                            .collect(Collectors.toList())
-            );
-
-            // Setting the concatenated details in the ListView
-            outdatedMovieView.setItems(movieDetails);
-        }
-    }
-
 }

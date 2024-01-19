@@ -108,7 +108,6 @@ public class MovieModel {
 
     public List<Movie> searchMovies(String query) throws MovieException
     {
-        //return movieManager.searchMovies(query);
         List<Movie> searchList;
         if (filteredMovies != null){
             searchList = filteredMovies;
@@ -135,12 +134,6 @@ public class MovieModel {
     public void updateLastView(Movie movie, String formattedDate) throws MovieException {
         movieManager.updateLastView(movie, formattedDate);
     }
-    private void setOutdatedMoviesAndBadRatingList(List<Movie> outdatedMoviesAndBadRatingList) {
-        this.outdatedMoviesAndBadRatingList = outdatedMoviesAndBadRatingList;
-    }
-    public List<Movie> getOutdatedMoviesAndBadRatingList() {
-        return outdatedMoviesAndBadRatingList;
-    }
 
     public boolean inputCheck(String userInput){
 
@@ -153,52 +146,7 @@ public class MovieModel {
         }
         return true;
     }
-    public void checkForOldMovies() throws MovieException {
-        ObservableList<Movie> allMovies = getAvailableMovies();
-        List<Movie> outdatedMoviesAndBadRatingList = findOutdatedMoviesAndBadRating(allMovies);
-        if (!outdatedMoviesAndBadRatingList.isEmpty()) {
-            handleOutdatedMoviesAndBadRating(outdatedMoviesAndBadRatingList);
-        }
-    }
-    private List<Movie> findOutdatedMoviesAndBadRating(ObservableList<Movie> allMovies) throws MovieException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"); //dd = day, MM = month, yyyy = year
-        List<Movie> outdatedMoviesAndBadRatingList = new ArrayList<>();
-        //Loop which checks if a movie hasn't been seen in 2 years, or has a personal rating under 6.0
-        for (Movie movie : allMovies) {
-            try {
-                String lastViewedDateString = movie.getLastView();
-                if (lastViewedDateString != null) {
-                    Date lastViewedDate = dateFormat.parse(lastViewedDateString);
-                    long timeDifference = System.currentTimeMillis() - lastViewedDate.getTime();
-                    long twoYearsInMillis = 2 * 365 * 24 * 60 * 60 * 1000L;
-                    //Adds the bad movies and not seen movies to a new list
-                    if (timeDifference >= twoYearsInMillis || movie.getPersonalRating() < 6.0) {
-                        outdatedMoviesAndBadRatingList.add(movie);
-                    }
-                }
-            } catch (ParseException e) {
-                throw new MovieException("An error occurred while processing a movie.", e);
-            }
-        }
-        return outdatedMoviesAndBadRatingList;
-    }
-    private void handleOutdatedMoviesAndBadRating(List<Movie> outdatedMoviesAndBadRatingList) {
-        setOutdatedMoviesAndBadRatingList(outdatedMoviesAndBadRatingList);
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/OutdatedWindow.fxml"));
-            Parent root = loader.load();
 
-            OutdatedController outdatedController = loader.getController();
-            outdatedController.setMovieModel(this);
-
-            Stage stage = new Stage();
-            stage.setTitle("Update Movie");
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-        } catch (IOException e) {
-            displayError("Error occurred while opening the program", e.getMessage());
-        }
-    }
     /**
      * Applies filtering to movies based on given criteria and updates the observable list of movies.
      *
@@ -215,6 +163,34 @@ public class MovieModel {
     public List<Movie> resetFilters() throws MovieException {
         filteredMovies = null;
         return movieManager.getAllMoviesWithCategories();
+    }
+
+    public List<Movie> checkForOldOrBadRatedMovies() throws MovieException {
+        List<Movie> allMovies = getAvailableMovies();
+        return allMovies.stream()
+                .filter(this::isMovieOutdatedOrBadRated)
+                .collect(Collectors.toList());
+        }
+
+    ///////////////////////////
+    ////  Helper Methods   ////
+    //// CheckForOldMovies ////
+    ///////////////////////////
+
+    private boolean isMovieOutdatedOrBadRated(Movie movie) {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+            String lastViewedDateString = movie.getLastView();
+            if (lastViewedDateString != null && !lastViewedDateString.isEmpty()){
+                Date lastViewedDate = dateFormat.parse(lastViewedDateString);
+                long timeDifference = System.currentTimeMillis() - lastViewedDate.getTime();
+                long twoYearsInMillis = 2 * 365 * 24 * 60 * 60 * 1000L;
+                return timeDifference >= twoYearsInMillis || movie.getPersonalRating() < 6.0;
+            }
+        } catch (ParseException e) {
+            displayError("Error parsing date for movie: " + movie.getMovieTitle(), e.getMessage());
+        }
+        return false;
     }
 
     private void displayError(String title, String content) {
