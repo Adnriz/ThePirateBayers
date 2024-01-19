@@ -131,35 +131,6 @@ public class UpdateMovieController {
         comboBox.getSelectionModel().select(movie.getCategories().get(index).getName());
     }
 
-        /*
-        // Set up ComboBox 1
-        cbCategory1.getItems().clear();
-        cbCategory1.getItems().addAll(movieCategories);
-        if (movie.getCategories().size() > 0) {
-            cbCategory1.getItems().remove("Empty");
-            cbCategory1.getItems().add(0, "Empty");
-            cbCategory1.getSelectionModel().select(movie.getCategories().get(0).getName());
-        }
-
-        // Set up ComboBox 2
-        cbCategory2.getItems().clear();
-        cbCategory2.getItems().addAll(movieCategories);
-        if (movie.getCategories().size() > 1) {
-            cbCategory2.getItems().remove("Empty");
-            cbCategory2.getItems().add(0, "Empty");
-            cbCategory2.getSelectionModel().select(movie.getCategories().get(1).getName());
-        }
-
-        // Set up ComboBox 3
-        cbCategory3.getItems().clear();
-        cbCategory3.getItems().addAll(movieCategories);
-        if (movie.getCategories().size() > 2) {
-            cbCategory3.getItems().remove("Empty");
-            cbCategory3.getItems().add(0, "Empty");
-            cbCategory3.getSelectionModel().select(movie.getCategories().get(2).getName());
-        }*/
-
-
     private void setupFileTypeBox() {
         ObservableList<String> fileTypes = FXCollections.observableArrayList(".mp4", ".mpeg4");
 
