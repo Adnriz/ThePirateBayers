@@ -23,10 +23,10 @@
             <TableColumn fx:id="colLastView" prefWidth="116.0" text="Last Viewed" />
          </columns>
       </TableView>
-      <TextField fx:id="txtSearch" layoutX="17.0" layoutY="25.0" prefHeight="25.0" prefWidth="198.0" promptText="Search" />
+      <TextField fx:id="txtSearch" layoutX="17.0" layoutY="24.0" prefHeight="25.0" prefWidth="198.0" promptText="Search" />
       <Button fx:id="btnNewMovie" layoutX="17.0" layoutY="394.0" mnemonicParsing="false" onAction="#onNewMovie" text="New Movie" />
-      <Button fx:id="btnUpdate" layoutX="97.0" layoutY="394.0" mnemonicParsing="false" onAction="#onUpdateAction" text="Update" />
-      <Button fx:id="btnDelete" layoutX="156.0" layoutY="394.0" mnemonicParsing="false" onAction="#onDeleteMovie" prefHeight="25.0" prefWidth="55.0" text="Delete" />
+      <Button fx:id="btnUpdate" layoutX="103.0" layoutY="394.0" mnemonicParsing="false" onAction="#onUpdateAction" text="Update" />
+      <Button fx:id="btnDelete" layoutX="167.0" layoutY="394.0" mnemonicParsing="false" onAction="#onDeleteMovie" prefHeight="25.0" prefWidth="55.0" text="Delete" />
       <Label layoutX="359.0" layoutY="392.0" prefHeight="20.0" prefWidth="55.0" text="Filters:">
          <font>
             <Font size="14.0" />
@@ -55,7 +55,7 @@
       <Button fx:id="btnApplyFilters" layoutX="236.0" layoutY="544.0" mnemonicParsing="false" onAction="#onApplyFilters" prefHeight="25.0" prefWidth="83.0" text="Apply Filters" />
       <Button fx:id="btnClearFilters" layoutX="326.0" layoutY="544.0" mnemonicParsing="false" onAction="#onClearFilters" prefHeight="25.0" prefWidth="83.0" text="Clear Filters" />
       <Separator layoutX="226.0" layoutY="391.0" orientation="VERTICAL" prefHeight="194.0" prefWidth="6.0" />
-      <Button fx:id="btnPlayMovie" layoutX="75.0" layoutY="477.0" mnemonicParsing="false" onAction="#onPlayMovie" text="PLAY MOVIE" />
+      <Button fx:id="btnPlayMovie" layoutX="85.0" layoutY="479.0" mnemonicParsing="false" onAction="#onPlayMovie" text="Play Movie" />
       <Separator layoutX="538.0" layoutY="391.0" orientation="VERTICAL" prefHeight="194.0" prefWidth="6.0" />
       <Label layoutX="606.0" layoutY="392.0" text="Manage Categories">
          <font>
@@ -63,8 +63,8 @@
          </font>
       </Label>
       <ListView fx:id="listCategories" layoutX="556.0" layoutY="418.0" prefHeight="98.0" prefWidth="229.0" />
-      <Button fx:id="btnAddCategory" layoutX="556.0" layoutY="546.0" mnemonicParsing="false" onAction="#onAddCategory" prefHeight="25.0" prefWidth="92.0" text="Add Category" />
-      <Button fx:id="btnDeleteCategory" layoutX="734.0" layoutY="546.0" mnemonicParsing="false" onAction="#onDeleteCategory" prefHeight="25.0" prefWidth="55.0" text="Delete" />
-      <TextField fx:id="txtAddCategory" layoutX="556.0" layoutY="519.0" prefHeight="25.0" prefWidth="126.0" promptText="New Category" />
+      <Button fx:id="btnAddCategory" layoutX="556.0" layoutY="545.0" mnemonicParsing="false" onAction="#onAddCategory" prefHeight="25.0" prefWidth="92.0" text="Add Category" />
+      <Button fx:id="btnDeleteCategory" layoutX="734.0" layoutY="545.0" mnemonicParsing="false" onAction="#onDeleteCategory" prefHeight="25.0" prefWidth="55.0" text="Delete" />
+      <TextField fx:id="txtAddCategory" layoutX="556.0" layoutY="518.0" prefHeight="25.0" prefWidth="126.0" promptText="New Category" />
    </children>
 </AnchorPane>

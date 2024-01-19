@@ -14,7 +14,6 @@ public class MovieSearcher {
      * @param query is a string from the GUI.
      * @return searchResult
      */
-
     public List<Movie> search(List<Movie> searchBase, String query) {
         List<Movie> searchResult = new ArrayList<>();
 

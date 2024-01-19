@@ -4,7 +4,6 @@ import BE.Category;
 import DAL.DAO.CategoryDAO;
 import Util.MovieException;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 public class CategoryManager {

@@ -7,7 +7,6 @@ import BLL.Util.MovieSearcher;
 import DAL.DAO.MovieDAO;
 import Util.MovieException;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class MovieManager {

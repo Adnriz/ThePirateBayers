@@ -104,7 +104,7 @@ public class MainController {
         setupSpinners();
 
 
-        // Adds a listener to the search field, so that it updates it realtime.
+        // Adds a listener to the search field, so that it updates in realtime.
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> onFilterSearch());
     }
 
