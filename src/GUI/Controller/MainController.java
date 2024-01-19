@@ -374,7 +374,6 @@ public class MainController {
      * If an IOException is thrown (for example, if the file does not exist),
      * the catch block prints an error message.
      */
-    // FIXME Bad Exception Handling.
     @FXML
     private void onPlayMovie(){
         Movie selectedMovie = tblviewMovies.getSelectionModel().getSelectedItem();
