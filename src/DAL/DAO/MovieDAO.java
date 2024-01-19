@@ -159,7 +159,12 @@ public class MovieDAO implements IMovieDAO {
         pstmt.setDouble(3, movie.getImdbRating());
         pstmt.setString(4, movie.getFilePath());
     }
-
+    /**
+     * Links a movie with the corresponding categories
+     *
+     * @param movie The Movie object to insert.
+     * @throws MovieException if there is an error executing the SQL commands.
+     */
     public void linkMovieWithCategories(Movie movie) throws MovieException {
         String sql = "INSERT INTO CatMovie (CategoryId, MovieId) VALUES (?, ?);";
         try (Connection conn = databaseConnector.getConnection();
@@ -222,13 +227,11 @@ public class MovieDAO implements IMovieDAO {
      */
     @Override
     public void updateMovie(int id, String title, double newPersonalRating, double newImdbRating, String filePath) throws MovieException {
-        // SQL query to update the Movie table
         String updateQuery = "UPDATE Movie SET Title = ?, PersonalRating = ?, IMDBRating = ?, Filepath = ? WHERE id = ?";
 
         try (Connection connection = databaseConnector.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(updateQuery)) {
 
-            // Set the values for the placeholders in the query
             preparedStatement.setString(1, title);
             preparedStatement.setDouble(2, newPersonalRating);
             preparedStatement.setDouble(3, newImdbRating);

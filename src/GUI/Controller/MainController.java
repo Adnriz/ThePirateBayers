@@ -456,7 +456,10 @@ public class MainController {
     //// Miscellaneous  ////
     ////////////////////////
 
-
+    /**
+     * Formatting the lastViewDate which is set to the movie after it has been played.
+     * @param movie
+     */
     private void updateLastViewDate(Movie movie) {
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
@@ -513,7 +516,10 @@ public class MainController {
         Optional<ButtonType> result = confirmAlert.showAndWait();
         return result.isPresent() && result.get() == ButtonType.YES;
     }
-
+    /**
+     * Displays an error alert, with the error.
+     * @param ex the exception thrown
+     */
     private void displayError(Throwable ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Application Error");
@@ -521,7 +527,11 @@ public class MainController {
         alert.setContentText("Please try again or contact support if the problem persists.");
         alert.showAndWait();
     }
-
+    /**
+     * Displays an information alert with specific title and content.
+     * @param title the title of the alert box
+     * @param content the content of the alert box
+     */
     private void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

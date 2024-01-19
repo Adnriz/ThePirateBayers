@@ -178,6 +178,12 @@ public class UpdateMovieController {
     ////  Update Movie  ////
     ////////////////////////
 
+    /**
+     * Gathering information from ui and updating the movie in the database
+     * @param movie the movie that's being updated
+     * @return
+     * @throws MovieException
+     */
     private boolean movieDetailsUpdate(Movie movie) throws MovieException {
         if (!txtTitle.getText().isEmpty()) {
             //assigning the information to be updated
@@ -205,6 +211,11 @@ public class UpdateMovieController {
         }
     }
 
+    /**
+     * Getting and updating the categories for a movie
+     * @param movie the movie being updated
+     * @throws MovieException
+     */
     private void movieCategoryUpdate(Movie movie) throws MovieException {
         int movieid = movie.getId();
         CategoryModel categoryModel = new CategoryModel();
